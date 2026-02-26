@@ -9,7 +9,8 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Text style={{ fontSize: 24, fontWeight: "bold" }}>Deen Daily</Text>
+      <Text style={{ fontSize: 16, color: "#666", marginTop: 8 }}>Your daily guide to Deen.</Text>
     </View>
   );
 }
