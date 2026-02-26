@@ -1,0 +1,9 @@
+export const Environment = {
+    // Base URLs
+    ISLAMIC_API_BASE_URL: process.env.EXPO_PUBLIC_ISLAMIC_API_BASE_URL,
+    HADITH_API_BASE_URL: process.env.EXPO_PUBLIC_HADITH_API_BASE_URL,
+    QURAN_API_BASE_URL: process.env.EXPO_PUBLIC_QURAN_API_BASE_URL,
+    // API Keys
+    ISLAMIC_API_KEY: process.env.EXPO_PUBLIC_ISLAMIC_API_KEY,
+    HADITH_API_KEY: process.env.EXPO_PUBLIC_HADITH_API_KEY,
+}
