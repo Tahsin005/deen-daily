@@ -2,6 +2,7 @@ export const IslamicAPISettings = {
     prayerTime: {
         apisuffix: "prayer-time",
         queryparams: [
+            "api_key",
             "lat",
             "lon",
             "method",
@@ -155,6 +156,7 @@ export const IslamicAPISettings = {
     fasting: {
         apisuffix: "fasting",
         queryparams: [
+            "api_key",
             "lat",
             "lon",
             "method",
@@ -297,6 +299,7 @@ export const IslamicAPISettings = {
     zakatNisab: {
         apisuffix: "zakat-nisab",
         queryparams: [
+            "api_key",
             "standard",
             "currency",
             "unit"
@@ -588,6 +591,7 @@ export const IslamicAPISettings = {
     ramadan: {
         apisuffix: "ramadan",
         queryparams: [
+            "api_key",
             "lat",
             "lon",
             "format",
