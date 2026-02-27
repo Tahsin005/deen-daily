@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 
-type PrayerHeaderProps = {
+type FastingHeaderProps = {
     gregorianDay?: string;
     gregorianMonth?: string;
     readableDate?: string;
@@ -10,16 +10,11 @@ type PrayerHeaderProps = {
     weekdayArabic?: string;
     timezoneLine?: string;
     statusMessage: string;
-    formattedTime: string;
     isLoading: boolean;
     onRefresh: () => void;
-    qiblaDegrees?: number;
-    qiblaDirectionFrom?: string;
-    qiblaDistanceValue?: number;
-    qiblaDistanceUnit?: string;
 };
 
-export const PrayerHeader = ({
+export const FastingHeader = ({
     gregorianDay,
     gregorianMonth,
     readableDate,
@@ -28,20 +23,9 @@ export const PrayerHeader = ({
     weekdayArabic,
     timezoneLine,
     statusMessage,
-    formattedTime,
     isLoading,
     onRefresh,
-    qiblaDegrees,
-    qiblaDirectionFrom,
-    qiblaDistanceValue,
-    qiblaDistanceUnit,
-}: PrayerHeaderProps) => {
-    const hasQibla =
-        typeof qiblaDegrees === "number" &&
-        typeof qiblaDistanceValue === "number" &&
-        Boolean(qiblaDirectionFrom) &&
-        Boolean(qiblaDistanceUnit);
-
+}: FastingHeaderProps) => {
     return (
         <View style={styles.headerCard}>
             <View style={styles.headerTopRow}>
@@ -56,7 +40,6 @@ export const PrayerHeader = ({
                         {weekdayLabel} {weekdayArabic ? `| ${weekdayArabic}` : ""}
                     </Text>
                 </View>
-            
                 <Pressable style={styles.headerRefreshButton} onPress={onRefresh}>
                     <Ionicons name="locate" size={18} color="#FFFFFF" />
                     <Text style={styles.headerRefreshText}>Update</Text>
@@ -64,26 +47,8 @@ export const PrayerHeader = ({
             </View>
             <View style={styles.headerTimezoneRow}>
                 <Text style={styles.headerTimezoneText}>{timezoneLine || statusMessage}</Text>
-                <View style={styles.headerTimezoneRight}>
-                    <View style={styles.headerClockWrap}>
-                        <Text style={styles.headerClockLabel}>Now</Text>
-                        <Text style={styles.headerClockValue}>{formattedTime}</Text>
-                    </View>
-                    {isLoading ? <ActivityIndicator color="#FFFFFF" size="small" /> : null}
-                </View>
+                {isLoading ? <ActivityIndicator color="#FFFFFF" size="small" /> : null}
             </View>
-            {hasQibla ? (
-                <View style={styles.headerQiblaRow}>
-                    <Ionicons name="compass" size={16} color="#E4F4EC" />
-                    <Text style={styles.headerQiblaText}>
-                        {qiblaDegrees?.toFixed(1)}° from {qiblaDirectionFrom}
-                    </Text>
-                    <Text style={styles.headerQiblaText}>·</Text>
-                    <Text style={styles.headerQiblaText}>
-                        {qiblaDistanceValue?.toFixed(1)} {qiblaDistanceUnit}
-                    </Text>
-                </View>
-            ) : null}
         </View>
     );
 };
@@ -125,19 +90,6 @@ const styles = StyleSheet.create({
     headerTextWrap: {
         flex: 1,
     },
-    headerClockWrap: {
-        alignItems: "flex-end",
-    },
-    headerClockLabel: {
-        fontSize: 10,
-        color: "#E4F4EC",
-    },
-    headerClockValue: {
-        fontSize: 16,
-        fontWeight: "700",
-        color: "#FFFFFF",
-        marginTop: 2,
-    },
     headerDateText: {
         fontSize: 16,
         fontWeight: "700",
@@ -176,28 +128,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
     },
-    headerTimezoneRight: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 12,
-    },
     headerTimezoneText: {
         fontSize: 12,
         color: "#E4F4EC",
         flex: 1,
         marginRight: 10,
-    },
-    headerQiblaRow: {
-        marginTop: 10,
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 6,
-        paddingTop: 10,
-        borderTopWidth: 1,
-        borderTopColor: "rgba(255, 255, 255, 0.2)",
-    },
-    headerQiblaText: {
-        fontSize: 11,
-        color: "#E4F4EC",
     },
 });

@@ -1,15 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { useEffect, useMemo, useState } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { TodayFastingCard } from "../../components/fasting/TodayFastingCard";
+import { WhiteDaysCard } from "../../components/fasting/WhiteDaysCard";
 import { PrayerHeader } from "../../components/prayer/PrayerHeader";
 import { PrayerTimesCard } from "../../components/prayer/PrayerTimesCard";
 import { ProhibitedTimesCard } from "../../components/prayer/ProhibitedTimesCard";
-import { QiblaCard } from "../../components/prayer/QiblaCard";
 import { Colors } from "../../constants/Colors";
+import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
 import { getPrayerTimes } from "../../lib/api/prayer/getPrayerTimes";
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 import { usePrayerSettings } from "../../lib/storage/usePrayerSettings";
+
+const formatReadableDate = (value?: string) => {
+  if (!value) {
+    return "";
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+  return parsed.toLocaleDateString(undefined, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
 
 type StoredLocation = {
   latitude: number;
@@ -119,6 +136,30 @@ export default function PrayerScreen() {
   const prayerTimes = prayerData?.times ?? {};
   const prohibitedTimes = prayerData?.prohibited_times;
 
+  const fastingQuery = useQuery({
+    queryKey: [
+      "fastingTimes",
+      location?.latitude,
+      location?.longitude,
+      method,
+      shifting,
+      calendar,
+    ],
+    queryFn: () =>
+      getFastingTimes({
+        latitude: location?.latitude ?? 0,
+        longitude: location?.longitude ?? 0,
+        method,
+        shifting,
+        calendar,
+      }),
+    enabled: Boolean(location),
+  });
+
+  const fastingData = fastingQuery.data?.data;
+  const today = fastingData?.fasting?.[0];
+  const fastingDateLabel = formatReadableDate(today?.date);
+
   return (
     <ScrollView
       style={styles.container}
@@ -137,6 +178,10 @@ export default function PrayerScreen() {
         formattedTime={formattedTime}
         isLoading={isLoading}
         onRefresh={fetchLocation}
+        qiblaDegrees={prayerData?.qibla.direction.degrees}
+        qiblaDirectionFrom={prayerData?.qibla.direction.from}
+        qiblaDistanceValue={prayerData?.qibla.distance.value}
+        qiblaDistanceUnit={prayerData?.qibla.distance.unit}
       />
 
       <PrayerTimesCard
@@ -146,14 +191,32 @@ export default function PrayerScreen() {
         now={currentTime}
       />
 
-      <QiblaCard
-        degrees={prayerData?.qibla.direction.degrees}
-        directionFrom={prayerData?.qibla.direction.from}
-        distanceValue={prayerData?.qibla.distance.value}
-        distanceUnit={prayerData?.qibla.distance.unit}
-      />
-
       <ProhibitedTimesCard times={prohibitedTimes} />
+
+      <View style={styles.fastingSection}>
+        <Text style={styles.sectionTitle}>Fasting</Text>
+        {fastingQuery.isLoading ? (
+          <View style={styles.loadingCard}>
+            <ActivityIndicator color={Colors.light.primary} />
+            <Text style={styles.loadingText}>Loading fasting info...</Text>
+          </View>
+        ) : fastingQuery.error ? (
+          <View style={styles.loadingCard}>
+            <Text style={styles.loadingText}>Unable to load fasting info.</Text>
+          </View>
+        ) : (
+          <>
+            <TodayFastingCard
+              dateLabel={fastingDateLabel}
+              hijriLabel={today?.hijri_readable}
+              sahur={today?.time.sahur}
+              iftar={today?.time.iftar}
+              duration={today?.time.duration}
+            />
+            <WhiteDaysCard whiteDays={fastingData?.white_days} />
+          </>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -167,5 +230,29 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: 18,
     paddingBottom: 32,
+  },
+  fastingSection: {
+    marginTop: 12,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: Colors.light.text,
+    marginTop: 6,
+  },
+  loadingCard: {
+    marginTop: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: Colors.light.icon,
   },
 });
