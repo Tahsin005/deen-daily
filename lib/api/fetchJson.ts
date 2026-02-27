@@ -6,6 +6,19 @@ export class ApiError extends Error {
 }
 
 export const fetchJson = async <T>(url: string, init?: RequestInit): Promise<T> => {
+    const sanitizedUrl = (() => {
+        try {
+            const parsed = new URL(url);
+            if (parsed.searchParams.has("api_key")) {
+                parsed.searchParams.set("api_key", "***");
+            }
+            return parsed.toString();
+        } catch {
+            return url;
+        }
+    })();
+
+    console.info(`[API] => ${sanitizedUrl}`);
     const response = await fetch(url, init);
 
     if (!response.ok) {
