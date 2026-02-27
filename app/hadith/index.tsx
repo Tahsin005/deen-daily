@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,6 +15,7 @@ import { Colors } from "../../constants/Colors";
 import { getHadithBooks, HadithBook } from "../../lib/api/hadith/getHadithBooks";
 
 export default function HadithScreen() {
+  const router = useRouter();
   const [showScrollTop, setShowScrollTop] = useState(false);
   const listRef = useRef<FlatList<HadithBook>>(null);
 
@@ -24,12 +26,20 @@ export default function HadithScreen() {
 
   const books = useMemo(() => data ?? [], [data]);
 
-  const renderItem = useCallback(({ item }: { item: HadithBook }) => <BookCard book={item} />, []);
+  const renderItem = useCallback(
+    ({ item }: { item: HadithBook }) => (
+      <Pressable onPress={() => router.push({ pathname: "/hadith/[slug]", params: { slug: item.bookSlug } })}>
+        <BookCard book={item} />
+      </Pressable>
+    ),
+    [router]
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Hadith Books</Text>
       <Text style={styles.subtitle}>Discover collections of Hadith.</Text>
+      <View style={{ height: 16 }} />
 
       {isLoading ? (
         <View style={styles.stateContainer}>

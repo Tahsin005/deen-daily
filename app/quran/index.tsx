@@ -14,7 +14,6 @@ import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { SurahListItem } from "../../components/quran/SurahListItem";
 import { Colors } from "../../constants/Colors";
 import { getSurahs, SurahSummary } from "../../lib/api/quran/getSurahs";
-import { Environment } from "@/constants/environment/env";
 
 const ALL_TYPES = "All";
 

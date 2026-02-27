@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     color: Colors.light.primary,
   },
   arabic: {
-    fontSize: 25,
+    fontSize: 35,
     lineHeight: 34,
     color: Colors.light.text,
     textAlign: "right",
