@@ -37,8 +37,18 @@ export default function HadithScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Hadith Books</Text>
-      <Text style={styles.subtitle}>Discover collections of Hadith.</Text>
+      <View style={styles.headerRow}>
+        <View style={styles.headerText}> 
+          <Text style={styles.title}>Hadith Books</Text>
+          <Text style={styles.subtitle}>Discover collections of Hadith.</Text>
+        </View>
+        <Pressable
+          style={styles.searchButton}
+          onPress={() => router.push("/hadith/search")}
+        >
+          <Text style={styles.searchButtonText}>Search</Text>
+        </Pressable>
+      </View>
       <View style={{ height: 16 }} />
 
       {isLoading ? (
@@ -94,6 +104,26 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 14,
     color: Colors.light.icon,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  headerText: {
+    flex: 1,
+  },
+  searchButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: Colors.light.primary,
+  },
+  searchButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+    fontSize: 12,
   },
   listContent: {
     paddingVertical: 16,

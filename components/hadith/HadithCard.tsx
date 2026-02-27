@@ -13,6 +13,9 @@ function HadithCard({ hadith }: HadithCardProps) {
             {hadith.headingEnglish ? (
                 <Text style={styles.heading}>{hadith.headingEnglish}</Text>
             ) : null}
+            {hadith.headingArabic ? (
+                <Text style={styles.headingArabic}>{hadith.headingArabic}</Text>
+            ) : null}
             <Text style={styles.narrator}>{hadith.englishNarrator ?? "Narrated"}</Text>
             <Text style={styles.hadithEnglish}>{hadith.hadithEnglish}</Text>
             {hadith.hadithArabic ? (
@@ -22,6 +25,9 @@ function HadithCard({ hadith }: HadithCardProps) {
             >
                 <Text style={styles.metaText}>Hadith #{hadith.hadithNumber}</Text>
                 {hadith.status ? <Text style={styles.metaText}>{hadith.status}</Text> : null}
+                {hadith.volume ? <Text style={styles.metaText}>Vol {hadith.volume}</Text> : null}
+                {hadith.bookSlug ? <Text style={styles.metaText}>{hadith.bookSlug}</Text> : null}
+                {hadith.chapterId ? <Text style={styles.metaText}>Ch {hadith.chapterId}</Text> : null}
             </View>
         </View>
     );
@@ -41,6 +47,13 @@ const styles = StyleSheet.create({
         color: Colors.light.primary,
         marginBottom: 8,
     },
+    headingArabic: {
+        fontSize: 18,
+        lineHeight: 26,
+        color: Colors.light.text,
+        textAlign: "right",
+        marginBottom: 6,
+    },
     narrator: {
         fontSize: 12,
         fontWeight: "600",
@@ -49,13 +62,13 @@ const styles = StyleSheet.create({
     },
     hadithEnglish: {
         fontSize: 18,
-        lineHeight: 22,
+        lineHeight: 26,
         color: Colors.light.text,
     },
     hadithArabic: {
         marginTop: 10,
-        fontSize: 28,
-        lineHeight: 28,
+        fontSize: 24,
+        lineHeight: 34,
         color: Colors.light.text,
         textAlign: "right",
     },

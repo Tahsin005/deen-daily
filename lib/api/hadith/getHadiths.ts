@@ -1,6 +1,6 @@
 import { Environment } from "../../../constants/environment/env";
 import { HadithAPISettings } from "../../../constants/settings/hadithAPISettings";
-import { fetchJson } from "../fetchJson";
+import { ApiError, fetchJson } from "../fetchJson";
 
 export type HadithEntry = {
     id: number;
@@ -41,13 +41,21 @@ const normalizeBaseUrl = (baseUrl: string) =>
         : `${baseUrl.replace(/\/$/, "")}/api`;
 
 export const getHadiths = async (params: {
-    bookSlug: string;
+    bookSlug?: string;
     chapter?: string;
     status?: string;
+    searchText?: string;
     page?: number;
     paginate?: number;
 }): Promise<HadithsPage> => {
-    const { bookSlug, chapter, status, page = HadithAPISettings.hadiths.defaults.page, paginate = HadithAPISettings.hadiths.defaults.paginate } = params;
+    const {
+        bookSlug,
+        chapter,
+        status,
+        searchText,
+        page = HadithAPISettings.hadiths.defaults.page,
+        paginate = HadithAPISettings.hadiths.defaults.paginate,
+    } = params;
     const baseUrl = Environment.HADITH_API_BASE_URL;
     const apiKey = Environment.HADITH_API_KEY;
 
@@ -62,10 +70,13 @@ export const getHadiths = async (params: {
     const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
     const query = new URLSearchParams({
         apiKey,
-        book: bookSlug,
         paginate: paginate.toString(),
         page: page.toString(),
     });
+
+    if (bookSlug) {
+        query.set("book", bookSlug);
+    }
 
     if (chapter) {
         query.set("chapter", chapter);
@@ -75,12 +86,32 @@ export const getHadiths = async (params: {
         query.set("status", status);
     }
 
-    const url = `${normalizedBaseUrl}/${HadithAPISettings.hadiths.apisuffix}?${query.toString()}`;
-    const response = await fetchJson<HadithsResponse>(url);
-
-    if (!response.hadiths) {
-        throw new Error(response.message || "Hadiths not found.");
+    if (searchText) {
+        query.set("hadithEnglish", searchText);
     }
 
-    return response.hadiths;
+    const url = `${normalizedBaseUrl}/${HadithAPISettings.hadiths.apisuffix}?${query.toString()}`;
+    try {
+        const response = await fetchJson<HadithsResponse>(url);
+
+        if (!response.hadiths) {
+            throw new Error(response.message || "Hadiths not found.");
+        }
+
+        return response.hadiths;
+    } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+            return {
+                current_page: page,
+                data: [],
+                last_page: page,
+                next_page_url: null,
+                per_page: paginate,
+                prev_page_url: null,
+                total: 0,
+            };
+        }
+
+        throw error;
+    }
 };
