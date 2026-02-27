@@ -7,9 +7,14 @@ import { WhiteDaysCard } from "../../components/fasting/WhiteDaysCard";
 import { PrayerHeader } from "../../components/prayer/PrayerHeader";
 import { PrayerTimesCard } from "../../components/prayer/PrayerTimesCard";
 import { ProhibitedTimesCard } from "../../components/prayer/ProhibitedTimesCard";
+import { DuaCard } from "../../components/ramadan/DuaCard";
+import { HadithCardRamadan } from "../../components/ramadan/HadithCardRamadan";
+import { RamadanBanner } from "../../components/ramadan/RamadanBanner";
+import { RamadanScheduleCard } from "../../components/ramadan/RamadanScheduleCard";
 import { Colors } from "../../constants/Colors";
 import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
 import { getPrayerTimes } from "../../lib/api/prayer/getPrayerTimes";
+import { getRamadanTimes } from "../../lib/api/ramadan/getRamadanTimes";
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 import { usePrayerSettings } from "../../lib/storage/usePrayerSettings";
 
@@ -160,6 +165,38 @@ export default function PrayerScreen() {
   const today = fastingData?.fasting?.[0];
   const fastingDateLabel = formatReadableDate(today?.date);
 
+  const ramadanQuery = useQuery({
+    queryKey: [
+      "ramadanTimes",
+      location?.latitude,
+      location?.longitude,
+      method,
+      shifting,
+      calendar,
+    ],
+    queryFn: () =>
+      getRamadanTimes({
+        latitude: location?.latitude ?? 0,
+        longitude: location?.longitude ?? 0,
+        method,
+        shifting,
+        calendar,
+      }),
+    enabled: Boolean(location),
+  });
+
+  const ramadanData = ramadanQuery.data;
+  const ramadanDays = ramadanData?.data.fasting ?? [];
+  const ramadanYearLabel = ramadanData?.ramadan_year
+    ? `Ramadan ${ramadanData.ramadan_year}`
+    : "Ramadan";
+  const ramadanDateRange =
+    ramadanDays.length > 1
+      ? `${formatReadableDate(ramadanDays[0].date)} – ${formatReadableDate(
+          ramadanDays[ramadanDays.length - 1].date
+        )}`
+      : undefined;
+
   return (
     <ScrollView
       style={styles.container}
@@ -217,6 +254,39 @@ export default function PrayerScreen() {
           </>
         )}
       </View>
+
+      <View style={styles.ramadanSection}>
+        <Text style={styles.sectionTitle}>Ramadan</Text>
+        {ramadanQuery.isLoading ? (
+          <View style={styles.loadingCard}>
+            <ActivityIndicator color={Colors.light.primary} />
+            <Text style={styles.loadingText}>Loading Ramadan info...</Text>
+          </View>
+        ) : ramadanQuery.error ? (
+          <View style={styles.loadingCard}>
+            <Text style={styles.loadingText}>Unable to load Ramadan info.</Text>
+          </View>
+        ) : ramadanData ? (
+          <>
+            <RamadanBanner yearLabel={ramadanYearLabel} dateRange={ramadanDateRange} />
+            <RamadanScheduleCard days={ramadanDays} />
+            <DuaCard
+              title={ramadanData.resource?.dua?.title}
+              arabic={ramadanData.resource?.dua?.arabic}
+              translation={ramadanData.resource?.dua?.translation}
+              reference={ramadanData.resource?.dua?.reference}
+            />
+            <HadithCardRamadan
+              arabic={ramadanData.resource?.hadith?.arabic}
+              english={ramadanData.resource?.hadith?.english}
+              source={ramadanData.resource?.hadith?.source}
+              grade={ramadanData.resource?.hadith?.grade}
+            />
+          </>
+        ) : (
+          <Text style={styles.loadingText}>No Ramadan data available.</Text>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -233,6 +303,9 @@ const styles = StyleSheet.create({
   },
   fastingSection: {
     marginTop: 12,
+  },
+  ramadanSection: {
+    marginTop: 16,
   },
   sectionTitle: {
     fontSize: 16,

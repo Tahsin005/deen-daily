@@ -28,7 +28,7 @@ export const ProhibitedTimesCard = ({ times }: ProhibitedTimesCardProps) => {
                     {([
                         { label: "Sunrise", value: times.sunrise, icon: "sunny" as IconName },
                         { label: "Noon", value: times.noon, icon: "sunny-outline" as IconName },
-                        { label: "Sunset", value: times.sunset, icon: "sunset" as IconName },
+                        { label: "Sunset", value: times.sunset, icon: "partly-sunny" as IconName },
                     ] as const).map((item) => (
                         <View key={item.label} style={styles.prohibitedCard}>
                             <View style={styles.cardTopRow}>
