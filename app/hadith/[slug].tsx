@@ -60,10 +60,21 @@ export default function HadithChaptersScreen() {
         [data]
     );
 
-    const renderItem = useCallback(
-        ({ item }: { item: HadithChapter }) => <ChapterCard chapter={item} />,
-        []
-    );
+  const renderItem = useCallback(
+    ({ item }: { item: HadithChapter }) => (
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: "/hadith/[slug]/[chapter]",
+            params: { slug: bookSlug, chapter: item.chapterNumber },
+          })
+        }
+      >
+        <ChapterCard chapter={item} />
+      </Pressable>
+    ),
+    [bookSlug, router]
+  );
 
   return (
     <View style={styles.container}>
