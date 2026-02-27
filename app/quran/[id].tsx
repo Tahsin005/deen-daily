@@ -9,8 +9,8 @@ import {
     Text,
     View,
 } from "react-native";
+import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { BackButton } from "../../components/quran/BackButton";
-import { ScrollToTopButton } from "../../components/quran/ScrollToTopButton";
 import { VerseCard } from "../../components/quran/VerseCard";
 import { Colors } from "../../constants/Colors";
 import { getSurahDetail } from "../../lib/api/quran/getSurahDetail";
