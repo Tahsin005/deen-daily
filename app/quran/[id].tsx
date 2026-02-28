@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import {
-    ActivityIndicator,
     FlatList,
     Pressable,
     StyleSheet,
@@ -10,6 +9,7 @@ import {
     View,
 } from "react-native";
 import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
+import { SkeletonLine } from "../../components/common/Skeleton";
 import { BackButton } from "../../components/quran/BackButton";
 import { VerseCard } from "../../components/quran/VerseCard";
 import { Colors } from "../../constants/Colors";
@@ -69,8 +69,14 @@ export default function SurahDetailScreen() {
 
             {isLoading ? (
                 <View style={styles.stateContainer}>
-                    <ActivityIndicator color={Colors.light.primary} />
-                    <Text style={styles.stateText}>Loading surah details...</Text>
+                    <View style={styles.skeletonList}>
+                        {Array.from({ length: 6 }).map((_, index) => (
+                            <View key={`skeleton-${index}`} style={styles.skeletonRow}>
+                                <SkeletonLine style={styles.skeletonLine} />
+                                <SkeletonLine style={styles.skeletonLineWide} />
+                            </View>
+                        ))}
+                    </View>
                 </View>
             ) : error || selectedIndex === null ? (
                 <View style={styles.stateContainer}>
@@ -94,7 +100,7 @@ export default function SurahDetailScreen() {
                             <Text style={styles.title}>{surahDetail.name}</Text>
                             <Text style={styles.subtitle}>{surahDetail.count} verses</Text>
                             {isTranslationLoading ? (
-                                <Text style={styles.translationStatus}>Loading translation...</Text>
+                                <SkeletonLine style={styles.translationSkeleton} />
                             ) : translationError ? (
                                 <Text style={styles.translationStatus}>Translation unavailable.</Text>
                             ) : null}
@@ -165,6 +171,13 @@ const styles = StyleSheet.create({
         color: Colors.light.icon,
         textAlign: "center",
     },
+    translationSkeleton: {
+        marginTop: 6,
+        width: 140,
+        height: 10,
+        borderRadius: 5,
+        alignSelf: "center",
+    },
     stateContainer: {
         marginTop: 32,
         alignItems: "center",
@@ -173,6 +186,28 @@ const styles = StyleSheet.create({
     stateText: {
         fontSize: 14,
         color: Colors.light.icon,
+    },
+    skeletonList: {
+        width: "100%",
+        gap: 12,
+    },
+    skeletonRow: {
+        backgroundColor: "#FFFFFF",
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#F0F0F0",
+        padding: 12,
+        gap: 8,
+    },
+    skeletonLine: {
+        width: "70%",
+        height: 12,
+        borderRadius: 6,
+    },
+    skeletonLineWide: {
+        width: "90%",
+        height: 12,
+        borderRadius: 6,
     },
     retryButton: {
         paddingHorizontal: 16,

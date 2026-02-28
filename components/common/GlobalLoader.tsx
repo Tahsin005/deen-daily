@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Animated, ImageStyle, StyleProp, StyleSheet } from "react-native";
 
-const logoSource = require("../../assets/images/daily-deen-app-icon-1.png");
+const logoSource = require("../../assets/images/logo.png");
 
 type GlobalLoaderProps = {
     size?: number;
@@ -63,5 +63,6 @@ export const GlobalLoader = ({ size = 120, style }: GlobalLoaderProps) => {
 const styles = StyleSheet.create({
     logo: {
         resizeMode: "contain",
+        alignSelf: "center",
     },
 });

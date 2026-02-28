@@ -1,7 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { SkeletonCircle, SkeletonLine } from "../common/Skeleton";
 import { mainPrayerKeys, parseTimeToMinutes, timeEntries } from "./prayerTimesUtils";
 
 type NextPrayerCardProps = {
@@ -60,9 +61,12 @@ export const NextPrayerCard = ({
                 ) : null}
             </View>
             {isLoading ? (
-                <View style={styles.statusRow}>
-                    <ActivityIndicator color={Colors.light.primary} />
-                    <Text style={styles.statusText}>Loading prayer times...</Text>
+                <View style={styles.skeletonRow}>
+                    <SkeletonCircle style={styles.skeletonIcon} />
+                    <View style={styles.skeletonTextGroup}>
+                        <SkeletonLine style={styles.skeletonLine} />
+                        <SkeletonLine style={styles.skeletonLineShort} />
+                    </View>
                 </View>
             ) : error ? (
                 <Text style={styles.statusText}>Unable to load prayer times.</Text>
@@ -130,6 +134,30 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 10,
+    },
+    skeletonRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 12,
+    },
+    skeletonIcon: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+    },
+    skeletonTextGroup: {
+        flex: 1,
+        gap: 8,
+    },
+    skeletonLine: {
+        width: "70%",
+        height: 12,
+        borderRadius: 6,
+    },
+    skeletonLineShort: {
+        width: "40%",
+        height: 12,
+        borderRadius: 6,
     },
     statusText: {
         fontSize: 14,

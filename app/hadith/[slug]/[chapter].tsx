@@ -2,7 +2,6 @@ import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
-    ActivityIndicator,
     FlatList,
     Pressable,
     StyleSheet,
@@ -10,6 +9,7 @@ import {
     View,
 } from "react-native";
 import { ScrollToTopButton } from "../../../components/common/ScrollToTopButton";
+import { SkeletonLine } from "../../../components/common/Skeleton";
 import { HadithCard } from "../../../components/hadith/HadithCard";
 import { BackButton } from "../../../components/quran/BackButton";
 import { Colors } from "../../../constants/Colors";
@@ -73,8 +73,14 @@ export default function HadithsScreen() {
 
             {isLoading ? (
                 <View style={styles.stateContainer}>
-                    <ActivityIndicator color={Colors.light.primary} />
-                    <Text style={styles.stateText}>Loading hadiths...</Text>
+                    <View style={styles.skeletonList}>
+                        {Array.from({ length: 6 }).map((_, index) => (
+                            <View key={`skeleton-${index}`} style={styles.skeletonRow}>
+                                <SkeletonLine style={styles.skeletonLine} />
+                                <SkeletonLine style={styles.skeletonLineShort} />
+                            </View>
+                        ))}
+                    </View>
                 </View>
             ) : error ? (
                 <View style={styles.stateContainer}>
@@ -101,7 +107,7 @@ export default function HadithsScreen() {
                 ListFooterComponent={
                     isFetchingNextPage ? (
                         <View style={styles.footerLoader}>
-                            <ActivityIndicator color={Colors.light.primary} />
+                            <SkeletonLine style={styles.footerSkeleton} />
                         </View>
                     ) : null
                 }
@@ -147,6 +153,28 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: Colors.light.icon,
     },
+    skeletonList: {
+        width: "100%",
+        gap: 12,
+    },
+    skeletonRow: {
+        backgroundColor: "#FFFFFF",
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#F0F0F0",
+        padding: 12,
+        gap: 8,
+    },
+    skeletonLine: {
+        width: "80%",
+        height: 12,
+        borderRadius: 6,
+    },
+    skeletonLineShort: {
+        width: "50%",
+        height: 12,
+        borderRadius: 6,
+    },
     retryButton: {
         paddingHorizontal: 16,
         paddingVertical: 10,
@@ -160,5 +188,10 @@ const styles = StyleSheet.create({
     footerLoader: {
         paddingVertical: 16,
         alignItems: "center",
+    },
+    footerSkeleton: {
+        width: 120,
+        height: 10,
+        borderRadius: 5,
     },
 });

@@ -1,7 +1,6 @@
 import { InfiniteData, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-    ActivityIndicator,
     FlatList,
     Modal,
     Pressable,
@@ -11,6 +10,7 @@ import {
     View,
 } from "react-native";
 import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
+import { SkeletonLine } from "../../components/common/Skeleton";
 import { HadithCard } from "../../components/hadith/HadithCard";
 import { Colors } from "../../constants/Colors";
 import { HadithAPISettings } from "../../constants/settings/hadithAPISettings";
@@ -129,8 +129,14 @@ export default function HadithSearchScreen() {
 
             {isLoading ? (
                 <View style={styles.stateContainer}>
-                    <ActivityIndicator color={Colors.light.primary} />
-                    <Text style={styles.stateText}>Loading hadiths...</Text>
+                    <View style={styles.skeletonList}>
+                        {Array.from({ length: 6 }).map((_, index) => (
+                            <View key={`skeleton-${index}`} style={styles.skeletonRow}>
+                                <SkeletonLine style={styles.skeletonLine} />
+                                <SkeletonLine style={styles.skeletonLineShort} />
+                            </View>
+                        ))}
+                    </View>
                 </View>
             ) : error ? (
                 <View style={styles.stateContainer}>
@@ -157,7 +163,7 @@ export default function HadithSearchScreen() {
                     ListFooterComponent={
                         isFetchingNextPage ? (
                             <View style={styles.footerLoader}>
-                                <ActivityIndicator color={Colors.light.primary} />
+                                <SkeletonLine style={styles.footerSkeleton} />
                             </View>
                         ) : null
                     }
@@ -408,6 +414,34 @@ const styles = StyleSheet.create({
     stateText: {
         fontSize: 14,
         color: Colors.light.icon,
+    },
+    skeletonList: {
+        width: "100%",
+        gap: 12,
+    },
+    skeletonRow: {
+        backgroundColor: "#FFFFFF",
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#F0F0F0",
+        padding: 12,
+        gap: 8,
+    },
+    skeletonLine: {
+        width: "80%",
+        height: 12,
+        borderRadius: 6,
+    },
+    skeletonLineShort: {
+        width: "50%",
+        height: 12,
+        borderRadius: 6,
+    },
+    footerSkeleton: {
+        width: 120,
+        height: 10,
+        borderRadius: 5,
+        alignSelf: "center",
     },
     retryButton: {
         paddingHorizontal: 16,

@@ -2,16 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { AnimatedLogo } from "../../components/common/AnimatedLogo";
-import { GlobalLoader } from "../../components/common/GlobalLoader";
+import { SkeletonBox, SkeletonLine } from "../../components/common/Skeleton";
 import { TodayFastingCard } from "../../components/fasting/TodayFastingCard";
 import { NextPrayerCard } from "../../components/prayer/NextPrayerCard";
 import { PrayerHeader } from "../../components/prayer/PrayerHeader";
@@ -305,7 +298,12 @@ export default function HomeScreen() {
   if (isCheckingPermission) {
     return (
       <View style={styles.permissionContainer}>
-        <GlobalLoader size={140} />
+        <View style={styles.permissionCard}>
+          <SkeletonBox style={styles.skeletonLogo} />
+          <SkeletonLine style={styles.skeletonLine} />
+          <SkeletonLine style={styles.skeletonLineWide} />
+          <SkeletonLine style={styles.skeletonButton} />
+        </View>
       </View>
     );
   }
@@ -329,7 +327,7 @@ export default function HomeScreen() {
           <Text style={styles.permissionHint}>You can change this later in settings.</Text>
           {isUpdatingLocation ? (
             <View style={styles.permissionLoading}>
-              <ActivityIndicator color={Colors.light.primary} />
+              <SkeletonBox style={styles.skeletonDot} />
               <Text style={styles.permissionStatus}>{statusMessage}</Text>
             </View>
           ) : null}
@@ -441,8 +439,8 @@ export default function HomeScreen() {
           <Text style={styles.statusText}>Set your location to see fasting times.</Text>
         ) : fastingQuery.isLoading ? (
           <View style={styles.statusRow}>
-            <ActivityIndicator color={Colors.light.primary} />
-            <Text style={styles.statusText}>Loading fasting times...</Text>
+            <SkeletonBox style={styles.loadingDot} />
+            <SkeletonLine style={styles.loadingLine} />
           </View>
         ) : fastingQuery.error ? (
           <Text style={styles.statusText}>Unable to load fasting info.</Text>
@@ -463,8 +461,8 @@ export default function HomeScreen() {
         <Text style={styles.sectionTitle}>Dua and Hadith of the Day</Text>
         {ramadanQuery.isLoading ? (
           <View style={styles.statusRow}>
-            <ActivityIndicator color={Colors.light.primary} />
-            <Text style={styles.statusText}>Loading daily content...</Text>
+            <SkeletonBox style={styles.loadingDot} />
+            <SkeletonLine style={styles.loadingLine} />
           </View>
         ) : ramadanQuery.error ? (
           <Text style={styles.statusText}>Unable to load daily content.</Text>
@@ -645,6 +643,46 @@ const styles = StyleSheet.create({
   permissionStatus: {
     fontSize: 12,
     color: Colors.light.icon,
+  },
+  skeletonLogo: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+  },
+  skeletonLine: {
+    width: 120,
+    height: 12,
+    borderRadius: 6,
+  },
+  skeletonLineWide: {
+    width: 200,
+    height: 12,
+    borderRadius: 6,
+  },
+  skeletonButton: {
+    width: 140,
+    height: 32,
+    borderRadius: 16,
+  },
+  skeletonDot: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+  },
+  skeletonStatus: {
+    width: 140,
+    height: 10,
+    borderRadius: 5,
+  },
+  loadingDot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+  },
+  loadingLine: {
+    width: 160,
+    height: 12,
+    borderRadius: 6,
   },
   asmaCard: {
     marginTop: 16,

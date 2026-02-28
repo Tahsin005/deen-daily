@@ -2,17 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  Modal,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { AnimatedLogo } from "../../components/common/AnimatedLogo";
-import { GlobalLoader } from "../../components/common/GlobalLoader";
+import { SkeletonBox, SkeletonLine } from "../../components/common/Skeleton";
 import { TodayFastingCard } from "../../components/fasting/TodayFastingCard";
 import { WhiteDaysCard } from "../../components/fasting/WhiteDaysCard";
 import { NextPrayerCard } from "../../components/prayer/NextPrayerCard";
@@ -282,7 +274,12 @@ export default function PrayerScreen() {
   if (isCheckingPermission) {
     return (
       <View style={styles.permissionContainer}>
-        <GlobalLoader size={140} />
+        <View style={styles.permissionCard}>
+          <SkeletonBox style={styles.skeletonLogo} />
+          <SkeletonLine style={styles.skeletonLine} />
+          <SkeletonLine style={styles.skeletonLineWide} />
+          <SkeletonLine style={styles.skeletonButton} />
+        </View>
       </View>
     );
   }
@@ -306,7 +303,7 @@ export default function PrayerScreen() {
           <Text style={styles.permissionHint}>You can change this later in settings.</Text>
           {isLoading ? (
             <View style={styles.permissionLoading}>
-              <ActivityIndicator color={Colors.light.primary} />
+              <SkeletonBox style={styles.skeletonDot} />
               <Text style={styles.permissionStatus}>{statusMessage}</Text>
             </View>
           ) : null}
@@ -346,8 +343,8 @@ export default function PrayerScreen() {
             <Text style={styles.sectionTitle}>Fasting</Text>
             {fastingQuery.isLoading ? (
               <View style={styles.loadingCard}>
-                <ActivityIndicator color={Colors.light.primary} />
-                <Text style={styles.loadingText}>Loading fasting info...</Text>
+                <SkeletonBox style={styles.loadingDot} />
+                <SkeletonLine style={styles.loadingLine} />
               </View>
             ) : fastingQuery.error ? (
               <View style={styles.loadingCard}>
@@ -369,8 +366,8 @@ export default function PrayerScreen() {
             <Text style={styles.sectionTitle}>Ramadan</Text>
             {ramadanQuery.isLoading ? (
               <View style={styles.loadingCard}>
-                <ActivityIndicator color={Colors.light.primary} />
-                <Text style={styles.loadingText}>Loading Ramadan info...</Text>
+                <SkeletonBox style={styles.loadingDot} />
+                <SkeletonLine style={styles.loadingLine} />
               </View>
             ) : ramadanQuery.error ? (
               <View style={styles.loadingCard}>
@@ -392,8 +389,8 @@ export default function PrayerScreen() {
             <Text style={styles.sectionTitle}>Zakat</Text>
             {zakatQuery.isLoading ? (
               <View style={styles.loadingCard}>
-                <ActivityIndicator color={Colors.light.primary} />
-                <Text style={styles.loadingText}>Loading nisab values...</Text>
+                <SkeletonBox style={styles.loadingDot} />
+                <SkeletonLine style={styles.loadingLine} />
               </View>
             ) : zakatQuery.error ? (
               <View style={styles.loadingCard}>
@@ -422,8 +419,8 @@ export default function PrayerScreen() {
 
             {asmaQuery.isLoading ? (
               <View style={styles.loadingCard}>
-                <ActivityIndicator color={Colors.light.primary} />
-                <Text style={styles.loadingText}>Loading names...</Text>
+                <SkeletonBox style={styles.loadingDot} />
+                <SkeletonLine style={styles.loadingLine} />
               </View>
             ) : asmaQuery.error ? (
               <View style={styles.loadingCard}>
@@ -638,6 +635,46 @@ const styles = StyleSheet.create({
   permissionStatus: {
     fontSize: 12,
     color: Colors.light.icon,
+  },
+  skeletonLogo: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+  },
+  skeletonLine: {
+    width: 120,
+    height: 12,
+    borderRadius: 6,
+  },
+  skeletonLineWide: {
+    width: 200,
+    height: 12,
+    borderRadius: 6,
+  },
+  skeletonButton: {
+    width: 140,
+    height: 32,
+    borderRadius: 16,
+  },
+  skeletonDot: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+  },
+  skeletonStatus: {
+    width: 140,
+    height: 10,
+    borderRadius: 5,
+  },
+  loadingDot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+  },
+  loadingLine: {
+    width: 160,
+    height: 12,
+    borderRadius: 6,
   },
   tabBar: {
     position: "absolute",

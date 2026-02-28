@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SkeletonLine } from "../common/Skeleton";
 
 type FastingHeaderProps = {
     gregorianDay?: string;
@@ -47,7 +48,7 @@ export const FastingHeader = ({
             </View>
             <View style={styles.headerTimezoneRow}>
                 <Text style={styles.headerTimezoneText}>{timezoneLine || statusMessage}</Text>
-                {isLoading ? <ActivityIndicator color="#FFFFFF" size="small" /> : null}
+                {isLoading ? <SkeletonLine style={styles.skeletonDot} /> : null}
             </View>
         </View>
     );
@@ -133,5 +134,11 @@ const styles = StyleSheet.create({
         color: "#E4F4EC",
         flex: 1,
         marginRight: 10,
+    },
+    skeletonDot: {
+        width: 28,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: "rgba(255, 255, 255, 0.6)",
     },
 });

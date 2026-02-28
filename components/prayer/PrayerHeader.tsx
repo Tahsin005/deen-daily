@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SkeletonLine } from "../common/Skeleton";
 
 type PrayerHeaderProps = {
     gregorianDay?: string;
@@ -69,7 +70,7 @@ export const PrayerHeader = ({
                         <Text style={styles.headerClockLabel}>Now</Text>
                         <Text style={styles.headerClockValue}>{formattedTime}</Text>
                     </View>
-                    {isLoading ? <ActivityIndicator color="#FFFFFF" size="small" /> : null}
+                    {isLoading ? <SkeletonLine style={styles.skeletonDot} /> : null}
                 </View>
             </View>
             {hasQibla ? (
@@ -199,5 +200,11 @@ const styles = StyleSheet.create({
     headerQiblaText: {
         fontSize: 11,
         color: "#E4F4EC",
+    },
+    skeletonDot: {
+        width: 28,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: "rgba(255, 255, 255, 0.6)",
     },
 });

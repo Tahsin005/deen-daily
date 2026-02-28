@@ -1,15 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
+import { SkeletonLine } from "../../components/common/Skeleton";
 import { BookCard } from "../../components/hadith/BookCard";
 import { Colors } from "../../constants/Colors";
 import { getHadithBooks, HadithBook } from "../../lib/api/hadith/getHadithBooks";
@@ -53,8 +47,14 @@ export default function HadithScreen() {
 
       {isLoading ? (
         <View style={styles.stateContainer}>
-          <ActivityIndicator color={Colors.light.primary} />
-          <Text style={styles.stateText}>Loading books...</Text>
+          <View style={styles.skeletonList}>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <View key={`skeleton-${index}`} style={styles.skeletonRow}>
+                <SkeletonLine style={styles.skeletonLine} />
+                <SkeletonLine style={styles.skeletonLineShort} />
+              </View>
+            ))}
+          </View>
         </View>
       ) : error ? (
         <View style={styles.stateContainer}>
@@ -138,6 +138,28 @@ const styles = StyleSheet.create({
   stateText: {
     fontSize: 14,
     color: Colors.light.icon,
+  },
+  skeletonList: {
+    width: "100%",
+    gap: 12,
+  },
+  skeletonRow: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
+    padding: 12,
+    gap: 8,
+  },
+  skeletonLine: {
+    width: "80%",
+    height: 12,
+    borderRadius: 6,
+  },
+  skeletonLineShort: {
+    width: "50%",
+    height: 12,
+    borderRadius: 6,
   },
   retryButton: {
     paddingHorizontal: 16,

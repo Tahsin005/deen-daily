@@ -1,7 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { SkeletonLine } from "../common/Skeleton";
 import { timeEntries } from "./prayerTimesUtils";
 
 type PrayerTimesCardProps = {
@@ -21,9 +22,13 @@ export const PrayerTimesCard = ({ isLoading, error, times }: PrayerTimesCardProp
         <View style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>Today’s prayer times</Text>
             {isLoading ? (
-                <View style={styles.statusRow}>
-                    <ActivityIndicator color={Colors.light.primary} />
-                    <Text style={styles.statusText}>Loading prayer times...</Text>
+                <View style={styles.skeletonGrid}>
+                    {Array.from({ length: 6 }).map((_, index) => (
+                        <View key={`skeleton-${index}`} style={styles.skeletonItem}>
+                            <SkeletonLine style={styles.skeletonLine} />
+                            <SkeletonLine style={styles.skeletonLineShort} />
+                        </View>
+                    ))}
                 </View>
             ) : error ? (
                 <Text style={styles.statusText}>Unable to load prayer times.</Text>
@@ -65,6 +70,31 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 10,
+    },
+    skeletonGrid: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 12,
+    },
+    skeletonItem: {
+        width: "48%",
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#E5E7EB",
+        backgroundColor: "#F9FAFB",
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        gap: 8,
+    },
+    skeletonLine: {
+        width: "70%",
+        height: 12,
+        borderRadius: 6,
+    },
+    skeletonLineShort: {
+        width: "40%",
+        height: 14,
+        borderRadius: 6,
     },
     statusText: {
         fontSize: 14,

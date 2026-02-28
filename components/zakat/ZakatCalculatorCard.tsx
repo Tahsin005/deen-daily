@@ -1,7 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo, useState } from "react";
 import {
-    ActivityIndicator,
     Pressable,
     StyleSheet,
     Text,
@@ -10,6 +9,7 @@ import {
 } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { fetchJson } from "../../lib/api/fetchJson";
+import { SkeletonLine } from "../common/Skeleton";
 
 const formatCurrency = (amount: number, currency: string) => {
     try {
@@ -507,7 +507,7 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
             <View style={styles.buttonRow}>
                 <Pressable style={[styles.actionButton, styles.primaryButton]} onPress={calculateZakat}>
                     {isCalculating ? (
-                        <ActivityIndicator color="#FFFFFF" />
+                        <SkeletonLine style={styles.buttonSkeleton} />
                     ) : (
                         <Text style={[styles.actionButtonText, styles.primaryButtonText]}>Calculate</Text>
                     )}
@@ -707,6 +707,12 @@ const styles = StyleSheet.create({
     },
     primaryButtonText: {
         color: "#FFFFFF",
+    },
+    buttonSkeleton: {
+        width: 60,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
     },
     ghostButton: {
         flex: 1,
