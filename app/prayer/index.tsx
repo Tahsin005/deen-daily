@@ -11,6 +11,7 @@ import { PrayerTimesCard } from "../../components/prayer/PrayerTimesCard";
 import { ProhibitedTimesCard } from "../../components/prayer/ProhibitedTimesCard";
 import { RamadanBanner } from "../../components/ramadan/RamadanBanner";
 import { RamadanScheduleCard } from "../../components/ramadan/RamadanScheduleCard";
+import { ZakatCalculatorCard } from "../../components/zakat/ZakatCalculatorCard";
 import { ZakatNisabCard } from "../../components/zakat/ZakatNisabCard";
 import { Colors } from "../../constants/Colors";
 import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
@@ -363,6 +364,7 @@ export default function PrayerScreen() {
             ) : (
               <Text style={styles.loadingText}>No nisab data available.</Text>
             )}
+            <ZakatCalculatorCard defaultCurrency={storedZakatCurrency} />
           </View>
         ) : null}
       </ScrollView>

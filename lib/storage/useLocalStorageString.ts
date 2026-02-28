@@ -6,7 +6,7 @@ export const useLocalStorageString = (key: string, initialValue = "") => {
     const [value, setValue] = useMMKVString(key, storage);
 
     useEffect(() => {
-        if (value === undefined) {
+        if (value === undefined || value === "") {
             setValue(initialValue);
         }
     }, [initialValue, setValue, value]);
