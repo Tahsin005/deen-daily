@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { AnimatedLogo } from "../../components/common/AnimatedLogo";
 import { GlobalLoader } from "../../components/common/GlobalLoader";
 import { TodayFastingCard } from "../../components/fasting/TodayFastingCard";
 import { NextPrayerCard } from "../../components/prayer/NextPrayerCard";
@@ -18,6 +19,7 @@ import { PrayerTimesModal } from "../../components/prayer/PrayerTimesModal";
 import { DuaCard } from "../../components/ramadan/DuaCard";
 import { HadithCardRamadan } from "../../components/ramadan/HadithCardRamadan";
 import { Colors } from "../../constants/Colors";
+import { getAsmaulHusna } from "../../lib/api/asmaulHusna/getAsmaulHusna";
 import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
 import { getPrayerTimes } from "../../lib/api/prayer/getPrayerTimes";
 import { getRamadanTimes } from "../../lib/api/ramadan/getRamadanTimes";
@@ -90,6 +92,12 @@ const formatReadableDate = (value?: string) => {
   });
 };
 
+const getDayOfYear = (date: Date) => {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date.getTime() - start.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+};
+
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -98,6 +106,7 @@ export default function HomeScreen() {
   const [storedLocation, setStoredLocation] = useLocalStorageString("prayerLocation", "");
   const [isUpdatingLocation, setIsUpdatingLocation] = useState(false);
   const [statusMessage, setStatusMessage] = useState("No saved location yet.");
+  const [asmaLanguage] = useLocalStorageString("asmaLanguage", "en");
   const [permissionStatus, setPermissionStatus] = useState<
     "granted" | "denied" | "undetermined"
   >("undetermined");
@@ -196,6 +205,11 @@ export default function HomeScreen() {
     enabled: Boolean(parsedLocation),
   });
 
+  const asmaQuery = useQuery({
+    queryKey: ["asmaulHusna", asmaLanguage],
+    queryFn: () => getAsmaulHusna(asmaLanguage),
+  });
+
   const prayerData = prayerQuery.data?.data;
   const hijri = prayerData?.date?.hijri;
   const hijriReadable = hijri
@@ -214,6 +228,15 @@ export default function HomeScreen() {
   const fastingToday = fastingQuery.data?.data?.fasting?.[0];
   const fastingDateLabel = formatReadableDate(fastingToday?.date);
   const ramadanData = ramadanQuery.data;
+
+  const nameOfTheDay = useMemo(() => {
+    const names = asmaQuery.data?.data.names ?? [];
+    if (!names.length) {
+      return null;
+    }
+    const index = getDayOfYear(new Date()) % names.length;
+    return names[index];
+  }, [asmaQuery.data?.data.names]);
 
   const nextPrayer = useMemo(() => {
     const nowMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
@@ -291,6 +314,9 @@ export default function HomeScreen() {
     return (
       <View style={styles.permissionContainer}>
         <View style={styles.permissionCard}>
+          <View style={styles.logoWrap}>
+            <AnimatedLogo size={64} />
+          </View>
           <Text style={styles.permissionTitle}>Location required</Text>
           <Text style={styles.permissionText}>
             We need your location to show prayer, fasting, and Ramadan times.
@@ -300,6 +326,7 @@ export default function HomeScreen() {
               {permissionStatus === "denied" ? "Enable location" : "Share location"}
             </Text>
           </Pressable>
+          <Text style={styles.permissionHint}>You can change this later in settings.</Text>
           {isUpdatingLocation ? (
             <View style={styles.permissionLoading}>
               <ActivityIndicator color={Colors.light.primary} />
@@ -338,6 +365,43 @@ export default function HomeScreen() {
         qiblaDistanceValue={prayerData?.qibla.distance.value}
         qiblaDistanceUnit={prayerData?.qibla.distance.unit}
       />
+
+      <View style={styles.asmaCard}>
+        <View style={styles.asmaHeader}>
+          <View>
+            <Text style={styles.asmaTitle}>Asma-ul Husna</Text>
+            <Text style={styles.asmaSubtitle}>Name of the day</Text>
+          </View>
+          <Pressable onPress={() => router.push({ pathname: "/prayer", params: { section: "asma" } })}
+            style={styles.asmaAction}
+          >
+            <Text style={styles.asmaActionText}>View all</Text>
+          </Pressable>
+        </View>
+
+        {asmaQuery.isLoading ? (
+          <Text style={styles.asmaHelper}>Loading...</Text>
+        ) : asmaQuery.error ? (
+          <Text style={styles.asmaHelper}>Unable to load names.</Text>
+        ) : nameOfTheDay ? (
+          <View style={styles.asmaNameRow}>
+            <View style={styles.asmaBadge}>
+              <Text style={styles.asmaBadgeText}>{nameOfTheDay.number}</Text>
+            </View>
+            <View style={styles.asmaNameContent}>
+              <Text style={styles.asmaArabic}>{nameOfTheDay.name}</Text>
+              <Text style={styles.asmaTranslation}>
+                {nameOfTheDay.transliteration} · {nameOfTheDay.translation}
+              </Text>
+              <Text style={styles.asmaMeaning} numberOfLines={2}>
+                {nameOfTheDay.meaning}
+              </Text>
+            </View>
+          </View>
+        ) : (
+          <Text style={styles.asmaHelper}>No names available.</Text>
+        )}
+      </View>
 
       <View>
         <NextPrayerCard
@@ -522,12 +586,29 @@ const styles = StyleSheet.create({
   },
   permissionCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 18,
+    borderRadius: 20,
+    paddingVertical: 24,
+    paddingHorizontal: 22,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: "#E5E7EB",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
+    shadowColor: "#000000",
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+    width: "100%",
+    maxWidth: 320,
+  },
+  logoWrap: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: "#F3F4F6",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
   },
   permissionTitle: {
     fontSize: 18,
@@ -538,6 +619,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.light.icon,
     textAlign: "center",
+    lineHeight: 18,
   },
   permissionButton: {
     paddingHorizontal: 16,
@@ -550,12 +632,97 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 13,
   },
+  permissionHint: {
+    fontSize: 12,
+    color: Colors.light.icon,
+    textAlign: "center",
+  },
   permissionLoading: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
   permissionStatus: {
+    fontSize: 12,
+    color: Colors.light.icon,
+  },
+  asmaCard: {
+    marginTop: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
+    padding: 16,
+    gap: 12,
+  },
+  asmaHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  asmaTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: Colors.light.text,
+  },
+  asmaSubtitle: {
+    marginTop: 4,
+    fontSize: 12,
+    color: Colors.light.icon,
+  },
+  asmaAction: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: "#E8F5E2",
+  },
+  asmaActionText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.light.primary,
+  },
+  asmaHelper: {
+    fontSize: 12,
+    color: Colors.light.icon,
+  },
+  asmaNameRow: {
+    flexDirection: "row",
+    gap: 12,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+    backgroundColor: "#F9FAFB",
+  },
+  asmaBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#E8F5E2",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  asmaBadgeText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: Colors.light.primary,
+  },
+  asmaNameContent: {
+    flex: 1,
+    gap: 4,
+  },
+  asmaArabic: {
+    fontSize: 18,
+    color: Colors.light.text,
+    textAlign: "right",
+  },
+  asmaTranslation: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.light.text,
+  },
+  asmaMeaning: {
     fontSize: 12,
     color: Colors.light.icon,
   },

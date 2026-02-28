@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.snerp.deendaily"
+  "bundleIdentifier": "com.tahsin_ferdous.deen_daily"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.snerp.deendaily"
+  "package": "com.tahsin_ferdous.deen_daily"
     },
     "web": {
       "output": "static",

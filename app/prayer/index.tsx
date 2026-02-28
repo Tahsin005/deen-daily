@@ -2,7 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { AnimatedLogo } from "../../components/common/AnimatedLogo";
 import { GlobalLoader } from "../../components/common/GlobalLoader";
 import { TodayFastingCard } from "../../components/fasting/TodayFastingCard";
 import { WhiteDaysCard } from "../../components/fasting/WhiteDaysCard";
@@ -15,12 +24,21 @@ import { ZakatCalculatorCard } from "../../components/zakat/ZakatCalculatorCard"
 import { ZakatNisabCard } from "../../components/zakat/ZakatNisabCard";
 import { Colors } from "../../constants/Colors";
 import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
+import { getAsmaulHusna } from "../../lib/api/asmaulHusna/getAsmaulHusna";
 import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
 import { getPrayerTimes } from "../../lib/api/prayer/getPrayerTimes";
 import { getRamadanTimes } from "../../lib/api/ramadan/getRamadanTimes";
 import { getZakatNisab } from "../../lib/api/zakat/getZakatNisab";
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 import { usePrayerSettings } from "../../lib/storage/usePrayerSettings";
+
+const asmaLanguageOptions = [
+  { label: "English", value: "en" },
+  { label: "বাংলা (Bengali)", value: "bn" },
+  { label: "العربية (Arabic)", value: "ar" },
+  { label: "اردو (Urdu)", value: "ur" },
+  { label: "Türkçe (Turkish)", value: "tr" },
+];
 
 const formatReadableDate = (value?: string) => {
   if (!value) {
@@ -59,10 +77,12 @@ export default function PrayerScreen() {
     "zakatCurrency",
     zakatDefaults.currency
   );
+  const [asmaLanguage, setAsmaLanguage] = useLocalStorageString("asmaLanguage", "en");
+  const [isAsmaLanguageOpen, setIsAsmaLanguageOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(() => new Date());
-  const [activeSection, setActiveSection] = useState<"prayer" | "fasting" | "zakat">(
-    "prayer"
-  );
+  const [activeSection, setActiveSection] = useState<
+    "prayer" | "fasting" | "zakat" | "asma"
+  >( "prayer" );
   const [permissionStatus, setPermissionStatus] = useState<
     "granted" | "denied" | "undetermined"
   >("undetermined");
@@ -143,6 +163,9 @@ export default function PrayerScreen() {
     }
     if (section === "zakat") {
       setActiveSection("zakat");
+    }
+    if (section === "asma") {
+      setActiveSection("asma");
     }
   }, [section]);
 
@@ -243,6 +266,19 @@ export default function PrayerScreen() {
       }),
   });
 
+  const asmaQuery = useQuery({
+    queryKey: ["asmaulHusna", asmaLanguage],
+    queryFn: () => getAsmaulHusna(asmaLanguage),
+  });
+
+  const asmaNames = asmaQuery.data?.data.names ?? [];
+  const currentAsmaLanguageLabel = useMemo(
+    () =>
+      asmaLanguageOptions.find((item) => item.value === asmaLanguage)?.label ??
+      asmaLanguage.toUpperCase(),
+    [asmaLanguage]
+  );
+
   if (isCheckingPermission) {
     return (
       <View style={styles.permissionContainer}>
@@ -255,6 +291,9 @@ export default function PrayerScreen() {
     return (
       <View style={styles.permissionContainer}>
         <View style={styles.permissionCard}>
+          <View style={styles.logoWrap}>
+            <AnimatedLogo size={64} />
+          </View>
           <Text style={styles.permissionTitle}>Location required</Text>
           <Text style={styles.permissionText}>
             We need your location to show prayer, fasting, and Ramadan times.
@@ -264,6 +303,7 @@ export default function PrayerScreen() {
               {permissionStatus === "denied" ? "Enable location" : "Share location"}
             </Text>
           </Pressable>
+          <Text style={styles.permissionHint}>You can change this later in settings.</Text>
           {isLoading ? (
             <View style={styles.permissionLoading}>
               <ActivityIndicator color={Colors.light.primary} />
@@ -367,7 +407,81 @@ export default function PrayerScreen() {
             <ZakatCalculatorCard defaultCurrency={storedZakatCurrency} />
           </View>
         ) : null}
+
+        {activeSection === "asma" ? (
+          <View style={styles.sectionSpacing}>
+            <View style={styles.asmaHeader}>
+              <View>
+                <Text style={styles.sectionTitle}>Asma-ul Husna</Text>
+                <Text style={styles.asmaSubtitle}>The 99 beautiful names of Allah</Text>
+              </View>
+              <Pressable onPress={() => setIsAsmaLanguageOpen(true)}>
+                <Text style={styles.asmaLanguageButton}>{currentAsmaLanguageLabel}</Text>
+              </Pressable>
+            </View>
+
+            {asmaQuery.isLoading ? (
+              <View style={styles.loadingCard}>
+                <ActivityIndicator color={Colors.light.primary} />
+                <Text style={styles.loadingText}>Loading names...</Text>
+              </View>
+            ) : asmaQuery.error ? (
+              <View style={styles.loadingCard}>
+                <Text style={styles.loadingText}>Unable to load names right now.</Text>
+              </View>
+            ) : (
+              <View style={styles.asmaList}>
+                {asmaNames.map((name) => (
+                  <View key={name.number} style={styles.asmaRow}>
+                    <View style={styles.asmaBadge}>
+                      <Text style={styles.asmaBadgeText}>{name.number}</Text>
+                    </View>
+                    <View style={styles.asmaContent}>
+                      <Text style={styles.asmaArabic}>{name.name}</Text>
+                      <Text style={styles.asmaTranslation}>
+                        {name.transliteration} · {name.translation}
+                      </Text>
+                      <Text style={styles.asmaMeaning}>{name.meaning}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        ) : null}
       </ScrollView>
+
+      <Modal
+        visible={isAsmaLanguageOpen}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setIsAsmaLanguageOpen(false)}
+      >
+        <Pressable style={styles.modalBackdrop} onPress={() => setIsAsmaLanguageOpen(false)}>
+          <Pressable style={styles.modalCard} onPress={() => null}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select language</Text>
+              <Pressable onPress={() => setIsAsmaLanguageOpen(false)}>
+                <Text style={styles.modalCloseText}>Close</Text>
+              </Pressable>
+            </View>
+            <ScrollView contentContainerStyle={styles.modalList}>
+              {asmaLanguageOptions.map((option) => (
+                <Pressable
+                  key={option.label}
+                  style={styles.modalOption}
+                  onPress={() => {
+                    setAsmaLanguage(option.value);
+                    setIsAsmaLanguageOpen(false);
+                  }}
+                >
+                  <Text style={styles.modalOptionText}>{option.label}</Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       <View style={styles.tabBar}>
         <Pressable
@@ -398,6 +512,16 @@ export default function PrayerScreen() {
             style={[styles.tabButtonText, activeSection === "zakat" && styles.tabButtonTextActive]}
           >
             Zakat
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[styles.tabButton, activeSection === "asma" && styles.tabButtonActive]}
+          onPress={() => setActiveSection("asma")}
+        >
+          <Text
+            style={[styles.tabButtonText, activeSection === "asma" && styles.tabButtonTextActive]}
+          >
+            Asma
           </Text>
         </Pressable>
       </View>
@@ -451,12 +575,33 @@ const styles = StyleSheet.create({
   },
   permissionCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 18,
+    borderRadius: 20,
+    paddingVertical: 24,
+    paddingHorizontal: 22,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: "#E5E7EB",
     alignItems: "center",
-    gap: 10,
+    gap: 12,
+    shadowColor: "#000000",
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+    width: "100%",
+    maxWidth: 320,
+  },
+  logoWrap: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: "#F3F4F6",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
+  logo: {
+    width: 64,
+    height: 64,
   },
   permissionTitle: {
     fontSize: 18,
@@ -467,6 +612,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.light.icon,
     textAlign: "center",
+    lineHeight: 18,
   },
   permissionButton: {
     paddingHorizontal: 16,
@@ -478,6 +624,11 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "600",
     fontSize: 13,
+  },
+  permissionHint: {
+    fontSize: 12,
+    color: Colors.light.icon,
+    textAlign: "center",
   },
   permissionLoading: {
     flexDirection: "row",
@@ -522,5 +673,111 @@ const styles = StyleSheet.create({
   },
   tabButtonTextActive: {
     color: "#FFFFFF",
+  },
+  asmaHeader: {
+    marginTop: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  asmaSubtitle: {
+    marginTop: 4,
+    fontSize: 12,
+    color: Colors.light.icon,
+  },
+  asmaLanguageButton: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.light.primary,
+  },
+  asmaList: {
+    marginTop: 12,
+    gap: 12,
+  },
+  asmaRow: {
+    flexDirection: "row",
+    gap: 12,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+    backgroundColor: "#FFFFFF",
+  },
+  asmaBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#E8F5E2",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  asmaBadgeText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: Colors.light.primary,
+  },
+  asmaContent: {
+    flex: 1,
+    gap: 4,
+  },
+  asmaArabic: {
+    fontSize: 18,
+    color: Colors.light.text,
+    textAlign: "right",
+  },
+  asmaTranslation: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.light.text,
+  },
+  asmaMeaning: {
+    fontSize: 12,
+    color: Colors.light.icon,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(15, 23, 42, 0.45)",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+  },
+  modalCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    maxHeight: "70%",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: Colors.light.text,
+  },
+  modalCloseText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.light.primary,
+  },
+  modalList: {
+    gap: 8,
+    paddingBottom: 8,
+  },
+  modalOption: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
+  },
+  modalOptionText: {
+    fontSize: 13,
+    color: Colors.light.text,
   },
 });

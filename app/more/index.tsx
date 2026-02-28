@@ -5,7 +5,12 @@ import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings"
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 import { usePrayerSettings } from "../../lib/storage/usePrayerSettings";
 
-type SettingKey = "method" | "school" | "shifting" | "calendar" | "zakatCurrency";
+type SettingKey =
+  | "method"
+  | "school"
+  | "shifting"
+  | "calendar"
+  | "zakatCurrency";
 
 export default function MoreScreen() {
   const [activeSetting, setActiveSetting] = useState<SettingKey | null>(null);
@@ -15,7 +20,6 @@ export default function MoreScreen() {
     "zakatCurrency",
     IslamicAPISettings.zakatNisab.defaults.currency
   );
-
   const methodOptions = IslamicAPISettings.prayerTime.method;
   const schoolOptions = IslamicAPISettings.prayerTime.school;
   const shiftingOptions = IslamicAPISettings.prayerTime.shifting;
@@ -115,52 +119,54 @@ export default function MoreScreen() {
     >
       <Text style={styles.title}>More</Text>
       <Text style={styles.subtitle}>Settings and more tools.</Text>
+      <View style={styles.section}> 
+        <Text style={styles.sectionTitle}>Settings</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Prayer Settings</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Prayer Settings</Text>
+          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("method")}>
+            <View>
+              <Text style={styles.settingLabel}>Method</Text>
+              <Text style={styles.settingValue}>{currentMethodLabel}</Text>
+            </View>
+            <Text style={styles.settingAction}>Change</Text>
+          </Pressable>
 
-        <Pressable style={styles.settingRow} onPress={() => setActiveSetting("method")}>
-          <View>
-            <Text style={styles.settingLabel}>Method</Text>
-            <Text style={styles.settingValue}>{currentMethodLabel}</Text>
-          </View>
-          <Text style={styles.settingAction}>Change</Text>
-        </Pressable>
+          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("school")}>
+            <View>
+              <Text style={styles.settingLabel}>School</Text>
+              <Text style={styles.settingValue}>{currentSchoolLabel}</Text>
+            </View>
+            <Text style={styles.settingAction}>Change</Text>
+          </Pressable>
 
-        <Pressable style={styles.settingRow} onPress={() => setActiveSetting("school")}>
-          <View>
-            <Text style={styles.settingLabel}>School</Text>
-            <Text style={styles.settingValue}>{currentSchoolLabel}</Text>
-          </View>
-          <Text style={styles.settingAction}>Change</Text>
-        </Pressable>
+          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("shifting")}>
+            <View>
+              <Text style={styles.settingLabel}>Shifting</Text>
+              <Text style={styles.settingValue}>{currentShiftingLabel}</Text>
+            </View>
+            <Text style={styles.settingAction}>Change</Text>
+          </Pressable>
 
-        <Pressable style={styles.settingRow} onPress={() => setActiveSetting("shifting")}>
-          <View>
-            <Text style={styles.settingLabel}>Shifting</Text>
-            <Text style={styles.settingValue}>{currentShiftingLabel}</Text>
-          </View>
-          <Text style={styles.settingAction}>Change</Text>
-        </Pressable>
+          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("calendar")}>
+            <View>
+              <Text style={styles.settingLabel}>Calendar</Text>
+              <Text style={styles.settingValue}>{calendar}</Text>
+            </View>
+            <Text style={styles.settingAction}>Change</Text>
+          </Pressable>
+        </View>
 
-        <Pressable style={styles.settingRow} onPress={() => setActiveSetting("calendar")}>
-          <View>
-            <Text style={styles.settingLabel}>Calendar</Text>
-            <Text style={styles.settingValue}>{calendar}</Text>
-          </View>
-          <Text style={styles.settingAction}>Change</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Zakat Settings</Text>
-        <Pressable style={styles.settingRow} onPress={() => setActiveSetting("zakatCurrency")}> 
-          <View>
-            <Text style={styles.settingLabel}>Default currency</Text>
-            <Text style={styles.settingValue}>{currentZakatCurrencyLabel}</Text>
-          </View>
-          <Text style={styles.settingAction}>Change</Text>
-        </Pressable>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Zakat Settings</Text>
+          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("zakatCurrency")}>
+            <View>
+              <Text style={styles.settingLabel}>Default currency</Text>
+              <Text style={styles.settingValue}>{currentZakatCurrencyLabel}</Text>
+            </View>
+            <Text style={styles.settingAction}>Change</Text>
+          </Pressable>
+        </View>
       </View>
 
       <Modal
@@ -204,6 +210,17 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: 24,
     paddingBottom: 32,
+  },
+  section: {
+    marginTop: 18,
+    gap: 12,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: Colors.light.icon,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
   },
   title: {
     fontSize: 24,
