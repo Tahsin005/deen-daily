@@ -4,13 +4,13 @@
     "slug": "deen-daily",
     "version": "1.0.0",
     "orientation": "portrait",
-  "icon": "./assets/images/logo.png",
+    "icon": "./assets/images/logo.png",
     "scheme": "deendaily",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-  "bundleIdentifier": "com.tahsin_ferdous.deen_daily"
+      "bundleIdentifier": "com.tahsin_ferdous.deen_daily"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-  "package": "com.tahsin_ferdous.deen_daily"
+      "package": "com.tahsin_ferdous.deen_daily"
     },
     "web": {
       "output": "static",
@@ -46,6 +46,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f96d6c30-f30e-4cc4-97c1-de31de7f1913"
+      }
     }
   }
 }
