@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { GlobalLoader } from "../../components/common/GlobalLoader";
 import { TodayFastingCard } from "../../components/fasting/TodayFastingCard";
 import { WhiteDaysCard } from "../../components/fasting/WhiteDaysCard";
 import { PrayerHeader } from "../../components/prayer/PrayerHeader";
@@ -45,6 +46,10 @@ export default function PrayerScreen() {
   const [statusMessage, setStatusMessage] = useState("No saved location yet.");
   const [storedLocation, setStoredLocation] = useLocalStorageString("prayerLocation", "");
   const [currentTime, setCurrentTime] = useState(() => new Date());
+  const [permissionStatus, setPermissionStatus] = useState<
+    "granted" | "denied" | "undetermined"
+  >("undetermined");
+  const [isCheckingPermission, setIsCheckingPermission] = useState(true);
   const { method, school, shifting, calendar } = usePrayerSettings();
 
   const parsedStoredLocation = useMemo(() => {
@@ -62,6 +67,7 @@ export default function PrayerScreen() {
     try {
       setIsLoading(true);
       const { status } = await Location.requestForegroundPermissionsAsync();
+      setPermissionStatus(status === "granted" ? "granted" : "denied");
       if (status !== "granted") {
         setStatusMessage("Location permission denied.");
         return;
@@ -91,6 +97,18 @@ export default function PrayerScreen() {
       setStatusMessage("Using saved location.");
     }
   }, [parsedStoredLocation]);
+
+  useEffect(() => {
+    const checkPermission = async () => {
+      try {
+        const { status } = await Location.getForegroundPermissionsAsync();
+        setPermissionStatus(status === "granted" ? "granted" : "denied");
+      } finally {
+        setIsCheckingPermission(false);
+      }
+    };
+    checkPermission();
+  }, []);
 
   useEffect(() => {
     const tick = () => setCurrentTime(new Date());
@@ -196,6 +214,38 @@ export default function PrayerScreen() {
           ramadanDays[ramadanDays.length - 1].date
         )}`
       : undefined;
+
+  if (isCheckingPermission) {
+    return (
+      <View style={styles.permissionContainer}>
+        <GlobalLoader size={140} />
+      </View>
+    );
+  }
+
+  if (permissionStatus !== "granted" || !location) {
+    return (
+      <View style={styles.permissionContainer}>
+        <View style={styles.permissionCard}>
+          <Text style={styles.permissionTitle}>Location required</Text>
+          <Text style={styles.permissionText}>
+            We need your location to show prayer, fasting, and Ramadan times.
+          </Text>
+          <Pressable style={styles.permissionButton} onPress={fetchLocation}>
+            <Text style={styles.permissionButtonText}>
+              {permissionStatus === "denied" ? "Enable location" : "Share location"}
+            </Text>
+          </Pressable>
+          {isLoading ? (
+            <View style={styles.permissionLoading}>
+              <ActivityIndicator color={Colors.light.primary} />
+              <Text style={styles.permissionStatus}>{statusMessage}</Text>
+            </View>
+          ) : null}
+        </View>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -326,6 +376,52 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 14,
+    color: Colors.light.icon,
+  },
+  permissionContainer: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  permissionCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
+    alignItems: "center",
+    gap: 10,
+  },
+  permissionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: Colors.light.text,
+  },
+  permissionText: {
+    fontSize: 13,
+    color: Colors.light.icon,
+    textAlign: "center",
+  },
+  permissionButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: Colors.light.primary,
+  },
+  permissionButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+  permissionLoading: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  permissionStatus: {
+    fontSize: 12,
     color: Colors.light.icon,
   },
 });
