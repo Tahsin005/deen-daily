@@ -22,19 +22,20 @@ function VerseCard({ verseNumber, arabicText, translationText }: VerseCardProps)
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#F0F0F0",
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
   },
   badge: {
     alignSelf: "flex-start",
-    backgroundColor: "#E8F5E2",
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#E3F2E1",
+    backgroundColor: "#E8F5E2",
+    marginBottom: 10,
   },
   verseIndex: {
     fontSize: 12,
@@ -42,14 +43,14 @@ const styles = StyleSheet.create({
     color: Colors.light.primary,
   },
   arabic: {
-    fontSize: 35,
-    lineHeight: 34,
+    fontSize: 34,
+    lineHeight: 48,
     color: Colors.light.text,
     textAlign: "right",
   },
   translation: {
     marginTop: 10,
-    fontSize: 15,
+    fontSize: 14,
     lineHeight: 22,
     color: Colors.light.icon,
     textAlign: "left",

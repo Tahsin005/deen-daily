@@ -90,7 +90,7 @@ export default function SurahDetailScreen() {
                     }}
                     scrollEventThrottle={16}
                     ListHeaderComponent={
-                        <View style={styles.header}>
+                        <View style={styles.headerFrame}>
                             <Text style={styles.title}>{surahDetail.name}</Text>
                             <Text style={styles.subtitle}>{surahDetail.count} verses</Text>
                             {isTranslationLoading ? (
@@ -125,27 +125,45 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 20,
     },
-    header: {
-        marginBottom: 16,
+    headerFrame: {
+        marginBottom: 18,
+        backgroundColor: "#FFFFFF",
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: "#F0F0F0",
+        paddingVertical: 18,
+        paddingHorizontal: 16,
+        alignItems: "center",
+        gap: 4,
     },
     title: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: "700",
         color: Colors.light.text,
+        textAlign: "center",
     },
     subtitle: {
-        marginTop: 6,
-        fontSize: 14,
+        marginTop: 4,
+        fontSize: 13,
         color: Colors.light.icon,
+        textAlign: "center",
     },
     listContent: {
         paddingBottom: 32,
-        gap: 14,
+        paddingTop: 8,
+        gap: 4,
+        backgroundColor: "#FFFFFF",
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: "#F0F0F0",
+        paddingHorizontal: 12,
+        paddingVertical: 12,
     },
     translationStatus: {
         marginTop: 6,
         fontSize: 12,
         color: Colors.light.icon,
+        textAlign: "center",
     },
     stateContainer: {
         marginTop: 32,
