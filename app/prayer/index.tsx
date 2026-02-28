@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { useLocalSearchParams } from "expo-router";
@@ -322,6 +323,7 @@ export default function PrayerScreen() {
       >
         {activeSection === "prayer" ? (
           <>
+          <Text style={styles.sectionTitle}>Praying</Text>
             <NextPrayerCard
               isLoading={prayerQuery.isLoading}
               error={prayerQuery.error}
@@ -486,6 +488,11 @@ export default function PrayerScreen() {
           style={[styles.tabButton, activeSection === "prayer" && styles.tabButtonActive]}
           onPress={() => setActiveSection("prayer")}
         >
+          <Ionicons
+            name="moon"
+            size={16}
+            color={activeSection === "prayer" ? Theme.colors.onPrimary : Theme.colors.primary}
+          />
           <Text
             style={[styles.tabButtonText, activeSection === "prayer" && styles.tabButtonTextActive]}
           >
@@ -496,6 +503,11 @@ export default function PrayerScreen() {
           style={[styles.tabButton, activeSection === "fasting" && styles.tabButtonActive]}
           onPress={() => setActiveSection("fasting")}
         >
+          <Ionicons
+            name="sunny"
+            size={16}
+            color={activeSection === "fasting" ? Theme.colors.onPrimary : Theme.colors.primary}
+          />
           <Text
             style={[styles.tabButtonText, activeSection === "fasting" && styles.tabButtonTextActive]}
           >
@@ -506,6 +518,11 @@ export default function PrayerScreen() {
           style={[styles.tabButton, activeSection === "zakat" && styles.tabButtonActive]}
           onPress={() => setActiveSection("zakat")}
         >
+          <Ionicons
+            name="wallet"
+            size={16}
+            color={activeSection === "zakat" ? Theme.colors.onPrimary : Theme.colors.primary}
+          />
           <Text
             style={[styles.tabButtonText, activeSection === "zakat" && styles.tabButtonTextActive]}
           >
@@ -516,6 +533,11 @@ export default function PrayerScreen() {
           style={[styles.tabButton, activeSection === "asma" && styles.tabButtonActive]}
           onPress={() => setActiveSection("asma")}
         >
+          <Ionicons
+            name="leaf"
+            size={16}
+            color={activeSection === "asma" ? Theme.colors.onPrimary : Theme.colors.primary}
+          />
           <Text
             style={[styles.tabButtonText, activeSection === "asma" && styles.tabButtonTextActive]}
           >
@@ -548,12 +570,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: Colors.light.text,
     marginTop: 6,
+    paddingLeft: 6,
   },
   sectionTitle2: {
     fontSize: 18,
     fontWeight: "700",
     color: Colors.light.text,
     marginTop: 12,
+    paddingLeft: 6,
   },
   loadingCard: {
     marginTop: 16,
@@ -582,8 +606,8 @@ const styles = StyleSheet.create({
   borderRadius: Theme.radius.xl,
     paddingVertical: 24,
     paddingHorizontal: 22,
-    borderWidth: 1,
-  borderColor: Theme.colors.border,
+    borderWidth: 1.5,
+    borderColor: Theme.colors.primary,
     alignItems: "center",
     gap: 12,
   shadowColor: Theme.colors.text,
@@ -688,32 +712,42 @@ const styles = StyleSheet.create({
     left: 16,
     right: 16,
     bottom: 16,
-  backgroundColor: Theme.colors.surface,
-  borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.xl,
     padding: 6,
     borderWidth: 1,
   borderColor: Theme.colors.border,
     flexDirection: "row",
-    gap: 6,
+    gap: 8,
   shadowColor: Theme.colors.text,
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
   },
   tabButton: {
     flex: 1,
     paddingVertical: 10,
-    borderRadius: Theme.radius.pill,
+    borderRadius: Theme.radius.lg,
     alignItems: "center",
+    justifyContent: "center",
+    gap: 4,
+    borderWidth: 1,
+    borderColor: "transparent",
   },
   tabButtonActive: {
     backgroundColor: Theme.colors.primary,
+    borderColor: Theme.colors.primary,
+    shadowColor: Theme.colors.text,
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
   tabButtonText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.light.icon,
+    fontSize: 11,
+    fontWeight: "700",
+    color: Theme.colors.primary,
   },
   tabButtonTextActive: {
     color: Theme.colors.onPrimary,

@@ -192,6 +192,35 @@ export default function MoreScreen() {
         </View>
       </View>
 
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Developer</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Built by Tahsin Ferdous</Text>
+          <Text style={styles.creditText}>Let’s connect and follow the project:</Text>
+          <Pressable
+            style={styles.creditRow}
+            onPress={() => Linking.openURL("https://github.com/Tahsin005/deen-daily")}
+          >
+            <Text style={styles.creditLabel}>Project Repository</Text>
+            <Text style={styles.creditLink}>github.com/Tahsin005/deen-daily</Text>
+          </Pressable>
+          <Pressable
+            style={styles.creditRow}
+            onPress={() => Linking.openURL("https://github.com/Tahsin005/")}
+          >
+            <Text style={styles.creditLabel}>GitHub Profile</Text>
+            <Text style={styles.creditLink}>github.com/Tahsin005</Text>
+          </Pressable>
+          <Pressable
+            style={styles.creditRow}
+            onPress={() => Linking.openURL("https://www.linkedin.com/in/md-tahsin-ferdous/")}
+          >
+            <Text style={styles.creditLabel}>LinkedIn</Text>
+            <Text style={styles.creditLink}>linkedin.com/in/md-tahsin-ferdous</Text>
+          </Pressable>
+        </View>
+      </View>
+
       <Modal
         visible={Boolean(activeSetting)}
         animationType="fade"
