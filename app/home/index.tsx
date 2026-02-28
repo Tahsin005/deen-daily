@@ -1,5 +1,5 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
+import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -10,9 +10,17 @@ import {
   Text,
   View,
 } from "react-native";
+import { GlobalLoader } from "../../components/common/GlobalLoader";
+import { TodayFastingCard } from "../../components/fasting/TodayFastingCard";
+import { NextPrayerCard } from "../../components/prayer/NextPrayerCard";
+import { PrayerHeader } from "../../components/prayer/PrayerHeader";
+import { PrayerTimesModal } from "../../components/prayer/PrayerTimesModal";
+import { DuaCard } from "../../components/ramadan/DuaCard";
+import { HadithCardRamadan } from "../../components/ramadan/HadithCardRamadan";
 import { Colors } from "../../constants/Colors";
 import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
 import { getPrayerTimes } from "../../lib/api/prayer/getPrayerTimes";
+import { getRamadanTimes } from "../../lib/api/ramadan/getRamadanTimes";
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 import { usePrayerSettings } from "../../lib/storage/usePrayerSettings";
 
@@ -67,11 +75,33 @@ const formatCountdown = (diffMs: number) => {
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 };
 
+const formatReadableDate = (value?: string) => {
+  if (!value) {
+    return "";
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+  return parsed.toLocaleDateString(undefined, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
 
 export default function HomeScreen() {
   const router = useRouter();
   const [currentTime, setCurrentTime] = useState(() => new Date());
-  const [storedLocation] = useLocalStorageString("prayerLocation", "");
+  const [isPrayerModalOpen, setIsPrayerModalOpen] = useState(false);
+  const [storedLocation, setStoredLocation] = useLocalStorageString("prayerLocation", "");
+  const [isUpdatingLocation, setIsUpdatingLocation] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("No saved location yet.");
+  const [permissionStatus, setPermissionStatus] = useState<
+    "granted" | "denied" | "undetermined"
+  >("undetermined");
+  const [isCheckingPermission, setIsCheckingPermission] = useState(true);
   const { method, school, shifting, calendar } = usePrayerSettings();
 
   const parsedLocation = useMemo(() => {
@@ -90,6 +120,18 @@ export default function HomeScreen() {
     tick();
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const checkPermission = async () => {
+      try {
+        const { status } = await Location.getForegroundPermissionsAsync();
+        setPermissionStatus(status === "granted" ? "granted" : "denied");
+      } finally {
+        setIsCheckingPermission(false);
+      }
+    };
+    checkPermission();
   }, []);
 
   const prayerQuery = useQuery({
@@ -134,14 +176,44 @@ export default function HomeScreen() {
     enabled: Boolean(parsedLocation),
   });
 
+  const ramadanQuery = useQuery({
+    queryKey: [
+      "homeRamadanTimes",
+      parsedLocation?.latitude,
+      parsedLocation?.longitude,
+      method,
+      shifting,
+      calendar,
+    ],
+    queryFn: () =>
+      getRamadanTimes({
+        latitude: parsedLocation?.latitude ?? 0,
+        longitude: parsedLocation?.longitude ?? 0,
+        method,
+        shifting,
+        calendar,
+      }),
+    enabled: Boolean(parsedLocation),
+  });
+
   const prayerData = prayerQuery.data?.data;
   const hijri = prayerData?.date?.hijri;
   const hijriReadable = hijri
     ? `${hijri.day} ${hijri.month.en} ${hijri.year} ${hijri.designation.abbreviated}`
     : "";
   const gregorianReadable = prayerData?.date?.readable ?? currentTime.toDateString();
+  const weekdayLabel = prayerData?.date?.gregorian?.weekday?.en ?? "";
+  const weekdayArabic = prayerData?.date?.hijri?.weekday?.ar ?? "";
+  const timezoneLine = prayerData
+    ? `${prayerData.timezone.name} (${prayerData.timezone.abbreviation}) UTC ${prayerData.timezone.utc_offset}`
+    : "";
+  const derivedStatusMessage = parsedLocation
+    ? "Using saved location."
+    : "Set location in Prayer to see times.";
   const prayerTimes = useMemo(() => prayerData?.times ?? {}, [prayerData?.times]);
   const fastingToday = fastingQuery.data?.data?.fasting?.[0];
+  const fastingDateLabel = formatReadableDate(fastingToday?.date);
+  const ramadanData = ramadanQuery.data;
 
   const nextPrayer = useMemo(() => {
     const nowMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
@@ -175,7 +247,69 @@ export default function HomeScreen() {
     return formatCountdown(target.getTime() - now.getTime());
   }, [currentTime, nextPrayer]);
 
-  const showRamadanQuickLink = hijri?.month?.number === 9;
+  const refreshLocation = async () => {
+    try {
+      setIsUpdatingLocation(true);
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      setPermissionStatus(status === "granted" ? "granted" : "denied");
+      if (status !== "granted") {
+        setStatusMessage("Location permission denied.");
+        return;
+      }
+
+      const current = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      const nextLocation: StoredLocation = {
+        latitude: current.coords.latitude,
+        longitude: current.coords.longitude,
+        updatedAt: new Date().toISOString(),
+      };
+      setStoredLocation(JSON.stringify(nextLocation));
+      setStatusMessage("Location updated.");
+      await Promise.all([
+        prayerQuery.refetch(),
+        fastingQuery.refetch(),
+        ramadanQuery.refetch(),
+      ]);
+    } catch {
+      setStatusMessage("Unable to fetch location.");
+    } finally {
+      setIsUpdatingLocation(false);
+    }
+  };
+
+  if (isCheckingPermission) {
+    return (
+      <View style={styles.permissionContainer}>
+        <GlobalLoader size={140} />
+      </View>
+    );
+  }
+
+  if (permissionStatus !== "granted" || !parsedLocation) {
+    return (
+      <View style={styles.permissionContainer}>
+        <View style={styles.permissionCard}>
+          <Text style={styles.permissionTitle}>Location required</Text>
+          <Text style={styles.permissionText}>
+            We need your location to show prayer, fasting, and Ramadan times.
+          </Text>
+          <Pressable style={styles.permissionButton} onPress={refreshLocation}>
+            <Text style={styles.permissionButtonText}>
+              {permissionStatus === "denied" ? "Enable location" : "Share location"}
+            </Text>
+          </Pressable>
+          {isUpdatingLocation ? (
+            <View style={styles.permissionLoading}>
+              <ActivityIndicator color={Colors.light.primary} />
+              <Text style={styles.permissionStatus}>{statusMessage}</Text>
+            </View>
+          ) : null}
+        </View>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -183,83 +317,60 @@ export default function HomeScreen() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.heroCard}>
-        <Text style={styles.greeting}>Assalamu Alaikum</Text>
-        <Text style={styles.hijriDate}>{hijriReadable || "Hijri date available after location"}</Text>
-        <Text style={styles.gregorianDate}>{gregorianReadable}</Text>
-      </View>
+      <PrayerHeader
+        gregorianDay={prayerData?.date?.gregorian?.day}
+        gregorianMonth={prayerData?.date?.gregorian?.month?.en}
+        readableDate={gregorianReadable}
+        hijriReadable={hijriReadable}
+        weekdayLabel={weekdayLabel}
+        weekdayArabic={weekdayArabic}
+        timezoneLine={timezoneLine}
+        statusMessage={derivedStatusMessage}
+        formattedTime={currentTime.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        })}
+        isLoading={prayerQuery.isLoading || isUpdatingLocation}
+        onRefresh={refreshLocation}
+        qiblaDegrees={prayerData?.qibla.direction.degrees}
+        qiblaDirectionFrom={prayerData?.qibla.direction.from}
+        qiblaDistanceValue={prayerData?.qibla.distance.value}
+        qiblaDistanceUnit={prayerData?.qibla.distance.unit}
+      />
 
-      <View style={styles.sectionCard}>
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>Next prayer</Text>
-          <Pressable onPress={() => router.push("/prayer")}> 
-            <Text style={styles.linkText}>Open Prayer</Text>
-          </Pressable>
-        </View>
-        {!parsedLocation ? (
-          <Text style={styles.statusText}>Enable location in Prayer to see times.</Text>
-        ) : prayerQuery.isLoading ? (
-          <View style={styles.statusRow}>
-            <ActivityIndicator color={Colors.light.primary} />
-            <Text style={styles.statusText}>Loading prayer times...</Text>
-          </View>
-        ) : prayerQuery.error ? (
-          <Text style={styles.statusText}>Unable to load prayer times.</Text>
-        ) : nextPrayer ? (
-          <View style={styles.nextPrayerCard}>
-            <View style={styles.nextPrayerRow}>
-              <Ionicons name={nextPrayer.icon} size={22} color={Colors.light.primary} />
-              <View style={styles.nextPrayerInfo}>
-                <Text style={styles.nextPrayerLabel}>{nextPrayer.label}</Text>
-                <Text style={styles.nextPrayerMeta}>Upcoming prayer</Text>
-              </View>
-              <Text style={styles.nextPrayerTime}>{prayerTimes[nextPrayer.key]}</Text>
-            </View>
-            {nextPrayerCountdown ? (
-              <Text style={styles.countdownText}>Starts in {nextPrayerCountdown}</Text>
-            ) : null}
-          </View>
-        ) : (
-          <Text style={styles.statusText}>No prayer times available.</Text>
-        )}
-      </View>
-
-      <View style={styles.sectionCard}>
-        <View style={styles.sectionHeaderRow}>
-          <Text style={styles.sectionTitle}>Today’s prayer times</Text>
-          <Pressable onPress={() => router.push("/prayer")}> 
-            <Text style={styles.linkText}>See all</Text>
-          </Pressable>
-        </View>
-        {parsedLocation && prayerQuery.isLoading ? (
-          <View style={styles.statusRow}>
-            <ActivityIndicator color={Colors.light.primary} />
-            <Text style={styles.statusText}>Loading times...</Text>
-          </View>
-        ) : parsedLocation && prayerQuery.error ? (
-          <Text style={styles.statusText}>Unable to load prayer times.</Text>
-        ) : parsedLocation ? (
-          <View style={styles.timesGrid}>
-            {mainPrayerEntries.map((entry) => (
-              <View key={entry.key} style={styles.timeItem}>
-                <View style={styles.timeLabelRow}>
-                  <Ionicons name={entry.icon} size={16} color={Colors.light.primary} />
-                  <Text style={styles.timeLabel}>{entry.label}</Text>
-                </View>
-                <Text style={styles.timeValue}>{prayerTimes[entry.key] ?? "--"}</Text>
-              </View>
-            ))}
-          </View>
-        ) : (
-          <Text style={styles.statusText}>Set your location to see prayer times.</Text>
-        )}
+      <View>
+        <NextPrayerCard
+          isLoading={prayerQuery.isLoading}
+          error={prayerQuery.error}
+          times={prayerTimes}
+          now={currentTime}
+          title="Next prayer"
+          actionLabel="See all"
+          onActionPress={() => setIsPrayerModalOpen(true)}
+          footerText={nextPrayerCountdown ? `Starts in ${nextPrayerCountdown}` : undefined}
+          footerActionLabel="See details"
+          onFooterActionPress={() => router.push("/prayer")}
+          emptyStateText={
+            parsedLocation
+              ? "No prayer times available yet."
+              : "Enable location in Prayer to see times."
+          }
+        />
       </View>
 
       <View style={styles.sectionCard}>
         <View style={styles.sectionHeaderRow}>
           <Text style={styles.sectionTitle}>Sahur & Iftar</Text>
-          <Pressable onPress={() => router.push("/prayer")}> 
-            <Text style={styles.linkText}>Fasting details</Text>
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/prayer",
+                params: { section: "fasting" },
+              })
+            }
+          >
+            <Text style={styles.linkText}>Show details</Text>
           </Pressable>
         </View>
         {!parsedLocation ? (
@@ -272,48 +383,60 @@ export default function HomeScreen() {
         ) : fastingQuery.error ? (
           <Text style={styles.statusText}>Unable to load fasting info.</Text>
         ) : fastingToday ? (
-          <View style={styles.fastingRow}>
-            <View style={styles.fastingItem}>
-              <Text style={styles.fastingLabel}>Sahur ends</Text>
-              <Text style={styles.fastingValue}>{fastingToday.time.sahur ?? "--"}</Text>
-            </View>
-            <View style={styles.fastingItem}>
-              <Text style={styles.fastingLabel}>Iftar</Text>
-              <Text style={styles.fastingValue}>{fastingToday.time.iftar ?? "--"}</Text>
-            </View>
-            <View style={styles.fastingItem}>
-              <Text style={styles.fastingLabel}>Fast length</Text>
-              <Text style={styles.fastingValue}>{fastingToday.time.duration ?? "--"}</Text>
-            </View>
-          </View>
+          <TodayFastingCard
+            dateLabel={fastingDateLabel}
+            hijriLabel={fastingToday.hijri_readable}
+            sahur={fastingToday.time.sahur}
+            iftar={fastingToday.time.iftar}
+            duration={fastingToday.time.duration}
+          />
         ) : (
           <Text style={styles.statusText}>No fasting info available.</Text>
         )}
       </View>
 
       <View style={styles.sectionCard}>
-        <Text style={styles.sectionTitle}>Quick actions</Text>
-        <View style={styles.quickGrid}>
-          <Pressable style={styles.quickButton} onPress={() => router.push("/quran")}> 
-            <Ionicons name="book" size={20} color={Colors.light.primary} />
-            <Text style={styles.quickText}>Quran</Text>
-          </Pressable>
-          <Pressable style={styles.quickButton} onPress={() => router.push("/hadith")}> 
-            <Ionicons name="library" size={20} color={Colors.light.primary} />
-            <Text style={styles.quickText}>Hadith</Text>
-          </Pressable>
-          <Pressable style={styles.quickButton} onPress={() => router.push("/prayer")}> 
-            <Ionicons name="time" size={20} color={Colors.light.primary} />
-            <Text style={styles.quickText}>Prayer</Text>
-          </Pressable>
-          {showRamadanQuickLink ? (
-            <Pressable style={styles.quickButton} onPress={() => router.push("/prayer")}> 
-              <Ionicons name="moon" size={20} color={Colors.light.primary} />
-              <Text style={styles.quickText}>Ramadan</Text>
-            </Pressable>
-          ) : null}
-        </View>
+        <Text style={styles.sectionTitle}>Dua and Hadith of the Day</Text>
+        {ramadanQuery.isLoading ? (
+          <View style={styles.statusRow}>
+            <ActivityIndicator color={Colors.light.primary} />
+            <Text style={styles.statusText}>Loading daily content...</Text>
+          </View>
+        ) : ramadanQuery.error ? (
+          <Text style={styles.statusText}>Unable to load daily content.</Text>
+        ) : ramadanData?.resource ? (
+          <>
+            {ramadanData.resource.dua ? (
+              <DuaCard
+                title={ramadanData.resource.dua.title}
+                arabic={ramadanData.resource.dua.arabic}
+                translation={ramadanData.resource.dua.translation}
+                reference={ramadanData.resource.dua.reference}
+              />
+            ) : (
+              <Text style={styles.statusText}>No dua available today.</Text>
+            )}
+            {ramadanData.resource.hadith ? (
+              <HadithCardRamadan
+                arabic={ramadanData.resource.hadith.arabic}
+                english={ramadanData.resource.hadith.english}
+                source={ramadanData.resource.hadith.source}
+                grade={ramadanData.resource.hadith.grade}
+              />
+            ) : (
+              <Text style={styles.statusText}>No hadith available today.</Text>
+            )}
+          </>
+        ) : (
+          <Text style={styles.statusText}>No daily content available.</Text>
+        )}
       </View>
+
+      <PrayerTimesModal
+        visible={isPrayerModalOpen}
+        onClose={() => setIsPrayerModalOpen(false)}
+        times={prayerTimes}
+      />
     </ScrollView>
   );
 }
@@ -327,30 +450,6 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: 18,
     paddingBottom: 32,
-  },
-  heroCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#F0F0F0",
-    padding: 18,
-    marginBottom: 14,
-  },
-  greeting: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.light.text,
-  },
-  hijriDate: {
-    marginTop: 8,
-    fontSize: 15,
-    fontWeight: "600",
-    color: Colors.light.primary,
-  },
-  gregorianDate: {
-    marginTop: 4,
-    fontSize: 13,
-    color: Colors.light.icon,
   },
   sectionCard: {
     marginTop: 14,
@@ -385,42 +484,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.light.icon,
   },
-  nextPrayerCard: {
-    backgroundColor: "#F9FAFB",
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    borderRadius: 14,
-    padding: 14,
-  },
-  nextPrayerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  nextPrayerInfo: {
-    flex: 1,
-  },
-  nextPrayerLabel: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: Colors.light.text,
-  },
-  nextPrayerMeta: {
-    fontSize: 12,
-    color: Colors.light.icon,
-    marginTop: 4,
-  },
-  nextPrayerTime: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: Colors.light.text,
-  },
-  countdownText: {
-    marginTop: 10,
-    fontSize: 13,
-    fontWeight: "600",
-    color: Colors.light.primary,
-  },
   timesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -450,50 +513,50 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.light.text,
   },
-  fastingRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
+  permissionContainer: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  fastingItem: {
-    flexGrow: 1,
-    minWidth: "30%",
-    borderRadius: 12,
+  permissionCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 18,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-    backgroundColor: "#F9FAFB",
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    borderColor: "#F0F0F0",
+    alignItems: "center",
+    gap: 10,
   },
-  fastingLabel: {
+  permissionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: Colors.light.text,
+  },
+  permissionText: {
+    fontSize: 13,
+    color: Colors.light.icon,
+    textAlign: "center",
+  },
+  permissionButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: Colors.light.primary,
+  },
+  permissionButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+  permissionLoading: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  permissionStatus: {
     fontSize: 12,
     color: Colors.light.icon,
-  },
-  fastingValue: {
-    marginTop: 6,
-    fontSize: 14,
-    fontWeight: "600",
-    color: Colors.light.text,
-  },
-  quickGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    marginTop: 12,
-  },
-  quickButton: {
-    width: "47%",
-    backgroundColor: "#F8FAFC",
-    borderWidth: 1,
-    borderColor: "#E2E8F0",
-    borderRadius: 14,
-    paddingVertical: 14,
-    alignItems: "center",
-    gap: 6,
-  },
-  quickText: {
-    fontSize: 13,
-    color: Colors.light.text,
-    fontWeight: "600",
   },
 });
