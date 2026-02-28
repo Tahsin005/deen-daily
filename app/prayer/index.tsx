@@ -11,10 +11,13 @@ import { PrayerTimesCard } from "../../components/prayer/PrayerTimesCard";
 import { ProhibitedTimesCard } from "../../components/prayer/ProhibitedTimesCard";
 import { RamadanBanner } from "../../components/ramadan/RamadanBanner";
 import { RamadanScheduleCard } from "../../components/ramadan/RamadanScheduleCard";
+import { ZakatNisabCard } from "../../components/zakat/ZakatNisabCard";
 import { Colors } from "../../constants/Colors";
+import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
 import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
 import { getPrayerTimes } from "../../lib/api/prayer/getPrayerTimes";
 import { getRamadanTimes } from "../../lib/api/ramadan/getRamadanTimes";
+import { getZakatNisab } from "../../lib/api/zakat/getZakatNisab";
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 import { usePrayerSettings } from "../../lib/storage/usePrayerSettings";
 
@@ -39,14 +42,26 @@ type StoredLocation = {
   updatedAt: string;
 };
 
+const zakatDefaults = IslamicAPISettings.zakatNisab.defaults as {
+  standard: "classical" | "common";
+  currency: string;
+  unit: "g" | "oz";
+};
+
 export default function PrayerScreen() {
   const { section } = useLocalSearchParams<{ section?: string }>();
   const [location, setLocation] = useState<StoredLocation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("No saved location yet.");
   const [storedLocation, setStoredLocation] = useLocalStorageString("prayerLocation", "");
+  const [storedZakatCurrency] = useLocalStorageString(
+    "zakatCurrency",
+    zakatDefaults.currency
+  );
   const [currentTime, setCurrentTime] = useState(() => new Date());
-  const [activeSection, setActiveSection] = useState<"prayer" | "fasting">("prayer");
+  const [activeSection, setActiveSection] = useState<"prayer" | "fasting" | "zakat">(
+    "prayer"
+  );
   const [permissionStatus, setPermissionStatus] = useState<
     "granted" | "denied" | "undetermined"
   >("undetermined");
@@ -124,6 +139,9 @@ export default function PrayerScreen() {
     }
     if (section === "prayer") {
       setActiveSection("prayer");
+    }
+    if (section === "zakat") {
+      setActiveSection("zakat");
     }
   }, [section]);
 
@@ -208,6 +226,21 @@ export default function PrayerScreen() {
           ramadanDays[ramadanDays.length - 1].date
         )}`
       : undefined;
+
+  const zakatQuery = useQuery({
+    queryKey: [
+      "zakatNisab",
+      zakatDefaults.standard,
+      storedZakatCurrency,
+      zakatDefaults.unit,
+    ],
+    queryFn: () =>
+      getZakatNisab({
+        standard: zakatDefaults.standard,
+        currency: storedZakatCurrency,
+        unit: zakatDefaults.unit,
+      }),
+  });
 
   if (isCheckingPermission) {
     return (
@@ -312,6 +345,26 @@ export default function PrayerScreen() {
             )}
           </View>
         ) : null}
+
+        {activeSection === "zakat" ? (
+          <View style={styles.sectionSpacing}>
+            <Text style={styles.sectionTitle}>Zakat</Text>
+            {zakatQuery.isLoading ? (
+              <View style={styles.loadingCard}>
+                <ActivityIndicator color={Colors.light.primary} />
+                <Text style={styles.loadingText}>Loading nisab values...</Text>
+              </View>
+            ) : zakatQuery.error ? (
+              <View style={styles.loadingCard}>
+                <Text style={styles.loadingText}>Unable to load nisab values.</Text>
+              </View>
+            ) : zakatQuery.data ? (
+              <ZakatNisabCard data={zakatQuery.data} />
+            ) : (
+              <Text style={styles.loadingText}>No nisab data available.</Text>
+            )}
+          </View>
+        ) : null}
       </ScrollView>
 
       <View style={styles.tabBar}>
@@ -333,6 +386,16 @@ export default function PrayerScreen() {
             style={[styles.tabButtonText, activeSection === "fasting" && styles.tabButtonTextActive]}
           >
             Fasting
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[styles.tabButton, activeSection === "zakat" && styles.tabButtonActive]}
+          onPress={() => setActiveSection("zakat")}
+        >
+          <Text
+            style={[styles.tabButtonText, activeSection === "zakat" && styles.tabButtonTextActive]}
+          >
+            Zakat
           </Text>
         </Pressable>
       </View>

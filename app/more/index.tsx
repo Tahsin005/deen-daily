@@ -2,19 +2,25 @@ import { useMemo, useState } from "react";
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
+import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 import { usePrayerSettings } from "../../lib/storage/usePrayerSettings";
 
-type SettingKey = "method" | "school" | "shifting" | "calendar";
+type SettingKey = "method" | "school" | "shifting" | "calendar" | "zakatCurrency";
 
 export default function MoreScreen() {
   const [activeSetting, setActiveSetting] = useState<SettingKey | null>(null);
   const { method, school, shifting, calendar, setMethod, setSchool, setShifting, setCalendar } =
     usePrayerSettings();
+  const [zakatCurrency, setZakatCurrency] = useLocalStorageString(
+    "zakatCurrency",
+    IslamicAPISettings.zakatNisab.defaults.currency
+  );
 
   const methodOptions = IslamicAPISettings.prayerTime.method;
   const schoolOptions = IslamicAPISettings.prayerTime.school;
   const shiftingOptions = IslamicAPISettings.prayerTime.shifting;
   const calendarOptions = IslamicAPISettings.prayerTime.calendar;
+  const zakatCurrencyOptions = IslamicAPISettings.zakatNisab.currency;
 
   const currentMethodLabel = useMemo(
     () => methodOptions.find((item) => item.value === method)?.label ?? "Select",
@@ -27,6 +33,12 @@ export default function MoreScreen() {
   const currentShiftingLabel = useMemo(
     () => shiftingOptions.find((item) => item.value === shifting)?.label ?? "Select",
     [shifting, shiftingOptions]
+  );
+  const currentZakatCurrencyLabel = useMemo(
+    () =>
+      zakatCurrencyOptions.find((item) => item.value === zakatCurrency)?.label ??
+      zakatCurrency.toUpperCase(),
+    [zakatCurrency, zakatCurrencyOptions]
   );
 
   const activeOptions = useMemo(() => {
@@ -70,6 +82,16 @@ export default function MoreScreen() {
         },
       }));
     }
+    if (activeSetting === "zakatCurrency") {
+      return zakatCurrencyOptions.map((item) => ({
+        label: item.label,
+        value: item.value,
+        onSelect: () => {
+          setZakatCurrency(item.value);
+          setActiveSetting(null);
+        },
+      }));
+    }
     return [];
   }, [
     activeSetting,
@@ -81,6 +103,8 @@ export default function MoreScreen() {
     setSchool,
     setShifting,
     shiftingOptions,
+    zakatCurrencyOptions,
+    setZakatCurrency,
   ]);
 
   return (
@@ -123,6 +147,17 @@ export default function MoreScreen() {
           <View>
             <Text style={styles.settingLabel}>Calendar</Text>
             <Text style={styles.settingValue}>{calendar}</Text>
+          </View>
+          <Text style={styles.settingAction}>Change</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Zakat Settings</Text>
+        <Pressable style={styles.settingRow} onPress={() => setActiveSetting("zakatCurrency")}> 
+          <View>
+            <Text style={styles.settingLabel}>Default currency</Text>
+            <Text style={styles.settingValue}>{currentZakatCurrencyLabel}</Text>
           </View>
           <Text style={styles.settingAction}>Change</Text>
         </Pressable>
