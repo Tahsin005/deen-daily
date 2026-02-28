@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import type { ZakatNisabResponse } from "../../lib/api/zakat/getZakatNisab";
 
 const formatCurrency = (amount: number, currency: string) => {
@@ -91,10 +92,10 @@ export const ZakatNisabCard = ({ data }: ZakatNisabCardProps) => {
 const styles = StyleSheet.create({
     card: {
         marginTop: 12,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 18,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         padding: 16,
         gap: 12,
     },
@@ -121,8 +122,8 @@ const styles = StyleSheet.create({
     badge: {
         paddingHorizontal: 10,
         paddingVertical: 4,
-        borderRadius: 999,
-        backgroundColor: "#EEF2FF",
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.surfaceSoft,
     },
     badgeText: {
         fontSize: 11,
@@ -139,10 +140,10 @@ const styles = StyleSheet.create({
         color: Colors.light.icon,
     },
     sectionCard: {
-        borderRadius: 14,
+        borderRadius: Theme.radius.md,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
-        backgroundColor: "#F9FAFB",
+        borderColor: Theme.colors.border,
+        backgroundColor: Theme.colors.surfaceMuted,
         padding: 12,
         gap: 6,
     },
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         paddingTop: 6,
         borderTopWidth: 1,
-        borderTopColor: "#E5E7EB",
+        borderTopColor: Theme.colors.border,
     },
     rateLabel: {
         fontSize: 12,

@@ -8,6 +8,7 @@ import {
     View,
 } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { fetchJson } from "../../lib/api/fetchJson";
 import { SkeletonLine } from "../common/Skeleton";
 
@@ -371,7 +372,7 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                                 <Pressable
                                 onPress={() => setAssets((prev) => prev.filter((item) => item.id !== asset.id))}
                                 >
-                                <Ionicons name="trash" size={18} color="#DC2626" />
+                                <Ionicons name="trash" size={18} color={Theme.colors.danger} />
                                 </Pressable>
                             </View>
                         ))}
@@ -417,7 +418,7 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                                         setLiabilities((prev) => prev.filter((item) => item.id !== liability.id))
                                     }
                                 >
-                                    <Ionicons name="trash" size={18} color="#DC2626" />
+                                    <Ionicons name="trash" size={18} color={Theme.colors.danger} />
                                 </Pressable>
                             </View>
                         ))}
@@ -459,7 +460,7 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                                 <Pressable
                                     onPress={() => setGoldItems((prev) => prev.filter((row) => row.id !== item.id))}
                                 >
-                                    <Ionicons name="trash" size={18} color="#DC2626" />
+                                    <Ionicons name="trash" size={18} color={Theme.colors.danger} />
                                 </Pressable>
                             </View>
                         ))}
@@ -494,7 +495,7 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                                         setSilverItems((prev) => prev.filter((row) => row.id !== item.id))
                                     }
                                 >
-                                    <Ionicons name="trash" size={18} color="#DC2626" />
+                                    <Ionicons name="trash" size={18} color={Theme.colors.danger} />
                                 </Pressable>
                             </View>
                         ))}
@@ -582,10 +583,10 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
 const styles = StyleSheet.create({
     card: {
         marginTop: 16,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 18,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         padding: 16,
         gap: 12,
     },
@@ -607,8 +608,8 @@ const styles = StyleSheet.create({
     badge: {
         paddingHorizontal: 10,
         paddingVertical: 4,
-        borderRadius: 999,
-        backgroundColor: "#EEF2FF",
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.surfaceSoft,
     },
     badgeText: {
         fontSize: 11,
@@ -620,10 +621,10 @@ const styles = StyleSheet.create({
         color: Colors.light.icon,
     },
     sectionCard: {
-        borderRadius: 14,
+        borderRadius: Theme.radius.md,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
-        backgroundColor: "#F9FAFB",
+        borderColor: Theme.colors.border,
+        backgroundColor: Theme.colors.surfaceMuted,
         padding: 12,
         gap: 8,
     },
@@ -638,12 +639,12 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderColor: "#E5E7EB",
-        borderRadius: 10,
+        borderColor: Theme.colors.border,
+        borderRadius: Theme.radius.sm,
         paddingHorizontal: 12,
         paddingVertical: 8,
         fontSize: 13,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: Theme.colors.surface,
     },
     inlineRow: {
         flexDirection: "row",
@@ -655,7 +656,7 @@ const styles = StyleSheet.create({
     currencyTag: {
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#EEF2FF",
+        backgroundColor: Theme.colors.surfaceSoft,
     },
     currencyText: {
         fontSize: 12,
@@ -666,8 +667,8 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start",
         paddingHorizontal: 14,
         paddingVertical: 8,
-        borderRadius: 999,
-        backgroundColor: "#E0E7FF",
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.surfaceSoft,
     },
     actionButtonText: {
         fontSize: 12,
@@ -681,11 +682,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: Theme.colors.surface,
         padding: 10,
-        borderRadius: 10,
+        borderRadius: Theme.radius.sm,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: Theme.colors.border,
     },
     listTitle: {
         fontSize: 13,
@@ -703,10 +704,10 @@ const styles = StyleSheet.create({
     primaryButton: {
         flex: 1,
         alignItems: "center",
-        backgroundColor: Colors.light.primary,
+        backgroundColor: Theme.colors.primary,
     },
     primaryButtonText: {
-        color: "#FFFFFF",
+        color: Theme.colors.onPrimary,
     },
     buttonSkeleton: {
         width: 60,
@@ -717,7 +718,7 @@ const styles = StyleSheet.create({
     ghostButton: {
         flex: 1,
         alignItems: "center",
-        backgroundColor: "#F3F4F6",
+        backgroundColor: Theme.colors.surfaceMuted,
     },
     ghostButtonText: {
         color: Colors.light.text,
@@ -725,16 +726,16 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
     errorText: {
-    color: "#DC2626",
+    color: Theme.colors.danger,
         fontSize: 12,
         fontWeight: "600",
     },
     resultCard: {
         marginTop: 8,
-        borderRadius: 16,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
-        backgroundColor: "#FDF8E8",
+        borderColor: Theme.colors.border,
+        backgroundColor: Theme.colors.surfaceAccent,
         padding: 14,
         gap: 8,
     },
@@ -763,7 +764,7 @@ const styles = StyleSheet.create({
     },
     divider: {
         height: 1,
-        backgroundColor: "#E5E7EB",
+        backgroundColor: Theme.colors.border,
     },
     resultNote: {
         marginTop: 4,

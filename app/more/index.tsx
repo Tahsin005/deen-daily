@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 import { usePrayerSettings } from "../../lib/storage/usePrayerSettings";
@@ -169,6 +170,28 @@ export default function MoreScreen() {
         </View>
       </View>
 
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Credits</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>API Providers</Text>
+          <Text style={styles.creditText}>We’re grateful to these API providers:</Text>
+          <Pressable
+            style={styles.creditRow}
+            onPress={() => Linking.openURL("https://islamicapi.com/")}
+          >
+            <Text style={styles.creditLabel}>Islamic API</Text>
+            <Text style={styles.creditLink}>islamicapi.com</Text>
+          </Pressable>
+          <Pressable
+            style={styles.creditRow}
+            onPress={() => Linking.openURL("https://hadithapi.com/")}
+          >
+            <Text style={styles.creditLabel}>Hadith API</Text>
+            <Text style={styles.creditLink}>hadithapi.com</Text>
+          </Pressable>
+        </View>
+      </View>
+
       <Modal
         visible={Boolean(activeSetting)}
         animationType="fade"
@@ -236,11 +259,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.lg,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: Theme.colors.borderLight,
   },
   cardTitle: {
     fontSize: 16,
@@ -248,13 +271,36 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
     marginBottom: 12,
   },
+  creditText: {
+    fontSize: 12,
+    color: Colors.light.icon,
+    marginBottom: 10,
+  },
+  creditRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: Theme.colors.borderLight,
+  },
+  creditLabel: {
+    fontSize: 13,
+    color: Colors.light.text,
+    fontWeight: "600",
+  },
+  creditLink: {
+    fontSize: 12,
+    color: Theme.colors.primary,
+    fontWeight: "600",
+  },
   settingRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: Theme.colors.borderLight,
   },
   settingLabel: {
     fontSize: 13,
@@ -273,13 +319,13 @@ const styles = StyleSheet.create({
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.45)",
+    backgroundColor: "rgba(17, 24, 28, 0.45)",
     justifyContent: "center",
     paddingHorizontal: 16,
   },
   modalCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.lg,
     padding: 18,
     maxHeight: "85%",
   },
@@ -297,7 +343,7 @@ const styles = StyleSheet.create({
   modalCloseText: {
     fontSize: 13,
     fontWeight: "600",
-    color: Colors.light.primary,
+    color: Theme.colors.primary,
   },
   modalList: {
     paddingBottom: 12,
@@ -305,10 +351,10 @@ const styles = StyleSheet.create({
   modalOption: {
     paddingVertical: 12,
     paddingHorizontal: 12,
-    borderRadius: 12,
-    backgroundColor: "#F9FAFB",
+    borderRadius: Theme.radius.md,
+    backgroundColor: Theme.colors.surfaceMuted,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Theme.colors.border,
     marginBottom: 10,
   },
   modalOptionText: {

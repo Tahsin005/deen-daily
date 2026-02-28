@@ -6,6 +6,7 @@ import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { SkeletonLine } from "../../components/common/Skeleton";
 import { BookCard } from "../../components/hadith/BookCard";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { getHadithBooks, HadithBook } from "../../lib/api/hadith/getHadithBooks";
 
 export default function HadithScreen() {
@@ -117,11 +118,11 @@ const styles = StyleSheet.create({
   searchButton: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: Colors.light.primary,
+    borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.primary,
   },
   searchButtonText: {
-    color: "#FFFFFF",
+    color: Theme.colors.onPrimary,
     fontWeight: "600",
     fontSize: 12,
   },
@@ -144,10 +145,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   skeletonRow: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.md,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: Theme.colors.borderLight,
     padding: 12,
     gap: 8,
   },
@@ -164,11 +165,11 @@ const styles = StyleSheet.create({
   retryButton: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: Colors.light.primary,
+    borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.primary,
   },
   retryButtonText: {
-    color: "#FFFFFF",
+    color: Theme.colors.onPrimary,
     fontWeight: "600",
   },
 });

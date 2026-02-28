@@ -13,6 +13,7 @@ import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { SkeletonLine } from "../../components/common/Skeleton";
 import { HadithCard } from "../../components/hadith/HadithCard";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { HadithAPISettings } from "../../constants/settings/hadithAPISettings";
 import { getHadithBooks } from "../../lib/api/hadith/getHadithBooks";
 import { getHadiths, HadithEntry } from "../../lib/api/hadith/getHadiths";
@@ -314,12 +315,12 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     searchSummaryCard: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         paddingVertical: 14,
         paddingHorizontal: 16,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         marginBottom: 16,
     },
     searchSummaryRow: {
@@ -344,11 +345,11 @@ const styles = StyleSheet.create({
     filterButton: {
         paddingHorizontal: 14,
         paddingVertical: 10,
-        borderRadius: 999,
-        backgroundColor: Colors.light.primary,
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.primary,
     },
     filterButtonText: {
-        color: "#FFFFFF",
+        color: Theme.colors.onPrimary,
         fontSize: 12,
         fontWeight: "700",
     },
@@ -361,21 +362,21 @@ const styles = StyleSheet.create({
     },
     searchInput: {
         minHeight: 44,
-        borderRadius: 12,
+        borderRadius: Theme.radius.md,
         borderWidth: 1,
-        borderColor: "#E4E4E7",
+        borderColor: Theme.colors.border,
         paddingHorizontal: 12,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: Theme.colors.surface,
         color: Colors.light.text,
     },
     dropdownTrigger: {
         minHeight: 44,
-        borderRadius: 12,
+        borderRadius: Theme.radius.md,
         borderWidth: 1,
-        borderColor: "#E4E4E7",
+        borderColor: Theme.colors.border,
         paddingHorizontal: 12,
         justifyContent: "center",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: Theme.colors.surface,
     },
     dropdownText: {
         fontSize: 13,
@@ -383,10 +384,10 @@ const styles = StyleSheet.create({
     },
     dropdownMenu: {
         marginTop: 8,
-        borderRadius: 12,
+        borderRadius: Theme.radius.md,
         borderWidth: 1,
-        borderColor: "#E4E4E7",
-        backgroundColor: "#FFFFFF",
+        borderColor: Theme.colors.border,
+        backgroundColor: Theme.colors.surface,
         overflow: "hidden",
     },
     dropdownItem: {
@@ -420,10 +421,10 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     skeletonRow: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 12,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.md,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         padding: 12,
         gap: 8,
     },
@@ -446,11 +447,11 @@ const styles = StyleSheet.create({
     retryButton: {
         paddingHorizontal: 16,
         paddingVertical: 10,
-        borderRadius: 999,
-        backgroundColor: Colors.light.primary,
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.primary,
     },
     retryButtonText: {
-        color: "#FFFFFF",
+        color: Theme.colors.onPrimary,
         fontWeight: "600",
     },
     footerLoader: {
@@ -459,13 +460,13 @@ const styles = StyleSheet.create({
     },
     modalBackdrop: {
         flex: 1,
-        backgroundColor: "rgba(15, 23, 42, 0.45)",
+        backgroundColor: "rgba(17, 24, 28, 0.45)",
         justifyContent: "center",
         paddingHorizontal: 16,
     },
     modalCard: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 20,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         padding: 18,
         maxHeight: "85%",
     },
@@ -483,7 +484,7 @@ const styles = StyleSheet.create({
     modalCloseText: {
         fontSize: 13,
         fontWeight: "600",
-        color: Colors.light.primary,
+        color: Theme.colors.primary,
     },
     modalFooter: {
         marginTop: 16,
@@ -494,10 +495,10 @@ const styles = StyleSheet.create({
     modalSecondaryButton: {
         paddingHorizontal: 16,
         paddingVertical: 10,
-        borderRadius: 999,
-        backgroundColor: "#F3F4F6",
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.surfaceMuted,
         borderWidth: 1,
-        borderColor: "#E4E4E7",
+        borderColor: Theme.colors.border,
     },
     modalSecondaryButtonText: {
         color: Colors.light.text,
@@ -507,11 +508,11 @@ const styles = StyleSheet.create({
     modalPrimaryButton: {
         paddingHorizontal: 20,
         paddingVertical: 12,
-        borderRadius: 999,
-        backgroundColor: Colors.light.primary,
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.primary,
     },
     modalPrimaryButtonText: {
-        color: "#FFFFFF",
+        color: Theme.colors.onPrimary,
         fontWeight: "700",
     },
 });

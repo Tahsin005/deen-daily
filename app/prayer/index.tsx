@@ -15,6 +15,7 @@ import { RamadanScheduleCard } from "../../components/ramadan/RamadanScheduleCar
 import { ZakatCalculatorCard } from "../../components/zakat/ZakatCalculatorCard";
 import { ZakatNisabCard } from "../../components/zakat/ZakatNisabCard";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
 import { getAsmaulHusna } from "../../lib/api/asmaulHusna/getAsmaulHusna";
 import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
@@ -363,7 +364,7 @@ export default function PrayerScreen() {
               </>
             )}
 
-            <Text style={styles.sectionTitle}>Ramadan</Text>
+            <Text style={styles.sectionTitle2}>Ramadan</Text>
             {ramadanQuery.isLoading ? (
               <View style={styles.loadingCard}>
                 <SkeletonBox style={styles.loadingDot} />
@@ -543,17 +544,23 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
     color: Colors.light.text,
     marginTop: 6,
   },
+  sectionTitle2: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: Colors.light.text,
+    marginTop: 12,
+  },
   loadingCard: {
     marginTop: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.lg,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: Theme.colors.borderLight,
     padding: 16,
     flexDirection: "row",
     alignItems: "center",
@@ -571,15 +578,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   permissionCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+  backgroundColor: Theme.colors.surface,
+  borderRadius: Theme.radius.xl,
     paddingVertical: 24,
     paddingHorizontal: 22,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+  borderColor: Theme.colors.border,
     alignItems: "center",
     gap: 12,
-    shadowColor: "#000000",
+  shadowColor: Theme.colors.text,
     shadowOpacity: 0.08,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 6 },
@@ -591,7 +598,7 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: "#F3F4F6",
+  backgroundColor: Theme.colors.surfaceMuted,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 4,
@@ -614,11 +621,11 @@ const styles = StyleSheet.create({
   permissionButton: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: Colors.light.primary,
+    borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.primary,
   },
   permissionButtonText: {
-    color: "#FFFFFF",
+    color: Theme.colors.onPrimary,
     fontWeight: "600",
     fontSize: 13,
   },
@@ -681,14 +688,14 @@ const styles = StyleSheet.create({
     left: 16,
     right: 16,
     bottom: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 999,
+  backgroundColor: Theme.colors.surface,
+  borderRadius: Theme.radius.pill,
     padding: 6,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+  borderColor: Theme.colors.border,
     flexDirection: "row",
     gap: 6,
-    shadowColor: "#000000",
+  shadowColor: Theme.colors.text,
     shadowOpacity: 0.08,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
@@ -697,11 +704,11 @@ const styles = StyleSheet.create({
   tabButton: {
     flex: 1,
     paddingVertical: 10,
-    borderRadius: 999,
+    borderRadius: Theme.radius.pill,
     alignItems: "center",
   },
   tabButtonActive: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Theme.colors.primary,
   },
   tabButtonText: {
     fontSize: 13,
@@ -709,7 +716,7 @@ const styles = StyleSheet.create({
     color: Colors.light.icon,
   },
   tabButtonTextActive: {
-    color: "#FFFFFF",
+    color: Theme.colors.onPrimary,
   },
   asmaHeader: {
     marginTop: 6,
@@ -736,16 +743,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     padding: 12,
-    borderRadius: 12,
+    borderRadius: Theme.radius.md,
     borderWidth: 1,
-    borderColor: "#F3F4F6",
-    backgroundColor: "#FFFFFF",
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
   },
   asmaBadge: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#E8F5E2",
+    backgroundColor: Theme.colors.surfaceSoft,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -774,16 +781,16 @@ const styles = StyleSheet.create({
   },
   modalBackdrop: {
     flex: 1,
-    backgroundColor: "rgba(15, 23, 42, 0.45)",
+  backgroundColor: "rgba(17, 24, 28, 0.45)",
     justifyContent: "center",
     paddingHorizontal: 16,
   },
   modalCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.lg,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Theme.colors.border,
     maxHeight: "70%",
   },
   modalHeader: {
@@ -809,9 +816,9 @@ const styles = StyleSheet.create({
   modalOption: {
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 10,
+    borderRadius: Theme.radius.sm,
     borderWidth: 1,
-    borderColor: "#F3F4F6",
+    borderColor: Theme.colors.border,
   },
   modalOptionText: {
     fontSize: 13,

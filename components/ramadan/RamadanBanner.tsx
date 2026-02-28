@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
+import { Theme } from "../../constants/Theme";
 
 type RamadanBannerProps = {
     yearLabel?: string;
@@ -10,21 +11,21 @@ export const RamadanBanner = ({ yearLabel, dateRange }: RamadanBannerProps) => {
     return (
         <View style={styles.banner}>
             <View style={styles.iconBadge}>
-                <Ionicons name="moon" size={20} color="#0F766E" />
+                <Ionicons name="moon" size={20} color={Theme.colors.primary} />
             </View>
             <View style={styles.textWrap}>
                 <Text style={styles.title}>{yearLabel ?? "Ramadan"}</Text>
                 {dateRange ? <Text style={styles.subtitle}>{dateRange}</Text> : null}
             </View>
-            <Ionicons name="sparkles" size={18} color="#E0F2FE" />
+            <Ionicons name="sparkles" size={18} color={Theme.colors.surface} />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     banner: {
-        backgroundColor: "#4B9B7D",
-        borderRadius: 20,
+        backgroundColor: Theme.colors.primary,
+        borderRadius: Theme.radius.lg,
         padding: 14,
         flexDirection: "row",
         alignItems: "center",
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: "#ECFEFF",
+        backgroundColor: Theme.colors.surface,
         alignItems: "center",
         justifyContent: "center",
     },
@@ -45,11 +46,11 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontWeight: "700",
-        color: "#FFFFFF",
+                color: Theme.colors.onPrimary,
     },
     subtitle: {
         fontSize: 12,
-        color: "#D1FAE5",
+                color: Theme.colors.surfaceSoft,
         marginTop: 2,
   },
 });

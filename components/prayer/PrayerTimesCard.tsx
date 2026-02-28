@@ -2,6 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { SkeletonLine } from "../common/Skeleton";
 import { timeEntries } from "./prayerTimesUtils";
 
@@ -54,10 +55,10 @@ export const PrayerTimesCard = ({ isLoading, error, times }: PrayerTimesCardProp
 const styles = StyleSheet.create({
     sectionCard: {
         marginTop: 16,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         padding: 16,
     },
     sectionTitle: {
@@ -78,10 +79,10 @@ const styles = StyleSheet.create({
     },
     skeletonItem: {
         width: "48%",
-        borderRadius: 12,
+        borderRadius: Theme.radius.md,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
-        backgroundColor: "#F9FAFB",
+        borderColor: Theme.colors.border,
+        backgroundColor: Theme.colors.surfaceMuted,
         paddingVertical: 12,
         paddingHorizontal: 12,
         gap: 8,
@@ -102,10 +103,10 @@ const styles = StyleSheet.create({
     },
     timeItem: {
         width: "48%",
-        borderRadius: 12,
-        backgroundColor: "#F9FAFB",
+        borderRadius: Theme.radius.md,
+        backgroundColor: Theme.colors.surfaceMuted,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: Theme.colors.border,
         paddingVertical: 12,
         paddingHorizontal: 12,
     },

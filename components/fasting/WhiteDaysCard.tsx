@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 
 type WhiteDays = {
     status?: string;
@@ -16,9 +17,9 @@ type WhiteDaysCardProps = {
 };
 
 const dayLabels = [
-    { key: "13th", label: "13th", color: "#DBEAFE" },
-    { key: "14th", label: "14th", color: "#DCFCE7" },
-    { key: "15th", label: "15th", color: "#FEF3C7" },
+    { key: "13th", label: "13th", color: Theme.colors.surfaceSoft },
+    { key: "14th", label: "14th", color: Theme.colors.surfaceSoft },
+    { key: "15th", label: "15th", color: Theme.colors.surfaceAccent },
 ] as const;
 
 const formatReadableDate = (value?: string) => {
@@ -93,10 +94,10 @@ export const WhiteDaysCard = ({ whiteDays }: WhiteDaysCardProps) => {
 const styles = StyleSheet.create({
     card: {
         marginTop: 16,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         padding: 16,
     },
     headerRow: {
@@ -120,11 +121,11 @@ const styles = StyleSheet.create({
         color: Colors.light.icon,
     },
     listCard: {
-        backgroundColor: "#F8FAFC",
-        borderRadius: 14,
+        backgroundColor: Theme.colors.surfaceMuted,
+        borderRadius: Theme.radius.md,
         padding: 12,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: Theme.colors.border,
         gap: 10,
     },
     dayRow: {

@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -33,7 +34,7 @@ export const ProhibitedTimesCard = ({ times }: ProhibitedTimesCardProps) => {
                         <View key={item.label} style={styles.prohibitedCard}>
                             <View style={styles.cardTopRow}>
                                 <View style={styles.iconBadge}>
-                                    <Ionicons name={item.icon} size={16} color="#F97316" />
+                                    <Ionicons name={item.icon} size={16} color={Theme.colors.accent} />
                                 </View>
                                 <Text style={styles.prohibitedLabel}>{item.label}</Text>
                             </View>
@@ -55,10 +56,10 @@ export const ProhibitedTimesCard = ({ times }: ProhibitedTimesCardProps) => {
 const styles = StyleSheet.create({
     sectionCard: {
         marginTop: 12,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         padding: 12,
     },
     headerRow: {
@@ -92,11 +93,11 @@ const styles = StyleSheet.create({
     },
     prohibitedCard: {
         flex: 1,
-        backgroundColor: "#FFF7ED",
-        borderRadius: 12,
+        backgroundColor: Theme.colors.surfaceAccent,
+        borderRadius: Theme.radius.md,
         padding: 10,
         borderWidth: 1,
-        borderColor: "#FED7AA",
+        borderColor: Theme.colors.accent,
     },
     cardTopRow: {
         flexDirection: "column",
@@ -107,30 +108,30 @@ const styles = StyleSheet.create({
     iconBadge: {
         width: 24,
         height: 24,
-        borderRadius: 12,
-        backgroundColor: "#FFEDD5",
+        borderRadius: Theme.radius.md,
+        backgroundColor: Theme.colors.surfaceAccent,
         alignItems: "center",
         justifyContent: "center",
     },
     prohibitedLabel: {
         fontSize: 12,
         fontWeight: "600",
-        color: "#9A3412",
+        color: Theme.colors.text,
         textAlign: "center",
     },
     timePill: {
         alignSelf: "center",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: Theme.colors.surface,
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: 999,
+        borderRadius: Theme.radius.pill,
         borderWidth: 1,
-        borderColor: "#FECACA",
+        borderColor: Theme.colors.accent,
     },
     prohibitedValue: {
         fontSize: 12,
         fontWeight: "600",
-        color: "#9A3412",
+        color: Theme.colors.text,
         textAlign: "center",
     },
 });

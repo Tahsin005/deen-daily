@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { timeEntries } from "./prayerTimesUtils";
 
 type PrayerTimesModalProps = {
@@ -50,13 +51,13 @@ const styles = StyleSheet.create({
     },
     modalBackdrop: {
         flex: 1,
-        backgroundColor: "rgba(15, 23, 42, 0.45)",
+        backgroundColor: "rgba(17, 24, 28, 0.45)",
         justifyContent: "center",
         paddingHorizontal: 16,
     },
     modalCard: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 20,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         padding: 18,
         maxHeight: "85%",
     },
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
     modalCloseText: {
         fontSize: 13,
         fontWeight: "600",
-        color: Colors.light.primary,
+        color: Theme.colors.primary,
     },
     modalGrid: {
         flexDirection: "row",
@@ -83,10 +84,10 @@ const styles = StyleSheet.create({
     },
     modalItem: {
         width: "48%",
-        borderRadius: 12,
-        backgroundColor: "#F9FAFB",
+        borderRadius: Theme.radius.md,
+        backgroundColor: Theme.colors.surfaceMuted,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: Theme.colors.border,
         paddingVertical: 12,
         paddingHorizontal: 12,
     },

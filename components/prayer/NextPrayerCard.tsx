@@ -2,6 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { SkeletonCircle, SkeletonLine } from "../common/Skeleton";
 import { mainPrayerKeys, parseTimeToMinutes, timeEntries } from "./prayerTimesUtils";
 
@@ -101,10 +102,10 @@ export const NextPrayerCard = ({
 const styles = StyleSheet.create({
     sectionCard: {
         marginTop: 16,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         padding: 16,
     },
     sectionTitle: {
@@ -122,8 +123,8 @@ const styles = StyleSheet.create({
     seeMoreButton: {
         paddingHorizontal: 12,
         paddingVertical: 6,
-        borderRadius: 999,
-        backgroundColor: "#EEF2FF",
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.surfaceSoft,
     },
     seeMoreText: {
         fontSize: 12,
@@ -164,10 +165,10 @@ const styles = StyleSheet.create({
         color: Colors.light.icon,
     },
     nextPrayerCard: {
-        backgroundColor: "#F9FAFB",
+        backgroundColor: Theme.colors.surfaceMuted,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
-        borderRadius: 14,
+        borderColor: Theme.colors.border,
+        borderRadius: Theme.radius.md,
         padding: 14,
     },
     nextPrayerRow: {
@@ -208,10 +209,10 @@ const styles = StyleSheet.create({
         footerAction: {
             paddingHorizontal: 12,
             paddingVertical: 6,
-            borderRadius: 999,
+            borderRadius: Theme.radius.pill,
             borderWidth: 1,
-            borderColor: "#E2E8F0",
-            backgroundColor: "#F8FAFC",
+            borderColor: Theme.colors.border,
+            backgroundColor: Theme.colors.surfaceMuted,
         },
         footerActionText: {
             fontSize: 12,

@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { memo } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 
 type BackButtonProps = {
   label?: string;
@@ -25,8 +26,8 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: "#E8F5E2",
+    borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.surfaceSoft,
     marginBottom: 12,
   },
   text: {

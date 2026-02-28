@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 
 type VerseCardProps = {
   verseNumber: string;
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    borderBottomColor: Theme.colors.borderLight,
   },
   badge: {
     alignSelf: "flex-start",
@@ -33,8 +34,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: "#E3F2E1",
-    backgroundColor: "#E8F5E2",
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surfaceSoft,
     marginBottom: 10,
   },
   verseIndex: {

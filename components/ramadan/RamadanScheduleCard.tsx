@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { RamadanDay } from "../../lib/api/ramadan/getRamadanTimes";
 
 type RamadanScheduleCardProps = {
@@ -49,11 +50,11 @@ export const RamadanScheduleCard = ({ days }: RamadanScheduleCardProps) => {
                         <Text style={styles.cellDate}>{formatDate(day.date)}</Text>
                         <View style={styles.cellTimes}>
                             <View style={styles.cellTimeRow}>
-                                <Ionicons name="moon" size={12} color="#3B82F6" />
+                                <Ionicons name="moon" size={12} color={Theme.colors.primary} />
                                 <Text style={styles.cellTimeText}>{day.time.sahur}</Text>
                             </View>
                             <View style={styles.cellTimeRow}>
-                                <Ionicons name="sunny" size={12} color="#F59E0B" />
+                                <Ionicons name="sunny" size={12} color={Theme.colors.accent} />
                                 <Text style={styles.cellTimeText}>{day.time.iftar}</Text>
                             </View>
                         </View>
@@ -69,10 +70,10 @@ export const RamadanScheduleCard = ({ days }: RamadanScheduleCardProps) => {
 const styles = StyleSheet.create({
     card: {
         marginTop: 16,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         padding: 16,
     },
     headerRow: {
@@ -97,15 +98,15 @@ const styles = StyleSheet.create({
     },
     calendarCell: {
         width: "31%",
-        backgroundColor: "#F8FAFC",
-        borderRadius: 12,
+        backgroundColor: Theme.colors.surfaceMuted,
+        borderRadius: Theme.radius.md,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: Theme.colors.border,
         padding: 8,
     },
     calendarCellToday: {
         borderColor: Colors.light.primary,
-        backgroundColor: "#dddedeff",
+        backgroundColor: Theme.colors.surfaceSoft,
     },
     cellHeader: {
         flexDirection: "row",

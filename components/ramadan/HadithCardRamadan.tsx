@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 
 type HadithCardRamadanProps = {
     arabic?: string;
@@ -33,10 +34,10 @@ export const HadithCardRamadan = ({ arabic, english, source, grade }: HadithCard
 const styles = StyleSheet.create({
     card: {
         marginTop: 16,
-        backgroundColor: "#F8FAFC",
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surfaceMuted,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#E2E8F0",
+        borderColor: Theme.colors.border,
         padding: 16,
     },
     headerRow: {

@@ -6,6 +6,7 @@ import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { SkeletonLine } from "../../components/common/Skeleton";
 import { SurahListItem } from "../../components/quran/SurahListItem";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { getSurahs, SurahSummary } from "../../lib/api/quran/getSurahs";
 
 const ALL_TYPES = "All";
@@ -189,11 +190,11 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     minHeight: 44,
-    borderRadius: 12,
+    borderRadius: Theme.radius.md,
     borderWidth: 1,
-    borderColor: "#E4E4E7",
+    borderColor: Theme.colors.border,
     paddingHorizontal: 12,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Theme.colors.surface,
     color: Colors.light.text,
   },
   dropdownWrapper: {
@@ -202,12 +203,12 @@ const styles = StyleSheet.create({
   },
   dropdownTrigger: {
     minHeight: 44,
-    borderRadius: 12,
+    borderRadius: Theme.radius.md,
     borderWidth: 1,
-    borderColor: "#E4E4E7",
+    borderColor: Theme.colors.border,
     paddingHorizontal: 12,
     justifyContent: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Theme.colors.surface,
   },
   dropdownTriggerPressed: {
     opacity: 0.8,
@@ -221,10 +222,10 @@ const styles = StyleSheet.create({
     top: 48,
     left: 0,
     right: 0,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E4E4E7",
-    backgroundColor: "#FFFFFF",
+  borderRadius: Theme.radius.md,
+  borderWidth: 1,
+  borderColor: Theme.colors.border,
+  backgroundColor: Theme.colors.surface,
     overflow: "hidden",
     zIndex: 20,
   },
@@ -233,10 +234,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   dropdownItemPressed: {
-    backgroundColor: "#F4F4F5",
+    backgroundColor: Theme.colors.surfaceMuted,
   },
   dropdownItemActive: {
-    backgroundColor: "#E8F5E2",
+    backgroundColor: Theme.colors.surfaceSoft,
   },
   dropdownItemText: {
     fontSize: 13,
@@ -261,10 +262,10 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   skeletonRow: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.md,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: Theme.colors.borderLight,
     padding: 12,
     gap: 8,
   },
@@ -281,11 +282,11 @@ const styles = StyleSheet.create({
   retryButton: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: Colors.light.primary,
+    borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.primary,
   },
   retryButtonText: {
-    color: "#FFFFFF",
+    color: Theme.colors.onPrimary,
     fontWeight: "600",
   },
 });

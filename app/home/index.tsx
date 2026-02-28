@@ -12,6 +12,7 @@ import { PrayerTimesModal } from "../../components/prayer/PrayerTimesModal";
 import { DuaCard } from "../../components/ramadan/DuaCard";
 import { HadithCardRamadan } from "../../components/ramadan/HadithCardRamadan";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import { getAsmaulHusna } from "../../lib/api/asmaulHusna/getAsmaulHusna";
 import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
 import { getPrayerTimes } from "../../lib/api/prayer/getPrayerTimes";
@@ -515,10 +516,10 @@ const styles = StyleSheet.create({
   },
   sectionCard: {
     marginTop: 14,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.lg,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: Theme.colors.borderLight,
     padding: 16,
   },
   sectionHeaderRow: {
@@ -553,10 +554,10 @@ const styles = StyleSheet.create({
   },
   timeItem: {
     width: "48%",
-    borderRadius: 12,
-    backgroundColor: "#F9FAFB",
+    borderRadius: Theme.radius.md,
+    backgroundColor: Theme.colors.surfaceMuted,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Theme.colors.border,
     paddingVertical: 10,
     paddingHorizontal: 12,
   },
@@ -583,15 +584,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   permissionCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+  backgroundColor: Theme.colors.surface,
+  borderRadius: Theme.radius.xl,
     paddingVertical: 24,
     paddingHorizontal: 22,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+  borderColor: Theme.colors.border,
     alignItems: "center",
     gap: 12,
-    shadowColor: "#000000",
+  shadowColor: Theme.colors.text,
     shadowOpacity: 0.08,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 6 },
@@ -603,7 +604,7 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: Theme.colors.surfaceMuted,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 4,
@@ -622,11 +623,11 @@ const styles = StyleSheet.create({
   permissionButton: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: Colors.light.primary,
+    borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.primary,
   },
   permissionButtonText: {
-    color: "#FFFFFF",
+    color: Theme.colors.onPrimary,
     fontWeight: "600",
     fontSize: 13,
   },
@@ -686,10 +687,10 @@ const styles = StyleSheet.create({
   },
   asmaCard: {
     marginTop: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.lg,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: Theme.colors.borderLight,
     padding: 16,
     gap: 12,
   },
@@ -712,8 +713,8 @@ const styles = StyleSheet.create({
   asmaAction: {
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: "#E8F5E2",
+    borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.surfaceSoft,
   },
   asmaActionText: {
     fontSize: 12,
@@ -728,16 +729,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     padding: 12,
-    borderRadius: 12,
+    borderRadius: Theme.radius.md,
     borderWidth: 1,
-    borderColor: "#F3F4F6",
-    backgroundColor: "#F9FAFB",
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surfaceMuted,
   },
   asmaBadge: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#E8F5E2",
+    backgroundColor: Theme.colors.surfaceSoft,
     alignItems: "center",
     justifyContent: "center",
   },

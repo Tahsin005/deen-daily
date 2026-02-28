@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Theme } from "../../constants/Theme";
 import { SkeletonLine } from "../common/Skeleton";
 
 type FastingHeaderProps = {
@@ -42,7 +43,7 @@ export const FastingHeader = ({
                     </Text>
                 </View>
                 <Pressable style={styles.headerRefreshButton} onPress={onRefresh}>
-                    <Ionicons name="locate" size={18} color="#FFFFFF" />
+                    <Ionicons name="locate" size={18} color={Theme.colors.onPrimary} />
                     <Text style={styles.headerRefreshText}>Update</Text>
                 </Pressable>
             </View>
@@ -56,10 +57,10 @@ export const FastingHeader = ({
 
 const styles = StyleSheet.create({
     headerCard: {
-        backgroundColor: "#4B9B7D",
-        borderRadius: 22,
+    backgroundColor: Theme.colors.secondary,
+        borderRadius: Theme.radius.xl,
         padding: 16,
-        shadowColor: "#1F2937",
+        shadowColor: Theme.colors.text,
         shadowOpacity: 0.15,
         shadowRadius: 12,
         elevation: 2,
@@ -71,8 +72,8 @@ const styles = StyleSheet.create({
     },
     dateBadge: {
         width: 58,
-        borderRadius: 14,
-        backgroundColor: "#FFFFFF",
+        borderRadius: Theme.radius.md,
+        backgroundColor: Theme.colors.surface,
         alignItems: "center",
         paddingVertical: 6,
         paddingHorizontal: 6,
@@ -80,13 +81,13 @@ const styles = StyleSheet.create({
     dateBadgeDay: {
         fontSize: 20,
         fontWeight: "700",
-        color: "#1F2937",
+        color: Theme.colors.text,
         lineHeight: 24,
     },
     dateBadgeMonth: {
         fontSize: 11,
         fontWeight: "600",
-        color: "#6B7280",
+        color: Theme.colors.textMuted,
     },
     headerTextWrap: {
         flex: 1,
@@ -94,16 +95,16 @@ const styles = StyleSheet.create({
     headerDateText: {
         fontSize: 16,
         fontWeight: "700",
-        color: "#FFFFFF",
+        color: Theme.colors.onPrimary,
     },
     headerHijriText: {
         fontSize: 13,
-        color: "#E4F4EC",
+        color: "rgba(255, 255, 255, 0.85)",
         marginTop: 4,
     },
     headerWeekdayText: {
         fontSize: 12,
-        color: "#D1FAE5",
+        color: "rgba(255, 255, 255, 0.85)",
         marginTop: 2,
     },
     headerRefreshButton: {
@@ -113,10 +114,10 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(255, 255, 255, 0.2)",
         paddingHorizontal: 10,
         paddingVertical: 8,
-        borderRadius: 999,
+        borderRadius: Theme.radius.pill,
     },
     headerRefreshText: {
-        color: "#FFFFFF",
+        color: Theme.colors.onPrimary,
         fontSize: 12,
         fontWeight: "600",
     },
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     },
     headerTimezoneText: {
         fontSize: 12,
-        color: "#E4F4EC",
+        color: "rgba(255, 255, 255, 0.8)",
         flex: 1,
         marginRight: 10,
     },

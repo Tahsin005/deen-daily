@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 
 type TodayFastingCardProps = {
     dateLabel?: string;
@@ -32,7 +33,7 @@ export const TodayFastingCard = ({
                 <View style={styles.fastingPanel}>
                     <View style={styles.timeColumn}>
                         <View style={styles.timeLabelRow}>
-                            <Ionicons name="moon" size={18} color="#3B82F6" />
+                            <Ionicons name="moon" size={18} color={Theme.colors.primary} />
                             <Text style={styles.timeLabel}>Sahur</Text>
                         </View>
                         <Text style={styles.timeValue}>{sahur}</Text>
@@ -47,7 +48,7 @@ export const TodayFastingCard = ({
 
                     <View style={styles.timeColumn}>
                         <View style={styles.timeLabelRow}>
-                            <Ionicons name="sunny" size={18} color="#F59E0B" />
+                            <Ionicons name="sunny" size={18} color={Theme.colors.accent} />
                             <Text style={styles.timeLabel}>Iftar</Text>
                         </View>
                         <Text style={styles.timeValue}>{iftar}</Text>
@@ -63,10 +64,10 @@ export const TodayFastingCard = ({
 const styles = StyleSheet.create({
     card: {
         marginTop: 16,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surface,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: Theme.colors.borderLight,
         padding: 16,
     },
     title: {
@@ -93,11 +94,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: "#F8FAFC",
-        borderRadius: 14,
+        backgroundColor: Theme.colors.surfaceMuted,
+        borderRadius: Theme.radius.md,
         padding: 12,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: Theme.colors.border,
     },
     timeColumn: {
         alignItems: "center",
@@ -126,12 +127,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 6,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: Theme.colors.surface,
         paddingHorizontal: 10,
         paddingVertical: 8,
-        borderRadius: 999,
+        borderRadius: Theme.radius.pill,
         borderWidth: 1,
-        borderColor: "#E5E7EB",
+        borderColor: Theme.colors.border,
     },
     durationText: {
         fontSize: 12,

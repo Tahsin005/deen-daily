@@ -1,6 +1,7 @@
 import { memo, useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 import type { SurahSummary } from "../../lib/api/quran/getSurahs";
 
 type SurahListItemProps = {
@@ -33,11 +34,11 @@ function SurahListItem({ surah, onPress }: SurahListItemProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.lg,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#F0F0F0",
+    borderColor: Theme.colors.borderLight,
   },
   cardPressed: {
     opacity: 0.85,
@@ -49,12 +50,12 @@ const styles = StyleSheet.create({
   cardIndex: {
     width: 42,
     height: 42,
-    borderRadius: 21,
-    backgroundColor: "#E8F5E2",
+  borderRadius: 21,
+  backgroundColor: Theme.colors.surfaceSoft,
     textAlign: "center",
     textAlignVertical: "center",
     fontWeight: "700",
-    color: Colors.light.primary,
+  color: Theme.colors.primary,
     marginRight: 12,
   },
   cardTitles: {

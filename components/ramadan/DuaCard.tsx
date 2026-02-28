@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Theme } from "../../constants/Theme";
 
 type DuaCardProps = {
     title?: string;
@@ -31,10 +32,10 @@ export const DuaCard = ({ title, arabic, translation, reference }: DuaCardProps)
 const styles = StyleSheet.create({
     card: {
         marginTop: 16,
-        backgroundColor: "#F0FDF4",
-        borderRadius: 16,
+        backgroundColor: Theme.colors.surfaceSoft,
+        borderRadius: Theme.radius.lg,
         borderWidth: 1,
-        borderColor: "#DCFCE7",
+        borderColor: Theme.colors.border,
         padding: 16,
     },
     headerRow: {
