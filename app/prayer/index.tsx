@@ -234,7 +234,7 @@ export default function PrayerScreen() {
   });
 
   const ramadanData = ramadanQuery.data;
-  const ramadanDays = ramadanData?.data.fasting ?? [];
+  const ramadanDays = ramadanData?.data?.fasting ?? [];
   const ramadanYearLabel = ramadanData?.ramadan_year
     ? `Ramadan ${ramadanData.ramadan_year}`
     : "Ramadan";
@@ -265,7 +265,8 @@ export default function PrayerScreen() {
     queryFn: () => getAsmaulHusna(asmaLanguage),
   });
 
-  const asmaNames = asmaQuery.data?.data.names ?? [];
+  // Safely access nested data — asmaQuery.data may be undefined during initial load
+  const asmaNames = asmaQuery.data?.data?.names ?? [];
   const currentAsmaLanguageLabel = useMemo(
     () =>
       asmaLanguageOptions.find((item) => item.value === asmaLanguage)?.label ??
@@ -358,9 +359,9 @@ export default function PrayerScreen() {
                 <TodayFastingCard
                   dateLabel={fastingDateLabel}
                   hijriLabel={today?.hijri_readable}
-                  sahur={today?.time.sahur}
-                  iftar={today?.time.iftar}
-                  duration={today?.time.duration}
+                  sahur={today?.time?.sahur}
+                  iftar={today?.time?.iftar}
+                  duration={today?.time?.duration}
                 />
                 <WhiteDaysCard whiteDays={fastingData?.white_days} />
               </>

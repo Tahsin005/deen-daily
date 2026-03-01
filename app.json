@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.tahsin_ferdous.deen_daily"
+      "bundleIdentifier": "com.tahsin005.deen.daily"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.tahsin_ferdous.deen_daily"
+      "package": "com.tahsin005.deen.daily"
     },
     "web": {
       "output": "static",

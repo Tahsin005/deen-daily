@@ -224,13 +224,14 @@ export default function HomeScreen() {
   const ramadanData = ramadanQuery.data;
 
   const nameOfTheDay = useMemo(() => {
-    const names = asmaQuery.data?.data.names ?? [];
+    // Guard against asmaQuery.data or asmaQuery.data.data being undefined
+    const names = asmaQuery.data?.data?.names ?? [];
     if (!names.length) {
       return null;
     }
     const index = getDayOfYear(new Date()) % names.length;
     return names[index];
-  }, [asmaQuery.data?.data.names]);
+  }, [asmaQuery.data?.data?.names]);
 
   const nextPrayer = useMemo(() => {
     const nowMinutes = currentTime.getHours() * 60 + currentTime.getMinutes() + currentTime.getSeconds() / 60;
@@ -359,10 +360,10 @@ export default function HomeScreen() {
         })}
         isLoading={prayerQuery.isLoading || isUpdatingLocation}
         onRefresh={refreshLocation}
-        qiblaDegrees={prayerData?.qibla.direction.degrees}
-        qiblaDirectionFrom={prayerData?.qibla.direction.from}
-        qiblaDistanceValue={prayerData?.qibla.distance.value}
-        qiblaDistanceUnit={prayerData?.qibla.distance.unit}
+        qiblaDegrees={prayerData?.qibla?.direction?.degrees}
+        qiblaDirectionFrom={prayerData?.qibla?.direction?.from}
+        qiblaDistanceValue={prayerData?.qibla?.distance?.value}
+        qiblaDistanceUnit={prayerData?.qibla?.distance?.unit}
       />
 
       <View style={styles.asmaCard}>
@@ -449,9 +450,9 @@ export default function HomeScreen() {
           <TodayFastingCard
             dateLabel={fastingDateLabel}
             hijriLabel={fastingToday.hijri_readable}
-            sahur={fastingToday.time.sahur}
-            iftar={fastingToday.time.iftar}
-            duration={fastingToday.time.duration}
+            sahur={fastingToday.time?.sahur}
+            iftar={fastingToday.time?.iftar}
+            duration={fastingToday.time?.duration}
           />
         ) : (
           <Text style={styles.statusText}>No fasting info available.</Text>
