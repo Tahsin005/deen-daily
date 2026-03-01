@@ -1,4 +1,4 @@
-# Deen Daily
+# Deen Daily (v1.0.0)
 
 Your daily guide to Deen — a modern Expo app that brings prayer times, Quran, hadith, fasting, and zakat tools into one clean, consistent experience.
 
