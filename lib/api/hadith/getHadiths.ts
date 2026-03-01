@@ -43,6 +43,7 @@ const normalizeBaseUrl = (baseUrl: string) =>
 export const getHadiths = async (params: {
     bookSlug?: string;
     chapter?: string;
+    hadithNumber?: string;
     status?: string;
     searchText?: string;
     page?: number;
@@ -51,6 +52,7 @@ export const getHadiths = async (params: {
     const {
         bookSlug,
         chapter,
+        hadithNumber,
         status,
         searchText,
         page = HadithAPISettings.hadiths.defaults.page,
@@ -80,6 +82,10 @@ export const getHadiths = async (params: {
 
     if (chapter) {
         query.set("chapter", chapter);
+    }
+
+    if (hadithNumber) {
+        query.set("hadithNumber", hadithNumber);
     }
 
     if (status) {

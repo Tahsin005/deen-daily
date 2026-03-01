@@ -2,8 +2,11 @@ import { InfiniteData, useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
     FlatList,
+    KeyboardAvoidingView,
     Modal,
+    Platform,
     Pressable,
+    ScrollView,
     StyleSheet,
     Text,
     TextInput,
@@ -36,6 +39,8 @@ const useDebouncedValue = <T,>(value: T, delay = 500) => {
 export default function HadithSearchScreen() {
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const [hadithNumber, setHadithNumber] = useState("");
+    const [chapterNumber, setChapterNumber] = useState("");
     const [selectedBook, setSelectedBook] = useState(ALL_BOOKS);
     const [selectedStatus, setSelectedStatus] = useState(ALL_STATUS);
     const [bookMenuOpen, setBookMenuOpen] = useState(false);
@@ -44,6 +49,8 @@ export default function HadithSearchScreen() {
     const listRef = useRef<FlatList<HadithEntry>>(null);
 
     const debouncedSearch = useDebouncedValue(searchText.trim(), 600);
+    const debouncedHadithNumber = useDebouncedValue(hadithNumber.trim(), 600);
+    const debouncedChapterNumber = useDebouncedValue(chapterNumber.trim(), 600);
 
     const { data: bookData } = useQuery({
         queryKey: ["hadithBooks"],
@@ -72,19 +79,33 @@ export default function HadithSearchScreen() {
         Awaited<ReturnType<typeof getHadiths>>,
         Error,
         InfiniteData<Awaited<ReturnType<typeof getHadiths>>, number>,
-        ["hadithSearch", string, string, string],
+        ["hadithSearch", string, string, string, string, string],
         number
     >({
-        queryKey: ["hadithSearch", debouncedSearch, selectedBook, selectedStatus],
+        queryKey: [
+            "hadithSearch",
+            debouncedSearch,
+            debouncedHadithNumber,
+            debouncedChapterNumber,
+            selectedBook,
+            selectedStatus,
+        ],
         queryFn: ({ pageParam = 1 }) =>
             getHadiths({
                 searchText: debouncedSearch,
+                hadithNumber: debouncedHadithNumber || undefined,
+                chapter: debouncedChapterNumber || undefined,
                 bookSlug: selectedBook === ALL_BOOKS ? undefined : selectedBook,
                 status: selectedStatus === ALL_STATUS ? undefined : selectedStatus,
                 page: pageParam,
                 paginate: PAGE_SIZE,
             }),
-        enabled: debouncedSearch.length > 0 || selectedBook !== ALL_BOOKS || selectedStatus !== ALL_STATUS,
+        enabled:
+            debouncedSearch.length > 0 ||
+            debouncedHadithNumber.length > 0 ||
+            debouncedChapterNumber.length > 0 ||
+            selectedBook !== ALL_BOOKS ||
+            selectedStatus !== ALL_STATUS,
         initialPageParam: 1,
         getNextPageParam: (lastPage) =>
         lastPage.current_page < lastPage.last_page ? lastPage.current_page + 1 : undefined,
@@ -105,13 +126,15 @@ export default function HadithSearchScreen() {
                 <View style={styles.searchSummaryRow}>
                     <View style={styles.searchSummaryTextWrap}>
                         <Text style={styles.searchSummaryLabel}>Filters</Text>
-                        <Text style={styles.searchSummaryValue} numberOfLines={1}>
-                            {searchText ? `“${searchText}”` : "Any text"} · {selectedBook === ALL_BOOKS
-                                ? "All books"
-                                : books.find((book) => book.bookSlug === selectedBook)?.bookName ?? "All books"} · {selectedStatus === ALL_STATUS
-                                ? "All status"
-                                : statusOptions.find((status) => status.value === selectedStatus)?.label ?? "All status"}
-                        </Text>
+            <Text style={styles.searchSummaryValue} numberOfLines={1}>
+                {searchText ? `“${searchText}”` : "Any text"}
+                {hadithNumber ? ` · #${hadithNumber}` : ""}
+                {chapterNumber ? ` · Chapter ${chapterNumber}` : ""} · {selectedBook === ALL_BOOKS
+                ? "All books"
+                : books.find((book) => book.bookSlug === selectedBook)?.bookName ?? "All books"} · {selectedStatus === ALL_STATUS
+                ? "All status"
+                : statusOptions.find((status) => status.value === selectedStatus)?.label ?? "All status"}
+            </Text>
                     </View>
                     <Pressable
                         style={styles.filterButton}
@@ -187,107 +210,140 @@ export default function HadithSearchScreen() {
                 onRequestClose={() => setFiltersOpen(false)}
             >
                 <Pressable style={styles.modalBackdrop} onPress={() => setFiltersOpen(false)}>
-                    <Pressable style={styles.modalCard} onPress={() => null}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Search Filters</Text>
-                            <Pressable onPress={() => setFiltersOpen(false)}>
-                                <Text style={styles.modalCloseText}>Close</Text>
-                            </Pressable>
-                        </View>
-
-                        <Text style={styles.filterLabel}>Search Text</Text>
-                        <TextInput
-                            value={searchText}
-                            onChangeText={setSearchText}
-                            placeholder="Search in English..."
-                            placeholderTextColor={Colors.light.icon}
-                            style={styles.searchInput}
-                            autoCapitalize="none"
-                        />
-
-                        <Text style={styles.filterLabel}>Book</Text>
-                        <Pressable
-                            onPress={() => setBookMenuOpen((prev) => !prev)}
-                            style={styles.dropdownTrigger}
-                        >
-                            <Text style={styles.dropdownText}>
-                                {selectedBook === ALL_BOOKS
-                                    ? "All Books"
-                                    : books.find((book) => book.bookSlug === selectedBook)?.bookName ?? "All Books"}
-                            </Text>
-                        </Pressable>
-                        {bookMenuOpen && (
-                            <View style={styles.dropdownMenu}>
-                                <Pressable
-                                    style={styles.dropdownItem}
-                                    onPress={() => {
-                                        setSelectedBook(ALL_BOOKS);
-                                        setBookMenuOpen(false);
-                                    }}
-                                >
-                                    <Text style={styles.dropdownItemText}>All Books</Text>
-                                </Pressable>
-                                {books.map((book) => (
-                                    <Pressable
-                                        key={book.bookSlug}
-                                        style={styles.dropdownItem}
-                                        onPress={() => {
-                                            setSelectedBook(book.bookSlug);
-                                            setBookMenuOpen(false);
-                                        }}
-                                    >
-                                        <Text style={styles.dropdownItemText}>{book.bookName}</Text>
+                    <KeyboardAvoidingView
+                        behavior={Platform.OS === "ios" ? "padding" : "height"}
+                        keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+                        style={styles.modalKeyboard}
+                    >
+                        <Pressable style={styles.modalCard} onPress={() => null}>
+                            <ScrollView
+                                contentContainerStyle={styles.modalContent}
+                                showsVerticalScrollIndicator={false}
+                            >
+                                <View style={styles.modalHeader}>
+                                    <Text style={styles.modalTitle}>Search Filters</Text>
+                                    <Pressable onPress={() => setFiltersOpen(false)}>
+                                        <Text style={styles.modalCloseText}>Close</Text>
                                     </Pressable>
-                                ))}
-                            </View>
-                        )}
+                                </View>
 
-                        <Text style={styles.filterLabel}>Status</Text>
-                        <Pressable
-                            onPress={() => setStatusMenuOpen((prev) => !prev)}
-                            style={styles.dropdownTrigger}
-                        >
-                            <Text style={styles.dropdownText}>
-                                {selectedStatus === ALL_STATUS
-                                    ? "All Status"
-                                    : statusOptions.find((status) => status.value === selectedStatus)?.label ?? "All Status"}
-                            </Text>
-                        </Pressable>
-                        {statusMenuOpen && (
-                            <View style={styles.dropdownMenu}>
-                                {statusOptions.map((status) => (
+                                <Text style={styles.filterLabel}>Search Text</Text>
+                                <TextInput
+                                    value={searchText}
+                                    onChangeText={setSearchText}
+                                    placeholder="Search in English..."
+                                    placeholderTextColor={Colors.light.icon}
+                                    style={styles.searchInput}
+                                    autoCapitalize="none"
+                                />
+
+                                <Text style={styles.filterLabel}>Hadith Number</Text>
+                                <TextInput
+                                    value={hadithNumber}
+                                    onChangeText={setHadithNumber}
+                                    placeholder="e.g. 42"
+                                    placeholderTextColor={Colors.light.icon}
+                                    style={styles.searchInput}
+                                    keyboardType="number-pad"
+                                />
+
+                                <Text style={styles.filterLabel}>Chapter</Text>
+                                <TextInput
+                                    value={chapterNumber}
+                                    onChangeText={setChapterNumber}
+                                    placeholder="e.g. 1"
+                                    placeholderTextColor={Colors.light.icon}
+                                    style={styles.searchInput}
+                                    keyboardType="number-pad"
+                                />
+
+                                <Text style={styles.filterLabel}>Book</Text>
+                                <Pressable
+                                    onPress={() => setBookMenuOpen((prev) => !prev)}
+                                    style={styles.dropdownTrigger}
+                                >
+                                    <Text style={styles.dropdownText}>
+                                        {selectedBook === ALL_BOOKS
+                                            ? "All Books"
+                                            : books.find((book) => book.bookSlug === selectedBook)?.bookName ?? "All Books"}
+                                    </Text>
+                                </Pressable>
+                                {bookMenuOpen && (
+                                    <View style={styles.dropdownMenu}>
+                                        <Pressable
+                                            style={styles.dropdownItem}
+                                            onPress={() => {
+                                                setSelectedBook(ALL_BOOKS);
+                                                setBookMenuOpen(false);
+                                            }}
+                                        >
+                                            <Text style={styles.dropdownItemText}>All Books</Text>
+                                        </Pressable>
+                                        {books.map((book) => (
+                                            <Pressable
+                                                key={book.bookSlug}
+                                                style={styles.dropdownItem}
+                                                onPress={() => {
+                                                    setSelectedBook(book.bookSlug);
+                                                    setBookMenuOpen(false);
+                                                }}
+                                            >
+                                                <Text style={styles.dropdownItemText}>{book.bookName}</Text>
+                                            </Pressable>
+                                        ))}
+                                    </View>
+                                )}
+
+                                <Text style={styles.filterLabel}>Status</Text>
+                                <Pressable
+                                    onPress={() => setStatusMenuOpen((prev) => !prev)}
+                                    style={styles.dropdownTrigger}
+                                >
+                                    <Text style={styles.dropdownText}>
+                                        {selectedStatus === ALL_STATUS
+                                            ? "All Status"
+                                            : statusOptions.find((status) => status.value === selectedStatus)?.label ?? "All Status"}
+                                    </Text>
+                                </Pressable>
+                                {statusMenuOpen && (
+                                    <View style={styles.dropdownMenu}>
+                                        {statusOptions.map((status) => (
+                                            <Pressable
+                                                key={status.value}
+                                                style={styles.dropdownItem}
+                                                onPress={() => {
+                                                    setSelectedStatus(status.value);
+                                                    setStatusMenuOpen(false);
+                                                }}
+                                            >
+                                                <Text style={styles.dropdownItemText}>{status.label}</Text>
+                                            </Pressable>
+                                        ))}
+                                    </View>
+                                )}
+
+                                <View style={styles.modalFooter}>
                                     <Pressable
-                                        key={status.value}
-                                        style={styles.dropdownItem}
+                                        style={styles.modalSecondaryButton}
                                         onPress={() => {
-                                            setSelectedStatus(status.value);
+                                            setSearchText("");
+                                            setHadithNumber("");
+                                            setChapterNumber("");
+                                            setSelectedBook(ALL_BOOKS);
+                                            setSelectedStatus(ALL_STATUS);
+                                            setBookMenuOpen(false);
                                             setStatusMenuOpen(false);
                                         }}
                                     >
-                                        <Text style={styles.dropdownItemText}>{status.label}</Text>
+                                        <Text style={styles.modalSecondaryButtonText}>Clear Filters</Text>
                                     </Pressable>
-                                ))}
-                            </View>
-                        )}
-
-                        <View style={styles.modalFooter}>
-                            <Pressable
-                                style={styles.modalSecondaryButton}
-                                onPress={() => {
-                                    setSearchText("");
-                                    setSelectedBook(ALL_BOOKS);
-                                    setSelectedStatus(ALL_STATUS);
-                                    setBookMenuOpen(false);
-                                    setStatusMenuOpen(false);
-                                }}
-                            >
-                                <Text style={styles.modalSecondaryButtonText}>Clear Filters</Text>
-                            </Pressable>
-                            <Pressable style={styles.modalPrimaryButton} onPress={() => setFiltersOpen(false)}>
-                                <Text style={styles.modalPrimaryButtonText}>Done</Text>
-                            </Pressable>
-                        </View>
-                    </Pressable>
+                                    <Pressable style={styles.modalPrimaryButton} onPress={() => setFiltersOpen(false)}>
+                                        <Text style={styles.modalPrimaryButtonText}>Done</Text>
+                                    </Pressable>
+                                </View>
+                            </ScrollView>
+                        </Pressable>
+                    </KeyboardAvoidingView>
                 </Pressable>
             </Modal>
         </View>
@@ -469,6 +525,12 @@ const styles = StyleSheet.create({
         borderRadius: Theme.radius.lg,
         padding: 18,
         maxHeight: "85%",
+    },
+    modalKeyboard: {
+        width: "100%",
+    },
+    modalContent: {
+        paddingBottom: 12,
     },
     modalHeader: {
         flexDirection: "row",
