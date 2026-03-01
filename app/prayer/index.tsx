@@ -1,9 +1,18 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
+import { BlurView } from "expo-blur";
 import * as Location from "expo-location";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Animated,
+  Easing,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { AnimatedLogo } from "../../components/common/AnimatedLogo";
 import { SkeletonBox, SkeletonLine } from "../../components/common/Skeleton";
 import { TodayFastingCard } from "../../components/fasting/TodayFastingCard";
@@ -77,6 +86,15 @@ export default function PrayerScreen() {
   const [activeSection, setActiveSection] = useState<
     "prayer" | "fasting" | "zakat" | "asma"
   >( "prayer" );
+  const [isSwitchingSection, setIsSwitchingSection] = useState(false);
+  const [pendingSection, setPendingSection] = useState<
+    "prayer" | "fasting" | "zakat" | "asma" | null
+  >(null);
+  const switchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const progressAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(0)).current;
+  const progressLoopRef = useRef<Animated.CompositeAnimation | null>(null);
+  const pulseLoopRef = useRef<Animated.CompositeAnimation | null>(null);
   const [permissionStatus, setPermissionStatus] = useState<
     "granted" | "denied" | "undetermined"
   >("undetermined");
@@ -161,7 +179,101 @@ export default function PrayerScreen() {
     if (section === "asma") {
       setActiveSection("asma");
     }
+    if (!section) {
+      setActiveSection("prayer");
+    }
   }, [section]);
+
+  useEffect(() => {
+    return () => {
+      if (switchTimeoutRef.current) {
+        clearTimeout(switchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isSwitchingSection) {
+      progressLoopRef.current?.stop();
+      progressLoopRef.current = null;
+      progressAnim.setValue(0);
+      return;
+    }
+    progressAnim.setValue(0);
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(progressAnim, {
+          toValue: 1,
+          duration: 520,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(progressAnim, {
+          toValue: 0,
+          duration: 520,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    progressLoopRef.current = loop;
+    loop.start();
+    return () => {
+      loop.stop();
+      progressLoopRef.current = null;
+    };
+  }, [isSwitchingSection, progressAnim]);
+
+  useEffect(() => {
+    if (!isSwitchingSection) {
+      pulseLoopRef.current?.stop();
+      pulseLoopRef.current = null;
+      pulseAnim.setValue(0);
+      return;
+    }
+    pulseAnim.setValue(0);
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 700,
+          easing: Easing.out(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 0,
+          duration: 700,
+          easing: Easing.in(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulseLoopRef.current = loop;
+    loop.start();
+    return () => {
+      loop.stop();
+      pulseLoopRef.current = null;
+    };
+  }, [isSwitchingSection, pulseAnim]);
+
+  const triggerSectionChange = (
+    nextSection: "prayer" | "fasting" | "zakat" | "asma"
+  ) => {
+    if (nextSection === activeSection) {
+      return;
+    }
+    if (switchTimeoutRef.current) {
+      clearTimeout(switchTimeoutRef.current);
+    }
+    setPendingSection(nextSection);
+    setIsSwitchingSection(true);
+    switchTimeoutRef.current = setTimeout(() => {
+      setActiveSection(nextSection);
+      setIsSwitchingSection(false);
+      setPendingSection(null);
+      switchTimeoutRef.current = null;
+    }, 200);
+  };
 
   const prayerQuery = useQuery({
     queryKey: [
@@ -322,6 +434,76 @@ export default function PrayerScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.tabRow}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.tabChip,
+              activeSection === "prayer" && styles.tabChipActive,
+              pressed && styles.tabChipPressed,
+            ]}
+            onPress={() => triggerSectionChange("prayer")}
+          >
+            <Text
+              style={[
+                styles.tabChipText,
+                activeSection === "prayer" && styles.tabChipTextActive,
+              ]}
+            >
+              Prayer
+            </Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.tabChip,
+              activeSection === "fasting" && styles.tabChipActive,
+              pressed && styles.tabChipPressed,
+            ]}
+            onPress={() => triggerSectionChange("fasting")}
+          >
+            <Text
+              style={[
+                styles.tabChipText,
+                activeSection === "fasting" && styles.tabChipTextActive,
+              ]}
+            >
+              Fasting
+            </Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.tabChip,
+              activeSection === "zakat" && styles.tabChipActive,
+              pressed && styles.tabChipPressed,
+            ]}
+            onPress={() => triggerSectionChange("zakat")}
+          >
+            <Text
+              style={[
+                styles.tabChipText,
+                activeSection === "zakat" && styles.tabChipTextActive,
+              ]}
+            >
+              Zakat
+            </Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.tabChip,
+              activeSection === "asma" && styles.tabChipActive,
+              pressed && styles.tabChipPressed,
+            ]}
+            onPress={() => triggerSectionChange("asma")}
+          >
+            <Text
+              style={[
+                styles.tabChipText,
+                activeSection === "asma" && styles.tabChipTextActive,
+              ]}
+            >
+              Asma
+            </Text>
+          </Pressable>
+        </View>
         {activeSection === "prayer" ? (
           <>
           <Text style={styles.sectionTitle}>Praying</Text>
@@ -483,69 +665,51 @@ export default function PrayerScreen() {
           </Pressable>
         </Pressable>
       </Modal>
-
-      <View style={styles.tabBar}>
-        <Pressable
-          style={[styles.tabButton, activeSection === "prayer" && styles.tabButtonActive]}
-          onPress={() => setActiveSection("prayer")}
-        >
-          <Ionicons
-            name="moon"
-            size={16}
-            color={activeSection === "prayer" ? Theme.colors.onPrimary : Theme.colors.primary}
-          />
-          <Text
-            style={[styles.tabButtonText, activeSection === "prayer" && styles.tabButtonTextActive]}
-          >
-            Prayer
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.tabButton, activeSection === "fasting" && styles.tabButtonActive]}
-          onPress={() => setActiveSection("fasting")}
-        >
-          <Ionicons
-            name="sunny"
-            size={16}
-            color={activeSection === "fasting" ? Theme.colors.onPrimary : Theme.colors.primary}
-          />
-          <Text
-            style={[styles.tabButtonText, activeSection === "fasting" && styles.tabButtonTextActive]}
-          >
-            Fasting
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.tabButton, activeSection === "zakat" && styles.tabButtonActive]}
-          onPress={() => setActiveSection("zakat")}
-        >
-          <Ionicons
-            name="wallet"
-            size={16}
-            color={activeSection === "zakat" ? Theme.colors.onPrimary : Theme.colors.primary}
-          />
-          <Text
-            style={[styles.tabButtonText, activeSection === "zakat" && styles.tabButtonTextActive]}
-          >
-            Zakat
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[styles.tabButton, activeSection === "asma" && styles.tabButtonActive]}
-          onPress={() => setActiveSection("asma")}
-        >
-          <Ionicons
-            name="leaf"
-            size={16}
-            color={activeSection === "asma" ? Theme.colors.onPrimary : Theme.colors.primary}
-          />
-          <Text
-            style={[styles.tabButtonText, activeSection === "asma" && styles.tabButtonTextActive]}
-          >
-            Asma
-          </Text>
-        </Pressable>
-      </View>
+      {isSwitchingSection ? (
+        <BlurView intensity={18} tint="dark" style={styles.transitionOverlay}>
+          <View style={styles.transitionCard}>
+            <Animated.View
+              style={[
+                styles.transitionLogo,
+                {
+                  transform: [
+                    {
+                      scale: pulseAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [1, 1.08],
+                      }),
+                    },
+                  ],
+                  opacity: pulseAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.7, 1],
+                  }),
+                },
+              ]}
+            >
+              <AnimatedLogo size={44} />
+            </Animated.View>
+            <Text style={styles.transitionText}>Switching to {pendingSection ?? "section"}</Text>
+            <View style={styles.shimmerTrack}>
+              <Animated.View
+                style={[
+                  styles.shimmerBar,
+                  {
+                    transform: [
+                      {
+                        translateX: progressAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [0, 80],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              />
+            </View>
+          </View>
+        </BlurView>
+      ) : null}
     </View>
   );
 }
@@ -561,7 +725,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingTop: 18,
-    paddingBottom: 120,
+    paddingBottom: 32,
   },
   sectionSpacing: {
     marginTop: 12,
@@ -708,50 +872,87 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
   },
-  tabBar: {
-    position: "absolute",
-    left: 16,
-    right: 16,
-    bottom: 16,
-    backgroundColor: Theme.colors.surface,
-    borderRadius: Theme.radius.xl,
-    padding: 6,
-    borderWidth: 1,
-  borderColor: Theme.colors.border,
+  tabRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
-  shadowColor: Theme.colors.text,
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
+    marginBottom: 16,
   },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: Theme.radius.lg,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 4,
+  tabChip: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.surface,
     borderWidth: 1,
-    borderColor: "transparent",
+    borderColor: Theme.colors.borderLight,
   },
-  tabButtonActive: {
+  tabChipActive: {
     backgroundColor: Theme.colors.primary,
     borderColor: Theme.colors.primary,
-    shadowColor: Theme.colors.text,
-    shadowOpacity: 0.16,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
   },
-  tabButtonText: {
-    fontSize: 11,
+  tabChipPressed: {
+    transform: [{ scale: 0.98 }],
+    opacity: 0.88,
+  },
+  tabChipText: {
+    fontSize: 12,
     fontWeight: "700",
     color: Theme.colors.primary,
   },
-  tabButtonTextActive: {
+  tabChipTextActive: {
     color: Theme.colors.onPrimary,
+  },
+  transitionOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(17, 24, 28, 0.08)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  transitionCard: {
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: Theme.radius.lg,
+    backgroundColor: Theme.colors.surface,
+    borderWidth: 1,
+    borderColor: Theme.colors.borderLight,
+    shadowColor: Theme.colors.text,
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+  },
+  transitionLogo: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: Theme.colors.surfaceMuted,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  transitionText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.light.text,
+  },
+  shimmerTrack: {
+    width: 140,
+    height: 6,
+    borderRadius: 999,
+    backgroundColor: Theme.colors.surfaceMuted,
+    overflow: "hidden",
+  },
+  shimmerBar: {
+    width: 60,
+    height: 6,
+    borderRadius: 999,
+    backgroundColor: Theme.colors.primary,
+    opacity: 0.35,
+    shadowColor: Theme.colors.primary,
+    shadowOpacity: 0.45,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 0 },
   },
   asmaHeader: {
     marginTop: 6,
