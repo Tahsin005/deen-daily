@@ -6,6 +6,7 @@ import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { SkeletonLine } from "../../components/common/Skeleton";
 import { BookCard } from "../../components/hadith/BookCard";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { getHadithBooks, HadithBook } from "../../lib/api/hadith/getHadithBooks";
 
@@ -97,13 +98,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: Fonts.size.mega,
     fontWeight: "700",
     color: Colors.light.text,
   },
   subtitle: {
     marginTop: 4,
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     color: Colors.light.icon,
   },
   headerRow: {
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
   searchButtonText: {
     color: Theme.colors.onPrimary,
     fontWeight: "600",
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
   },
   listContent: {
     paddingVertical: 16,
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   stateText: {
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     color: Colors.light.icon,
   },
   skeletonList: {

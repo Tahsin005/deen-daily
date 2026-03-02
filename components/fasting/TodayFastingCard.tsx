@@ -2,6 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 
 type TodayFastingCardProps = {
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     title: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
         marginBottom: 10,
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     dateText: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: Colors.light.text,
     },
     dateDivider: {
@@ -191,11 +192,11 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     timeLabel: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     timeValue: {
-        fontSize: 18,
+        fontSize: Fonts.size.xxl,
         fontWeight: "700",
         color: Colors.light.text,
     },
@@ -215,19 +216,19 @@ const styles = StyleSheet.create({
         borderColor: Theme.colors.border,
     },
     durationText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Colors.light.text,
     },
     remainingText: {
         marginTop: 8,
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Colors.light.icon,
         textAlign: "center",
     },
     emptyText: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: Colors.light.icon,
     },
 });

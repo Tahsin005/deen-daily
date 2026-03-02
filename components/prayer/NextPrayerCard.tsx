@@ -2,6 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { SkeletonCircle, SkeletonLine } from "../common/Skeleton";
 import { mainPrayerKeys, parseTimeToMinutes, timeEntries } from "./prayerTimesUtils";
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     sectionTitle: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
         marginBottom: 12,
@@ -127,7 +128,7 @@ const styles = StyleSheet.create({
         backgroundColor: Theme.colors.surfaceSoft,
     },
     seeMoreText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Colors.light.primary,
     },
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
     },
     statusText: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         color: Colors.light.icon,
     },
     nextPrayerCard: {
@@ -180,23 +181,23 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     nextPrayerLabel: {
-        fontSize: 15,
+        fontSize: Fonts.size.lg,
         fontWeight: "700",
         color: Colors.light.text,
     },
     nextPrayerMeta: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
         marginTop: 4,
     },
     nextPrayerTime: {
-        fontSize: 18,
+        fontSize: Fonts.size.xxl,
         fontWeight: "700",
         color: Colors.light.text,
     },
     footerText: {
         marginTop: 10,
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         fontWeight: "600",
         color: Colors.light.primary,
     },
@@ -215,7 +216,7 @@ const styles = StyleSheet.create({
             backgroundColor: Theme.colors.surfaceMuted,
         },
         footerActionText: {
-            fontSize: 12,
+            fontSize: Fonts.size.sm,
             fontWeight: "600",
             color: Colors.light.primary,
         },

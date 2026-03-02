@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 
 type WhiteDays = {
@@ -112,12 +113,12 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     title: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
     },
     monthLabel: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     listCard: {
@@ -141,13 +142,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     dayBadgeText: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         fontWeight: "700",
         color: Colors.light.text,
     },
     dayInfoText: {
         flex: 1,
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: Colors.light.text,
     },
 });

@@ -25,6 +25,7 @@ import { RamadanScheduleCard } from "../../components/ramadan/RamadanScheduleCar
 import { ZakatCalculatorCard } from "../../components/zakat/ZakatCalculatorCard";
 import { ZakatNisabCard } from "../../components/zakat/ZakatNisabCard";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
 import { getAsmaulHusna } from "../../lib/api/asmaulHusna/getAsmaulHusna";
@@ -731,14 +732,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: Fonts.size.xxl,
     fontWeight: "700",
     color: Colors.light.text,
     marginTop: 6,
     paddingLeft: 6,
   },
   sectionTitle2: {
-    fontSize: 18,
+    fontSize: Fonts.size.xxl,
     fontWeight: "700",
     color: Colors.light.text,
     marginTop: 12,
@@ -756,7 +757,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   loadingText: {
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     color: Colors.light.icon,
   },
   permissionContainer: {
@@ -797,12 +798,12 @@ const styles = StyleSheet.create({
     height: 64,
   },
   permissionTitle: {
-    fontSize: 18,
+    fontSize: Fonts.size.xxl,
     fontWeight: "700",
     color: Colors.light.text,
   },
   permissionText: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     color: Colors.light.icon,
     textAlign: "center",
     lineHeight: 18,
@@ -816,10 +817,10 @@ const styles = StyleSheet.create({
   permissionButtonText: {
     color: Theme.colors.onPrimary,
     fontWeight: "600",
-    fontSize: 13,
+    fontSize: Fonts.size.md,
   },
   permissionHint: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
     textAlign: "center",
   },
@@ -829,7 +830,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   permissionStatus: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
   },
   skeletonLogo: {
@@ -895,7 +896,7 @@ const styles = StyleSheet.create({
     opacity: 0.88,
   },
   tabChipText: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     fontWeight: "700",
     color: Theme.colors.primary,
   },
@@ -932,7 +933,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   transitionText: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     fontWeight: "600",
     color: Colors.light.text,
   },
@@ -963,11 +964,11 @@ const styles = StyleSheet.create({
   },
   asmaSubtitle: {
     marginTop: 4,
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
   },
   asmaLanguageButton: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     fontWeight: "600",
     color: Colors.light.primary,
   },
@@ -993,7 +994,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   asmaBadgeText: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     fontWeight: "700",
     color: Colors.light.primary,
   },
@@ -1002,17 +1003,17 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   asmaArabic: {
-    fontSize: 18,
+    fontSize: Fonts.size.mega,
     color: Colors.light.text,
     textAlign: "right",
   },
   asmaTranslation: {
-    fontSize: 12,
+    fontSize: Fonts.size.xl,
     fontWeight: "600",
     color: Colors.light.text,
   },
   asmaMeaning: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
   },
   modalBackdrop: {
@@ -1036,12 +1037,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   modalTitle: {
-    fontSize: 16,
+    fontSize: Fonts.size.xl,
     fontWeight: "700",
     color: Colors.light.text,
   },
   modalCloseText: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     fontWeight: "600",
     color: Colors.light.primary,
   },
@@ -1057,7 +1058,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.border,
   },
   modalOptionText: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     color: Colors.light.text,
   },
 });

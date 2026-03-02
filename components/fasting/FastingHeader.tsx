@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { SkeletonLine } from "../common/Skeleton";
 
@@ -79,13 +80,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 6,
     },
     dateBadgeDay: {
-        fontSize: 20,
+        fontSize: Fonts.size.display,
         fontWeight: "700",
         color: Theme.colors.text,
         lineHeight: 24,
     },
     dateBadgeMonth: {
-        fontSize: 11,
+        fontSize: Fonts.size.xs,
         fontWeight: "600",
         color: Theme.colors.textMuted,
     },
@@ -93,17 +94,17 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     headerDateText: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Theme.colors.onPrimary,
     },
     headerHijriText: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: "rgba(255, 255, 255, 0.85)",
         marginTop: 4,
     },
     headerWeekdayText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: "rgba(255, 255, 255, 0.85)",
         marginTop: 2,
     },
@@ -118,7 +119,7 @@ const styles = StyleSheet.create({
     },
     headerRefreshText: {
         color: Theme.colors.onPrimary,
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
     },
     headerTimezoneRow: {
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     headerTimezoneText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: "rgba(255, 255, 255, 0.8)",
         flex: 1,
         marginRight: 10,

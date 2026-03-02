@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 
 type VerseCardProps = {
@@ -39,19 +40,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   verseIndex: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     fontWeight: "700",
     color: Colors.light.primary,
   },
   arabic: {
-    fontSize: 34,
+    fontSize: Fonts.size.giant,
     lineHeight: 48,
     color: Colors.light.text,
     textAlign: "right",
   },
   translation: {
     marginTop: 10,
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     lineHeight: 22,
     color: Colors.light.icon,
     textAlign: "left",

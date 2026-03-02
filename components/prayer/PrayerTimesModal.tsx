@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { timeEntries } from "./prayerTimesUtils";
 
@@ -46,7 +47,7 @@ export const PrayerTimesModal = ({ visible, onClose, times }: PrayerTimesModalPr
 
 const styles = StyleSheet.create({
     statusText: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         color: Colors.light.icon,
     },
     modalBackdrop: {
@@ -68,12 +69,12 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     modalTitle: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
     },
     modalCloseText: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         fontWeight: "600",
         color: Theme.colors.primary,
     },
@@ -98,11 +99,11 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     timeLabel: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     timeValue: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "600",
         color: Colors.light.text,
     },

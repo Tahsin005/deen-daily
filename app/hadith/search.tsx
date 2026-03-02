@@ -16,6 +16,7 @@ import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { SkeletonLine } from "../../components/common/Skeleton";
 import { HadithCard } from "../../components/hadith/HadithCard";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { HadithAPISettings } from "../../constants/settings/hadithAPISettings";
 import { getHadithBooks } from "../../lib/api/hadith/getHadithBooks";
@@ -358,14 +359,14 @@ const styles = StyleSheet.create({
         paddingTop: 20,
     },
     title: {
-        fontSize: 24,
+        fontSize: Fonts.size.mega,
         fontWeight: "700",
         color: Colors.light.text,
         textAlign: "center",
     },
     subtitle: {
         marginTop: 6,
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         color: Colors.light.icon,
         textAlign: "center",
         marginBottom: 20,
@@ -389,13 +390,13 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     searchSummaryLabel: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Colors.light.icon,
         marginBottom: 4,
     },
     searchSummaryValue: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: Colors.light.text,
     },
     filterButton: {
@@ -406,11 +407,11 @@ const styles = StyleSheet.create({
     },
     filterButtonText: {
         color: Theme.colors.onPrimary,
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "700",
     },
     filterLabel: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Colors.light.icon,
         marginTop: 12,
@@ -435,7 +436,7 @@ const styles = StyleSheet.create({
         backgroundColor: Theme.colors.surface,
     },
     dropdownText: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: Colors.light.text,
     },
     dropdownMenu: {
@@ -451,11 +452,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
     },
     dropdownItemText: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: Colors.light.text,
     },
     resultCount: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
         marginBottom: 10,
     },
@@ -469,7 +470,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     stateText: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         color: Colors.light.icon,
     },
     skeletonList: {
@@ -539,12 +540,12 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     modalTitle: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
     },
     modalCloseText: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         fontWeight: "600",
         color: Theme.colors.primary,
     },
@@ -565,7 +566,7 @@ const styles = StyleSheet.create({
     modalSecondaryButtonText: {
         color: Colors.light.text,
         fontWeight: "600",
-        fontSize: 13,
+        fontSize: Fonts.size.md,
     },
     modalPrimaryButton: {
         paddingHorizontal: 20,

@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -74,16 +75,16 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     headerHint: {
-        fontSize: 10,
+        fontSize: Fonts.size.xxs,
         color: Colors.light.icon,
     },
     sectionTitle: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         fontWeight: "700",
         color: Colors.light.text,
     },
     statusText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     prohibitedGrid: {
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     prohibitedLabel: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Theme.colors.text,
         textAlign: "center",
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
         borderColor: Theme.colors.accent,
     },
     prohibitedValue: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Theme.colors.text,
         textAlign: "center",

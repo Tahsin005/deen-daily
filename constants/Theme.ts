@@ -1,4 +1,5 @@
 import { Colors } from "./Colors";
+import { Fonts } from "./Fonts";
 
 const primaryRgb = "37, 103, 30";
 const secondaryRgb = "72, 161, 17";
@@ -32,19 +33,19 @@ export const Theme = {
     },
     typography: {
         title: {
-            fontSize: 20,
+            fontSize: Fonts.size.display,
             fontWeight: "700" as const,
         },
         subtitle: {
-            fontSize: 16,
+            fontSize: Fonts.size.xl,
             fontWeight: "600" as const,
         },
         body: {
-            fontSize: 14,
+            fontSize: Fonts.size.text,
             fontWeight: "400" as const,
         },
         caption: {
-            fontSize: 12,
+            fontSize: Fonts.size.sm,
             fontWeight: "500" as const,
         },
     },

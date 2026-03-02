@@ -8,6 +8,7 @@ import {
     View,
 } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { fetchJson } from "../../lib/api/fetchJson";
 import { SkeletonLine } from "../common/Skeleton";
@@ -601,7 +602,7 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     headerTitle: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
     },
@@ -612,12 +613,12 @@ const styles = StyleSheet.create({
         backgroundColor: Theme.colors.surfaceSoft,
     },
     badgeText: {
-        fontSize: 11,
+        fontSize: Fonts.size.xs,
         fontWeight: "600",
         color: Colors.light.primary,
     },
     subText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     sectionCard: {
@@ -629,12 +630,12 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     sectionTitle: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         fontWeight: "700",
         color: Colors.light.text,
     },
     helperText: {
-        fontSize: 11,
+        fontSize: Fonts.size.xs,
         color: Colors.light.icon,
     },
     input: {
@@ -643,7 +644,7 @@ const styles = StyleSheet.create({
         borderRadius: Theme.radius.sm,
         paddingHorizontal: 12,
         paddingVertical: 8,
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         backgroundColor: Theme.colors.surface,
     },
     inlineRow: {
@@ -659,7 +660,7 @@ const styles = StyleSheet.create({
         backgroundColor: Theme.colors.surfaceSoft,
     },
     currencyText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "700",
         color: Colors.light.primary,
     },
@@ -671,7 +672,7 @@ const styles = StyleSheet.create({
         backgroundColor: Theme.colors.surfaceSoft,
     },
     actionButtonText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Colors.light.primary,
     },
@@ -689,12 +690,12 @@ const styles = StyleSheet.create({
         borderColor: Theme.colors.border,
     },
     listTitle: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         fontWeight: "600",
         color: Colors.light.text,
     },
     listSubtitle: {
-        fontSize: 11,
+        fontSize: Fonts.size.xs,
         color: Colors.light.icon,
     },
     buttonRow: {
@@ -722,12 +723,12 @@ const styles = StyleSheet.create({
     },
     ghostButtonText: {
         color: Colors.light.text,
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
     },
     errorText: {
     color: Theme.colors.danger,
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
     },
     resultCard: {
@@ -740,12 +741,12 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     resultTitle: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         fontWeight: "700",
         color: Colors.light.text,
     },
     resultSubtitle: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     resultRow: {
@@ -754,11 +755,11 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     resultLabel: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     resultValue: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "700",
         color: Colors.light.text,
     },
@@ -768,7 +769,7 @@ const styles = StyleSheet.create({
     },
     resultNote: {
         marginTop: 4,
-        fontSize: 11,
+        fontSize: Fonts.size.xs,
         color: Colors.light.icon,
     },
 });

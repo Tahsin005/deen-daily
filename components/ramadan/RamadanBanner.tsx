@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 
 type RamadanBannerProps = {
@@ -44,12 +45,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        fontSize: 16,
+    fontSize: Fonts.size.xl,
         fontWeight: "700",
                 color: Theme.colors.onPrimary,
     },
     subtitle: {
-        fontSize: 12,
+    fontSize: Fonts.size.sm,
                 color: Theme.colors.surfaceSoft,
         marginTop: 2,
   },

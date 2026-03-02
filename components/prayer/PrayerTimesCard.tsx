@@ -2,6 +2,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { SkeletonLine } from "../common/Skeleton";
 import { timeEntries } from "./prayerTimesUtils";
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     sectionTitle: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
         marginBottom: 12,
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
     },
     statusText: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         color: Colors.light.icon,
     },
     timeItem: {
@@ -117,11 +118,11 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     timeLabel: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     timeValue: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "600",
         color: Colors.light.text,
     },

@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { RamadanDay } from "../../lib/api/ramadan/getRamadanTimes";
 
@@ -83,12 +84,12 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     title: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
     },
     subtitle: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     calendarGrid: {
@@ -115,16 +116,16 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     cellDay: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         fontWeight: "700",
         color: Colors.light.text,
     },
     cellWeekday: {
-        fontSize: 10,
+        fontSize: Fonts.size.xxs,
         color: Colors.light.icon,
     },
     cellDate: {
-        fontSize: 10,
+        fontSize: Fonts.size.xxs,
         color: Colors.light.icon,
         marginBottom: 8,
     },
@@ -137,13 +138,13 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     cellTimeText: {
-        fontSize: 11,
+        fontSize: Fonts.size.xs,
         fontWeight: "600",
         color: Colors.light.text,
     },
     todayBadge: {
         marginTop: 6,
-        fontSize: 10,
+        fontSize: Fonts.size.xxs,
         fontWeight: "700",
         color: Colors.light.primary,
         textAlign: "center",

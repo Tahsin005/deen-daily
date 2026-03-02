@@ -1,6 +1,7 @@
 import { memo, useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import type { SurahSummary } from "../../lib/api/quran/getSurahs";
 
@@ -62,13 +63,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: Fonts.size.xl,
     fontWeight: "600",
     color: Colors.light.text,
   },
   cardSubtitle: {
     marginTop: 2,
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     color: Colors.light.icon,
   },
   cardMetaRow: {
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   cardMetaText: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
   },
 });

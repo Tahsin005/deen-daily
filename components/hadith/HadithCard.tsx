@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import type { HadithEntry } from "../../lib/api/hadith/getHadiths";
 
 type HadithCardProps = {
@@ -42,32 +43,32 @@ const styles = StyleSheet.create({
         borderColor: "#F0F0F0",
     },
     heading: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         fontWeight: "700",
         color: Colors.light.primary,
         marginBottom: 8,
     },
     headingArabic: {
-        fontSize: 18,
+        fontSize: Fonts.size.xxl,
         lineHeight: 26,
         color: Colors.light.text,
         textAlign: "right",
         marginBottom: 6,
     },
     narrator: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Colors.light.icon,
         marginBottom: 8,
     },
     hadithEnglish: {
-        fontSize: 18,
+        fontSize: Fonts.size.xxl,
         lineHeight: 26,
         color: Colors.light.text,
     },
     hadithArabic: {
         marginTop: 10,
-        fontSize: 24,
+        fontSize: Fonts.size.mega,
         lineHeight: 34,
         color: Colors.light.text,
         textAlign: "right",
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
         flexWrap: "wrap",
     },
     metaText: {
-        fontSize: 11,
+        fontSize: Fonts.size.xs,
         color: Colors.light.icon,
     },
 });

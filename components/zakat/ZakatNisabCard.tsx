@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import type { ZakatNisabResponse } from "../../lib/api/zakat/getZakatNisab";
 
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     headerTitle: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
     },
@@ -126,17 +127,17 @@ const styles = StyleSheet.create({
         backgroundColor: Theme.colors.surfaceSoft,
     },
     badgeText: {
-        fontSize: 11,
+        fontSize: Fonts.size.xs,
         fontWeight: "600",
         color: Colors.light.primary,
         textTransform: "capitalize",
     },
     subText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     noteText: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     sectionCard: {
@@ -153,17 +154,17 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     sectionTitle: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         fontWeight: "700",
         color: Colors.light.text,
     },
     sectionAmount: {
-        fontSize: 15,
+        fontSize: Fonts.size.lg,
         fontWeight: "700",
         color: Colors.light.text,
     },
     sectionLine: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     rateRow: {
@@ -175,11 +176,11 @@ const styles = StyleSheet.create({
         borderTopColor: Theme.colors.border,
     },
     rateLabel: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
     rateValue: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         fontWeight: "700",
         color: Colors.light.text,
     },

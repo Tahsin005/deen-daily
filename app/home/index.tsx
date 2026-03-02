@@ -12,6 +12,7 @@ import { PrayerTimesModal } from "../../components/prayer/PrayerTimesModal";
 import { DuaCard } from "../../components/ramadan/DuaCard";
 import { HadithCardRamadan } from "../../components/ramadan/HadithCardRamadan";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { getAsmaulHusna } from "../../lib/api/asmaulHusna/getAsmaulHusna";
 import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
@@ -530,12 +531,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: Fonts.size.xl,
     fontWeight: "700",
     color: Colors.light.text,
   },
   linkText: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.primary,
     fontWeight: "600",
   },
@@ -545,7 +546,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   statusText: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     color: Colors.light.icon,
   },
   timesGrid: {
@@ -569,11 +570,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   timeLabel: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
   },
   timeValue: {
-    fontSize: 15,
+    fontSize: Fonts.size.lg,
     fontWeight: "600",
     color: Colors.light.text,
   },
@@ -611,12 +612,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   permissionTitle: {
-    fontSize: 18,
+    fontSize: Fonts.size.xxl,
     fontWeight: "700",
     color: Colors.light.text,
   },
   permissionText: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     color: Colors.light.icon,
     textAlign: "center",
     lineHeight: 18,
@@ -630,10 +631,10 @@ const styles = StyleSheet.create({
   permissionButtonText: {
     color: Theme.colors.onPrimary,
     fontWeight: "600",
-    fontSize: 13,
+    fontSize: Fonts.size.md,
   },
   permissionHint: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
     textAlign: "center",
   },
@@ -643,7 +644,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   permissionStatus: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
   },
   skeletonLogo: {
@@ -702,13 +703,13 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   asmaTitle: {
-    fontSize: 16,
+    fontSize: Fonts.size.xl,
     fontWeight: "700",
     color: Colors.light.text,
   },
   asmaSubtitle: {
     marginTop: 4,
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
   },
   asmaAction: {
@@ -718,12 +719,12 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.surfaceSoft,
   },
   asmaActionText: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     fontWeight: "600",
     color: Colors.light.primary,
   },
   asmaHelper: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
   },
   asmaNameRow: {
@@ -744,7 +745,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   asmaBadgeText: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     fontWeight: "700",
     color: Colors.light.primary,
   },
@@ -753,17 +754,17 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   asmaArabic: {
-    fontSize: 18,
+    fontSize: Fonts.size.xxl,
     color: Colors.light.text,
     textAlign: "right",
   },
   asmaTranslation: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     fontWeight: "600",
     color: Colors.light.text,
   },
   asmaMeaning: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
   },
 });

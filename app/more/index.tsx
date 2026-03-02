@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
@@ -268,21 +269,21 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     fontWeight: "700",
     color: Colors.light.icon,
     textTransform: "uppercase",
     letterSpacing: 0.8,
   },
   title: {
-    fontSize: 24,
+    fontSize: Fonts.size.mega,
     fontWeight: "700",
     color: Colors.light.text,
     textAlign: "center",
   },
   subtitle: {
     marginTop: 6,
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     color: Colors.light.icon,
     textAlign: "center",
     marginBottom: 20,
@@ -295,13 +296,13 @@ const styles = StyleSheet.create({
     borderColor: Theme.colors.borderLight,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: Fonts.size.xl,
     fontWeight: "700",
     color: Colors.light.text,
     marginBottom: 12,
   },
   creditText: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.icon,
     marginBottom: 10,
   },
@@ -314,12 +315,12 @@ const styles = StyleSheet.create({
     borderTopColor: Theme.colors.borderLight,
   },
   creditLabel: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     color: Colors.light.text,
     fontWeight: "600",
   },
   creditLink: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Theme.colors.primary,
     fontWeight: "600",
   },
@@ -332,17 +333,17 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.colors.borderLight,
   },
   settingLabel: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     color: Colors.light.icon,
   },
   settingValue: {
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     fontWeight: "600",
     color: Colors.light.text,
     marginTop: 4,
   },
   settingAction: {
-    fontSize: 12,
+    fontSize: Fonts.size.sm,
     color: Colors.light.primary,
     fontWeight: "600",
   },
@@ -365,12 +366,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   modalTitle: {
-    fontSize: 16,
+    fontSize: Fonts.size.xl,
     fontWeight: "700",
     color: Colors.light.text,
   },
   modalCloseText: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     fontWeight: "600",
     color: Theme.colors.primary,
   },
@@ -387,7 +388,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   modalOptionText: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     color: Colors.light.text,
   },
 });

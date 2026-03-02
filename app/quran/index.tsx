@@ -6,6 +6,7 @@ import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { SkeletonLine } from "../../components/common/Skeleton";
 import { SurahListItem } from "../../components/quran/SurahListItem";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { getSurahs, SurahSummary } from "../../lib/api/quran/getSurahs";
 
@@ -171,13 +172,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: Fonts.size.mega,
     fontWeight: "700",
     color: Colors.light.text,
   },
   subtitle: {
     marginTop: 4,
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     color: Colors.light.icon,
   },
   filtersRow: {
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   dropdownTriggerText: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     color: Colors.light.text,
   },
   dropdownMenu: {
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.surfaceSoft,
   },
   dropdownItemText: {
-    fontSize: 13,
+    fontSize: Fonts.size.md,
     color: Colors.light.text,
   },
   listContent: {
@@ -254,7 +255,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   stateText: {
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     color: Colors.light.icon,
   },
   skeletonList: {

@@ -1,6 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 
 type DuaCardProps = {
@@ -45,28 +46,28 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     headerText: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         fontWeight: "700",
         color: Colors.light.text,
     },
     title: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         fontWeight: "600",
         color: Colors.light.text,
         marginBottom: 6,
     },
     arabic: {
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         color: Colors.light.text,
         marginBottom: 6,
     },
     translation: {
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: Colors.light.icon,
         marginBottom: 8,
     },
     reference: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
         textAlign: "right",
     },

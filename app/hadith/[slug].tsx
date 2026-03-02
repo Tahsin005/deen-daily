@@ -13,6 +13,7 @@ import { SkeletonLine } from "../../components/common/Skeleton";
 import { ChapterCard } from "../../components/hadith/ChapterCard";
 import { BackButton } from "../../components/quran/BackButton";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import {
     getHadithChapters,
@@ -143,13 +144,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: Fonts.size.mega,
     fontWeight: "700",
     color: Colors.light.text,
   },
   subtitle: {
     marginTop: 4,
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     color: Colors.light.icon,
     textTransform: "capitalize",
   },
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   stateText: {
-    fontSize: 14,
+    fontSize: Fonts.size.text,
     color: Colors.light.icon,
   },
   skeletonList: {

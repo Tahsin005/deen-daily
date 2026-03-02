@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import type { HadithBook } from "../../lib/api/hadith/getHadithBooks";
 
 type BookCardProps = {
@@ -29,13 +30,13 @@ const styles = StyleSheet.create({
         borderColor: "#F0F0F0",
     },
     title: {
-        fontSize: 16,
+        fontSize: Fonts.size.xxl,
         fontWeight: "700",
         color: Colors.light.text,
     },
     subtitle: {
         marginTop: 4,
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: Colors.light.icon,
     },
     metaRow: {
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     metaText: {
-        fontSize: 12,
+        fontSize: Fonts.size.text,
         color: Colors.light.icon,
     },
 });

@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import type { HadithChapter } from "../../lib/api/hadith/getHadithChapters";
 
 type ChapterCardProps = {
@@ -27,24 +28,24 @@ const styles = StyleSheet.create({
         borderColor: "#F0F0F0",
     },
     number: {
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
         color: Colors.light.primary,
     },
     title: {
         marginTop: 6,
-        fontSize: 16,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
         color: Colors.light.text,
     },
     subtitle: {
         marginTop: 4,
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         color: Colors.light.text,
     },
     subSubtitle: {
         marginTop: 4,
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
     },
 });

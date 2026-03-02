@@ -13,6 +13,7 @@ import { SkeletonLine } from "../../components/common/Skeleton";
 import { BackButton } from "../../components/quran/BackButton";
 import { VerseCard } from "../../components/quran/VerseCard";
 import { Colors } from "../../constants/Colors";
+import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { getSurahDetail } from "../../lib/api/quran/getSurahDetail";
 import { getSurahTranslation } from "../../lib/api/quran/getSurahTranslation";
@@ -144,14 +145,14 @@ const styles = StyleSheet.create({
         gap: 4,
     },
     title: {
-        fontSize: 22,
+        fontSize: Fonts.size.hero,
         fontWeight: "700",
         color: Colors.light.text,
         textAlign: "center",
     },
     subtitle: {
         marginTop: 4,
-        fontSize: 13,
+        fontSize: Fonts.size.md,
         color: Colors.light.icon,
         textAlign: "center",
     },
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
     },
     translationStatus: {
         marginTop: 6,
-        fontSize: 12,
+        fontSize: Fonts.size.sm,
         color: Colors.light.icon,
         textAlign: "center",
     },
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     stateText: {
-        fontSize: 14,
+        fontSize: Fonts.size.text,
         color: Colors.light.icon,
     },
     skeletonList: {
