@@ -80,18 +80,8 @@ export default function QuranScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <View>
-          <Text style={styles.title}>Surahs</Text>
-          <Text style={styles.subtitle}>Explore the Quran chapter list.</Text>
-        </View>
-        <Pressable
-          style={styles.searchButton}
-          onPress={() => router.push("/quran/search")}
-        >
-          <Text style={styles.searchButtonText}>Search verses</Text>
-        </Pressable>
-      </View>
+      <Text style={styles.title}>Surahs</Text>
+      <Text style={styles.subtitle}>Explore the Quran chapter list.</Text>
 
       <View style={styles.filtersRow}>
         <TextInput
@@ -201,25 +191,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: Fonts.size.text,
     color: Colors.light.icon,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  searchButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: Theme.radius.pill,
-    backgroundColor: Theme.colors.surfaceSoft,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-  },
-  searchButtonText: {
-    fontSize: Fonts.size.sm,
-    fontWeight: "600",
-    color: Colors.light.primary,
   },
   filtersRow: {
     marginTop: 16,

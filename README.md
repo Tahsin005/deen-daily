@@ -1,18 +1,27 @@
-# Deen Daily (v1.0.0)
+# Deen Daily (v1.1.0)
 
 Your daily guide to Deen — a modern Expo app that brings prayer times, Quran, hadith, fasting, and zakat tools into one clean, consistent experience.
 
 ## Highlights
 
 - Prayer times with location support, next-prayer countdown, and qibla direction.
-- Quran browsing with surah details and translations.
+- Quran browsing with surah details, translations and audio streaming.
 - Hadith browsing, search, and chapters.
 - Fasting cards (sahur/iftar) and white days.
 - Zakat nisab info and calculator.
 - Asma-ul Husna (name of the day + full list).
 - Consistent theming with shared palette, typography, and card styles.
 
-## Screenshots (v1.0.0)
+## Screenshots (v1.1.0)
+
+<table>
+	<tr>
+		<td><img src="assets/images/v110-ss/01.jpg" alt="Screenshot 01" width="280" /></td>
+		<td><img src="assets/images/v110-ss/02.jpg" alt="Screenshot 02" width="280" /></td>
+	</tr>
+</table>
+
+### Screenshots (v1.0.0)
 
 <table>
 	<tr>
@@ -90,18 +99,6 @@ Run the Android app:
 bunx expo run:android
 ```
 
-## Environment variables
-
-Create a `.env` file at the project root and provide API settings (values depend on your API plans):
-
-```bash
-EXPO_PUBLIC_ISLAMIC_API_BASE_URL=
-EXPO_PUBLIC_HADITH_API_BASE_URL=
-EXPO_PUBLIC_QURAN_API_BASE_URL=
-EXPO_PUBLIC_ISLAMIC_API_KEY=
-EXPO_PUBLIC_HADITH_API_KEY=
-```
-
 ## Project structure
 
 - `app/` — screens and routes (Expo Router)
@@ -116,6 +113,7 @@ This project uses the following APIs:
 
 - Islamic API — https://islamicapi.com/
 - Hadith API — https://hadithapi.com/
+- AlQuran API — https://alquran-api.pages.dev/
 
 ## Developer
 

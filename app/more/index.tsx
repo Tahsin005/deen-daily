@@ -190,6 +190,13 @@ export default function MoreScreen() {
             <Text style={styles.creditLabel}>Hadith API</Text>
             <Text style={styles.creditLink}>hadithapi.com</Text>
           </Pressable>
+          <Pressable
+            style={styles.creditRow}
+            onPress={() => Linking.openURL("https://alquran-api.pages.dev/")}
+          >
+            <Text style={styles.creditLabel}>AlQuran API</Text>
+            <Text style={styles.creditLink}>alquran-api.pages.dev</Text>
+          </Pressable>
         </View>
       </View>
 
