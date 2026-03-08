@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
-import type { SurahSummary } from "../../lib/api/quran/getSurahs";
+import type { SurahSummary } from "../../lib/api/quranV2/types";
 
 type SurahListItemProps = {
   surah: SurahSummary;
@@ -12,22 +12,22 @@ type SurahListItemProps = {
 
 function SurahListItem({ surah, onPress }: SurahListItemProps) {
   const handlePress = useCallback(() => {
-    onPress(Number.parseInt(surah.index, 10));
-  }, [onPress, surah.index]);
+    onPress(surah.id);
+  }, [onPress, surah.id]);
 
   return (
     <Pressable onPress={handlePress} style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
       <View style={styles.cardHeader}>
-        <Text style={styles.cardIndex}>{surah.index}</Text>
+        <Text style={styles.cardIndex}>{surah.id}</Text>
         <View style={styles.cardTitles}>
-          <Text style={styles.cardTitle}>{surah.title}</Text>
-          <Text style={styles.cardSubtitle}>{surah.titleAr}</Text>
+          <Text style={styles.cardTitle}>{surah.transliteration}</Text>
+          <Text style={styles.cardSubtitle}>{surah.translation}</Text>
         </View>
       </View>
       <View style={styles.cardMetaRow}>
         <Text style={styles.cardMetaText}>{surah.type}</Text>
-        <Text style={styles.cardMetaText}>{surah.place}</Text>
-        <Text style={styles.cardMetaText}>{surah.count} verses</Text>
+        <Text style={styles.cardMetaText}>{surah.total_verses} verses</Text>
+        <Text style={styles.cardMetaText}>{surah.name}</Text>
       </View>
     </Pressable>
   );

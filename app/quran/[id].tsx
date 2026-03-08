@@ -1,6 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
+import { useAudioPlayer, useAudioPlayerStatus, type AudioPlayer } from "expo-audio";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
     FlatList,
     Pressable,
@@ -15,14 +17,15 @@ import { VerseCard } from "../../components/quran/VerseCard";
 import { Colors } from "../../constants/Colors";
 import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
-import { getSurahDetail } from "../../lib/api/quran/getSurahDetail";
-import { getSurahTranslation } from "../../lib/api/quran/getSurahTranslation";
+import { getSurah } from "../../lib/api/quranV2/getSurah";
+import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 
 export default function SurahDetailScreen() {
     const router = useRouter();
     const params = useLocalSearchParams<{ id?: string }>();
     const [showScrollTop, setShowScrollTop] = useState(false);
-    const listRef = useRef<FlatList<{ key: string; value: string; translation?: string }>>(null);
+    const listRef = useRef<FlatList<{ id: number; text: string; translation: string }>>(null);
+    const [selectedLanguage] = useLocalStorageString("quranLanguage", "en");
     const selectedIndex = useMemo(() => {
         const rawValue = Array.isArray(params.id) ? params.id[0] : params.id;
         const parsed = rawValue ? Number.parseInt(rawValue, 10) : NaN;
@@ -35,35 +38,61 @@ export default function SurahDetailScreen() {
         error,
         refetch,
     } = useQuery({
-        queryKey: ["surahDetail", selectedIndex],
-        queryFn: () => getSurahDetail(selectedIndex ?? 0),
+        queryKey: ["surahDetail", selectedIndex, selectedLanguage],
+        queryFn: () => getSurah(selectedIndex ?? 0, selectedLanguage),
         enabled: selectedIndex !== null,
     });
 
-    const {
-        data: translationDetail,
-        isLoading: isTranslationLoading,
-        error: translationError,
-    } = useQuery({
-        queryKey: ["surahTranslation", selectedIndex],
-        queryFn: () => getSurahTranslation(selectedIndex ?? 0),
-        enabled: selectedIndex !== null,
-    });
+    const orderedVerses = useMemo(() => surahDetail?.verses ?? [], [surahDetail]);
+    const audioEntries = useMemo(
+        () => Object.entries(surahDetail?.audio ?? {}),
+        [surahDetail]
+    );
+    const preferredReciterKey = useMemo(() => {
+        if (!audioEntries.length) {
+            return null;
+        }
+        const target = "mishary rashid al-afasy";
+        const matched = audioEntries.find(([, reciter]) =>
+            reciter.reciter.toLowerCase().includes(target)
+        );
+        return matched?.[0] ?? audioEntries[0][0];
+    }, [audioEntries]);
 
-    const orderedVerses = useMemo(() => {
-        if (!surahDetail) {
-            return [];
+    const selectedReciter = useMemo(() => {
+        if (!preferredReciterKey) {
+            return null;
+        }
+        return audioEntries.find(([key]) => key === preferredReciterKey)?.[1] ?? null;
+    }, [audioEntries, preferredReciterKey]);
+
+    const audioSource = useMemo(
+        () => (selectedReciter?.url ? { uri: selectedReciter.url } : undefined),
+        [selectedReciter?.url]
+    );
+    const player = useAudioPlayer(audioSource) as unknown as {
+        play: () => void;
+        pause: () => void;
+        stop?: () => void;
+    };
+    const status = useAudioPlayerStatus(player as unknown as AudioPlayer);
+    const isPlaying = Boolean(status?.playing);
+
+    useEffect(() => {
+        player?.stop?.();
+    }, [preferredReciterKey, player]);
+
+    const handleTogglePlayback = () => {
+        if (!selectedReciter?.url) {
+            return;
         }
 
-        return Object.entries(surahDetail.verse)
-            .map(([key, value]) => ({
-                key,
-                value,
-                translation: translationDetail?.verse[key],
-                order: Number.parseInt(key.split("_")[1] ?? "0", 10),
-            }))
-            .sort((a, b) => a.order - b.order);
-    }, [surahDetail, translationDetail]);
+        if (isPlaying) {
+            player.pause();
+        } else {
+            player.play();
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -91,7 +120,7 @@ export default function SurahDetailScreen() {
                 <FlatList
                     ref={listRef}
                     data={orderedVerses}
-                    keyExtractor={(item) => item.key}
+                    keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={styles.listContent}
                     onScroll={({ nativeEvent }) => {
                         setShowScrollTop(nativeEvent.contentOffset.y > 300);
@@ -99,19 +128,55 @@ export default function SurahDetailScreen() {
                     scrollEventThrottle={16}
                     ListHeaderComponent={
                         <View style={styles.headerFrame}>
-                            <Text style={styles.title}>{surahDetail.name}</Text>
-                            <Text style={styles.subtitle}>{surahDetail.count} verses</Text>
-                            {isTranslationLoading ? (
-                                <SkeletonLine style={styles.translationSkeleton} />
-                            ) : translationError ? (
-                                <Text style={styles.translationStatus}>Translation unavailable.</Text>
+                            <Text style={styles.title}>{surahDetail.transliteration}</Text>
+                            <Text style={styles.subtitle}>{surahDetail.translation}</Text>
+                            <Text style={styles.subtitleAlt}>
+                                {surahDetail.name} · {surahDetail.total_verses} verses
+                            </Text>
+                            {audioEntries.length ? (
+                                <View style={styles.audioCard}>
+                                    <View style={styles.audioTopRow}>
+                                        <View style={styles.audioIconWrap}>
+                                            <Ionicons
+                                                name="musical-notes"
+                                                size={22}
+                                                color={Theme.colors.primary}
+                                            />
+                                        </View>
+                                        <View style={styles.audioInfo}>
+                                            <Text style={styles.audioTitle}>Recitation</Text>
+                                            <Text style={styles.audioReciterName}>
+                                                {selectedReciter?.reciter ?? "Recitation unavailable"}
+                                            </Text>
+                                        </View>
+                                        <Pressable
+                                            style={styles.audioControlButton}
+                                            onPress={handleTogglePlayback}
+                                        >
+                                            <Ionicons
+                                                name={isPlaying ? "pause" : "play"}
+                                                size={18}
+                                                color={Theme.colors.onPrimary}
+                                            />
+                                            <Text style={styles.audioControlText}>
+                                                {isPlaying ? "Pause" : "Play"}
+                                            </Text>
+                                        </Pressable>
+                                    </View>
+                                    <View style={styles.audioMetaRow}>
+                                        <Ionicons name="headset" size={14} color={Colors.light.icon} />
+                                        <Text style={styles.audioMetaText}>
+                                            High quality MP3 stream
+                                        </Text>
+                                    </View>
+                                </View>
                             ) : null}
                         </View>
                     }
                     renderItem={({ item }) => (
                         <VerseCard
-                            verseNumber={item.key.replace("verse_", "")}
-                            arabicText={item.value}
+                            verseNumber={item.id.toString()}
+                            arabicText={item.text}
                             translationText={item.translation}
                         />
                     )}
@@ -156,6 +221,73 @@ const styles = StyleSheet.create({
         color: Colors.light.icon,
         textAlign: "center",
     },
+    subtitleAlt: {
+        marginTop: 4,
+        fontSize: Fonts.size.sm,
+        color: Colors.light.icon,
+        textAlign: "center",
+    },
+    audioCard: {
+        marginTop: 12,
+        width: "100%",
+        borderRadius: Theme.radius.md,
+        borderWidth: 1,
+        borderColor: Theme.colors.borderLight,
+        backgroundColor: Theme.colors.surfaceMuted,
+        padding: 14,
+        gap: 10,
+    },
+    audioTopRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 12,
+    },
+    audioIconWrap: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: Theme.colors.surface,
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 1,
+        borderColor: Theme.colors.border,
+    },
+    audioInfo: {
+        flex: 1,
+        gap: 2,
+    },
+    audioTitle: {
+        fontSize: Fonts.size.md,
+        fontWeight: "700",
+        color: Colors.light.text,
+    },
+    audioReciterName: {
+        fontSize: Fonts.size.sm,
+        color: Colors.light.icon,
+    },
+    audioControlButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: Theme.radius.pill,
+        backgroundColor: Theme.colors.primary,
+    },
+    audioControlText: {
+        fontSize: Fonts.size.sm,
+        fontWeight: "600",
+        color: Theme.colors.onPrimary,
+    },
+    audioMetaRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+    },
+    audioMetaText: {
+        fontSize: Fonts.size.xs,
+        color: Colors.light.icon,
+    },
     listContent: {
         paddingBottom: 32,
         paddingTop: 8,
@@ -166,19 +298,6 @@ const styles = StyleSheet.create({
         borderColor: Theme.colors.borderLight,
         paddingHorizontal: 12,
         paddingVertical: 12,
-    },
-    translationStatus: {
-        marginTop: 6,
-        fontSize: Fonts.size.sm,
-        color: Colors.light.icon,
-        textAlign: "center",
-    },
-    translationSkeleton: {
-        marginTop: 6,
-        width: 140,
-        height: 10,
-        borderRadius: 5,
-        alignSelf: "center",
     },
     stateContainer: {
         marginTop: 32,

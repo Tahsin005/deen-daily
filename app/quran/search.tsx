@@ -1,33 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { SkeletonLine } from "../../components/common/Skeleton";
-import { SurahListItem } from "../../components/quran/SurahListItem";
+import { BackButton } from "../../components/quran/BackButton";
 import { Colors } from "../../constants/Colors";
 import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { getLanguages } from "../../lib/api/quranV2/getLanguages";
-import { getSurahs } from "../../lib/api/quranV2/getSurahs";
-import type { QuranLanguage, SurahSummary } from "../../lib/api/quranV2/types";
+import { searchQuran } from "../../lib/api/quranV2/searchQuran";
+import type { QuranLanguage, QuranSearchResult } from "../../lib/api/quranV2/types";
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 
-export default function QuranScreen() {
+export default function QuranSearchScreen() {
   const router = useRouter();
-  const [searchText, setSearchText] = useState("");
+  const [query, setQuery] = useState("");
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const listRef = useRef<FlatList<SurahSummary>>(null);
-  const [selectedLanguage, setSelectedLanguage] = useLocalStorageString(
-    "quranLanguage",
-    "en"
-  );
+  const listRef = useRef<FlatList<QuranSearchResult>>(null);
+  const [selectedLanguage, setSelectedLanguage] = useLocalStorageString("quranLanguage", "en");
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["surahs", selectedLanguage],
-    queryFn: () => getSurahs(selectedLanguage),
-  });
+  const trimmedQuery = query.trim();
+  const searchEnabled = trimmedQuery.length >= 3;
 
   const { data: languageData } = useQuery({
     queryKey: ["quranLanguages"],
@@ -35,8 +30,8 @@ export default function QuranScreen() {
   });
 
   const languages = useMemo<QuranLanguage[]>(
-    () => languageData?.languages ?? data?.available_languages ?? [],
-    [data?.available_languages, languageData?.languages]
+    () => languageData?.languages ?? [],
+    [languageData?.languages]
   );
 
   const currentLanguageLabel = useMemo(() => {
@@ -44,60 +39,30 @@ export default function QuranScreen() {
     return match?.nativeName ?? selectedLanguage.toUpperCase();
   }, [languages, selectedLanguage]);
 
-  const filteredSurahs = useMemo(() => {
-    if (!data?.surahs) {
-      return [];
-    }
+  const {
+    data: searchData,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["quranSearch", trimmedQuery, selectedLanguage],
+    queryFn: () => searchQuran(trimmedQuery, selectedLanguage),
+    enabled: searchEnabled,
+  });
 
-    const normalizedSearch = searchText.trim().toLowerCase();
-
-    return data.surahs.filter((surah) => {
-      const matchesTitle = normalizedSearch
-        ? surah.transliteration.toLowerCase().includes(normalizedSearch) ||
-          surah.translation.toLowerCase().includes(normalizedSearch) ||
-          surah.name.toLowerCase().includes(normalizedSearch)
-        : true;
-      return matchesTitle;
-    });
-  }, [data, searchText]);
-
-  const handlePressSurah = useCallback(
-    (index: number) => {
-      router.push({
-        pathname: "/quran/[id]",
-        params: { id: index.toString() },
-      });
-    },
-    [router]
-  );
-
-  const renderItem = useCallback(
-    ({ item }: { item: SurahSummary }) => (
-      <SurahListItem surah={item} onPress={handlePressSurah} />
-    ),
-    [handlePressSurah]
-  );
+  const results = useMemo(() => searchData?.results ?? [], [searchData?.results]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <View>
-          <Text style={styles.title}>Surahs</Text>
-          <Text style={styles.subtitle}>Explore the Quran chapter list.</Text>
-        </View>
-        <Pressable
-          style={styles.searchButton}
-          onPress={() => router.push("/quran/search")}
-        >
-          <Text style={styles.searchButtonText}>Search verses</Text>
-        </Pressable>
-      </View>
+      <BackButton onPress={() => router.back()} label="Back to Quran" />
+      <Text style={styles.title}>Search Quran</Text>
+      <Text style={styles.subtitle}>Search by meaning or keyword (min 3 characters).</Text>
 
       <View style={styles.filtersRow}>
         <TextInput
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholder="Search by title"
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search for mercy, prayer, guidance..."
           placeholderTextColor={Colors.light.icon}
           style={styles.searchInput}
           autoCapitalize="none"
@@ -136,23 +101,26 @@ export default function QuranScreen() {
             </View>
           ) : null}
         </View>
-
       </View>
 
-      {isLoading ? (
+      {!searchEnabled ? (
+        <View style={styles.stateContainer}>
+          <Text style={styles.stateText}>Start typing to search the Quran.</Text>
+        </View>
+      ) : isLoading ? (
         <View style={styles.stateContainer}>
           <View style={styles.skeletonList}>
-            {Array.from({ length: 8 }).map((_, index) => (
+            {Array.from({ length: 6 }).map((_, index) => (
               <View key={`skeleton-${index}`} style={styles.skeletonRow}>
                 <SkeletonLine style={styles.skeletonLine} />
-                <SkeletonLine style={styles.skeletonLineShort} />
+                <SkeletonLine style={styles.skeletonLineWide} />
               </View>
             ))}
           </View>
         </View>
       ) : error ? (
         <View style={styles.stateContainer}>
-          <Text style={styles.stateText}>Could not load surahs.</Text>
+          <Text style={styles.stateText}>Unable to search right now.</Text>
           <Pressable onPress={() => refetch()} style={styles.retryButton}>
             <Text style={styles.retryButtonText}>Try again</Text>
           </Pressable>
@@ -160,20 +128,51 @@ export default function QuranScreen() {
       ) : (
         <FlatList
           ref={listRef}
-          data={filteredSurahs}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
+          data={results}
+          keyExtractor={(item) => `${item.surah.id}-${item.verses[0]?.id ?? "0"}`}
           contentContainerStyle={styles.listContent}
-          keyboardShouldPersistTaps="handled"
           onScroll={({ nativeEvent }) => {
             setShowScrollTop(nativeEvent.contentOffset.y > 300);
           }}
           scrollEventThrottle={16}
           ListEmptyComponent={
             <View style={styles.stateContainer}>
-              <Text style={styles.stateText}>No surahs found.</Text>
+              <Text style={styles.stateText}>No results found.</Text>
             </View>
           }
+          renderItem={({ item }) => (
+            <View style={styles.resultCard}>
+              <View style={styles.resultHeader}>
+                <View>
+                  <Text style={styles.resultTitle}>{item.surah.transliteration}</Text>
+                  <Text style={styles.resultSubtitle}>{item.surah.translation}</Text>
+                </View>
+                <Pressable
+                  style={styles.openButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/quran/[id]",
+                      params: { id: item.surah.id.toString() },
+                    })
+                  }
+                >
+                  <Text style={styles.openButtonText}>Open</Text>
+                </Pressable>
+              </View>
+              <Text style={styles.resultMeta}>{item.surah.name}</Text>
+              <View style={styles.verseList}>
+                {item.verses.slice(0, 2).map((verse) => (
+                  <View key={verse.id} style={styles.verseRow}>
+                    <Text style={styles.verseNumber}>{verse.id}</Text>
+                    <View style={styles.verseTextWrap}>
+                      <Text style={styles.verseArabic}>{verse.text}</Text>
+                      <Text style={styles.verseTranslation}>{verse.translation}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
         />
       )}
 
@@ -196,30 +195,12 @@ const styles = StyleSheet.create({
     fontSize: Fonts.size.mega,
     fontWeight: "700",
     color: Colors.light.text,
+    marginTop: 8,
   },
   subtitle: {
     marginTop: 4,
     fontSize: Fonts.size.text,
     color: Colors.light.icon,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  searchButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: Theme.radius.pill,
-    backgroundColor: Theme.colors.surfaceSoft,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-  },
-  searchButtonText: {
-    fontSize: Fonts.size.sm,
-    fontWeight: "600",
-    color: Colors.light.primary,
   },
   filtersRow: {
     marginTop: 16,
@@ -240,7 +221,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   dropdownWrapper: {
-    width: 140,
+    width: 160,
     position: "relative",
   },
   dropdownTrigger: {
@@ -264,10 +245,10 @@ const styles = StyleSheet.create({
     top: 48,
     left: 0,
     right: 0,
-  borderRadius: Theme.radius.md,
-  borderWidth: 1,
-  borderColor: Theme.colors.border,
-  backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.md,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.surface,
     overflow: "hidden",
     zIndex: 20,
   },
@@ -285,11 +266,6 @@ const styles = StyleSheet.create({
     fontSize: Fonts.size.md,
     color: Colors.light.text,
   },
-  listContent: {
-    paddingVertical: 16,
-    gap: 12,
-    paddingBottom: 32,
-  },
   stateContainer: {
     marginTop: 32,
     alignItems: "center",
@@ -298,6 +274,7 @@ const styles = StyleSheet.create({
   stateText: {
     fontSize: Fonts.size.text,
     color: Colors.light.icon,
+    textAlign: "center",
   },
   skeletonList: {
     width: "100%",
@@ -312,12 +289,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   skeletonLine: {
-    width: "80%",
+    width: "70%",
     height: 12,
     borderRadius: 6,
   },
-  skeletonLineShort: {
-    width: "40%",
+  skeletonLineWide: {
+    width: "90%",
     height: 12,
     borderRadius: 6,
   },
@@ -330,5 +307,81 @@ const styles = StyleSheet.create({
   retryButtonText: {
     color: Theme.colors.onPrimary,
     fontWeight: "600",
+  },
+  listContent: {
+    paddingVertical: 16,
+    gap: 12,
+    paddingBottom: 32,
+  },
+  resultCard: {
+    backgroundColor: Theme.colors.surface,
+    borderRadius: Theme.radius.lg,
+    borderWidth: 1,
+    borderColor: Theme.colors.borderLight,
+    padding: 16,
+    gap: 10,
+  },
+  resultHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  resultTitle: {
+    fontSize: Fonts.size.xl,
+    fontWeight: "700",
+    color: Colors.light.text,
+  },
+  resultSubtitle: {
+    fontSize: Fonts.size.sm,
+    color: Colors.light.icon,
+    marginTop: 2,
+  },
+  resultMeta: {
+    fontSize: Fonts.size.md,
+    color: Colors.light.primary,
+  },
+  openButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: Theme.radius.pill,
+    backgroundColor: Theme.colors.surfaceSoft,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  openButtonText: {
+    fontSize: Fonts.size.sm,
+    fontWeight: "600",
+    color: Colors.light.primary,
+  },
+  verseList: {
+    gap: 10,
+  },
+  verseRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  verseNumber: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: Theme.colors.surfaceSoft,
+    textAlign: "center",
+    textAlignVertical: "center",
+    fontWeight: "700",
+    color: Theme.colors.primary,
+  },
+  verseTextWrap: {
+    flex: 1,
+    gap: 4,
+  },
+  verseArabic: {
+    fontSize: Fonts.size.xl,
+    color: Colors.light.text,
+    textAlign: "right",
+  },
+  verseTranslation: {
+    fontSize: Fonts.size.text,
+    color: Colors.light.icon,
   },
 });
