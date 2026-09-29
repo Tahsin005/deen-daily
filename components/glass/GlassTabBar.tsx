@@ -85,7 +85,7 @@ const TabItem = ({
       onPressOut={handlePressOut}
       style={[styles.tabButton, animatedStyle]}
     >
-      <View style={[styles.tabContent, isFocused && styles.tabContentActive]}>
+      <View style={styles.tabContent}>
         <Ionicons
           name={isFocused ? info.active : info.inactive}
           size={20}
@@ -94,7 +94,6 @@ const TabItem = ({
         <Text style={[styles.tabLabel, isFocused && styles.tabLabelActive]}>
           {info.label}
         </Text>
-        {isFocused ? <View style={styles.activeDot} /> : null}
       </View>
     </AnimatedPressable>
   );
@@ -203,12 +202,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    position: "relative",
-  },
-  tabContentActive: {
-    backgroundColor: "rgba(37, 103, 30, 0.35)",
   },
   tabLabel: {
     fontSize: Fonts.size.xxs,
@@ -221,14 +214,8 @@ const styles = StyleSheet.create({
     color: "#48A111",
     fontWeight: "700",
   },
-  activeDot: {
-    position: "absolute",
-    bottom: 2,
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: "#48A111",
-  },
 });
+
+GlassTabBar.displayName = "GlassTabBar";
 
 export default GlassTabBar;
