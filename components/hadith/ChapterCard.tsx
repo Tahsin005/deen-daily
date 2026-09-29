@@ -1,6 +1,7 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Colors } from "../../constants/Colors";
+import { GlassCard } from "../glass/GlassCard";
 import { Fonts } from "../../constants/Fonts";
 import type { HadithChapter } from "../../lib/api/hadith/getHadithChapters";
 
@@ -10,46 +11,79 @@ type ChapterCardProps = {
 
 function ChapterCard({ chapter }: ChapterCardProps) {
     return (
-        <View style={styles.card}>
-            <Text style={styles.number}>Chapter {chapter.chapterNumber}</Text>
-            <Text style={styles.title}>{chapter.chapterEnglish}</Text>
-            <Text style={styles.subtitle}>{chapter.chapterArabic}</Text>
-            <Text style={styles.subSubtitle}>{chapter.chapterUrdu}</Text>
-        </View>
+        <GlassCard style={styles.card} contentStyle={styles.cardContent}>
+            <View style={styles.left}>
+                <View style={styles.badge}>
+                    <Text style={styles.number}>#{chapter.chapterNumber}</Text>
+                </View>
+                <View style={styles.textWrap}>
+                    <Text style={styles.title}>{chapter.chapterEnglish}</Text>
+                    {chapter.chapterArabic ? (
+                        <Text style={styles.arabic}>{chapter.chapterArabic}</Text>
+                    ) : null}
+                    {chapter.chapterUrdu ? (
+                        <Text style={styles.urdu}>{chapter.chapterUrdu}</Text>
+                    ) : null}
+                </View>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#9CA3AF" />
+        </GlassCard>
     );
 }
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
+        marginBottom: 10,
+    },
+    cardContent: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
         padding: 16,
+    },
+    left: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        gap: 12,
+        flex: 1,
+    },
+    badge: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+        backgroundColor: "rgba(37, 103, 30, 0.35)",
         borderWidth: 1,
-        borderColor: "#F0F0F0",
+        borderColor: "rgba(72, 161, 17, 0.35)",
+        marginTop: 2,
     },
     number: {
-        fontSize: Fonts.size.sm,
-        fontWeight: "600",
-        color: Colors.light.primary,
+        fontSize: Fonts.size.xs,
+        fontWeight: "700",
+        color: "#48A111",
+    },
+    textWrap: {
+        flex: 1,
     },
     title: {
-        marginTop: 6,
-        fontSize: Fonts.size.xl,
+        fontSize: Fonts.size.md,
         fontWeight: "700",
-        color: Colors.light.text,
+        color: "#F3F4F6",
+        letterSpacing: -0.2,
     },
-    subtitle: {
+    arabic: {
         marginTop: 4,
-        fontSize: Fonts.size.text,
-        color: Colors.light.text,
+        fontSize: Fonts.size.lg,
+        color: "#FDE68A",
+        textAlign: "right",
     },
-    subSubtitle: {
-        marginTop: 4,
-        fontSize: Fonts.size.sm,
-        color: Colors.light.icon,
+    urdu: {
+        marginTop: 2,
+        fontSize: Fonts.size.xs,
+        color: "#9CA3AF",
+        textAlign: "right",
     },
 });
 
-const MemoizedChapterCard = memo(ChapterCard);
+export const MemoizedChapterCard = memo(ChapterCard);
 export default MemoizedChapterCard;
 export { MemoizedChapterCard as ChapterCard };

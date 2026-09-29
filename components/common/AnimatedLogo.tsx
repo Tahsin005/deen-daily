@@ -69,6 +69,7 @@ export const AnimatedLogo = ({ size = 64, source, style }: AnimatedLogoProps) =>
                 {
                     width: size,
                     height: size,
+                    borderRadius: Math.round(size * 0.22),
                     transform: [{ translateY: floatY }, { scale }],
                 },
                 style,

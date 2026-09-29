@@ -1,9 +1,8 @@
 import { memo, useCallback } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Colors } from "../../constants/Colors";
+import { StyleSheet, Text, View } from "react-native";
 import { Fonts } from "../../constants/Fonts";
-import { Theme } from "../../constants/Theme";
 import type { SurahSummary } from "../../lib/api/quranV2/types";
+import { GlassCard } from "../glass/GlassCard";
 
 type SurahListItemProps = {
   surah: SurahSummary;
@@ -15,75 +14,132 @@ function SurahListItem({ surah, onPress }: SurahListItemProps) {
     onPress(surah.id);
   }, [onPress, surah.id]);
 
+  const isMakki = surah.type.toLowerCase().includes("makk");
+
   return (
-    <Pressable onPress={handlePress} style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.cardIndex}>{surah.id}</Text>
-        <View style={styles.cardTitles}>
-          <Text style={styles.cardTitle}>{surah.transliteration}</Text>
-          <Text style={styles.cardSubtitle}>{surah.translation}</Text>
+    <GlassCard onPress={handlePress} style={styles.card} contentStyle={styles.cardContent}>
+
+      <View style={styles.leftRow}>
+        <View style={styles.idBadge}>
+          <Text style={styles.idText}>{surah.id}</Text>
+        </View>
+
+        <View style={styles.textGroup}>
+          <Text style={styles.transliteration}>{surah.transliteration}</Text>
+          <Text style={styles.translation} numberOfLines={1}>
+            {surah.translation}
+          </Text>
+          <View style={styles.metaRow}>
+            <View style={[styles.typeBadge, isMakki ? styles.makkiBadge : styles.madaniBadge]}>
+              <Text style={[styles.typeText, isMakki ? styles.makkiText : styles.madaniText]}>
+                {isMakki ? "MAKKI" : "MADANI"}
+              </Text>
+            </View>
+            <Text style={styles.versesCount}>{surah.total_verses} verses</Text>
+          </View>
         </View>
       </View>
-      <View style={styles.cardMetaRow}>
-        <Text style={styles.cardMetaText}>{surah.type}</Text>
-        <Text style={styles.cardMetaText}>{surah.total_verses} verses</Text>
-        <Text style={styles.cardMetaText}>{surah.name}</Text>
+
+
+      <View style={styles.rightArabic}>
+        <Text style={styles.arabicName}>{surah.name}</Text>
       </View>
-    </Pressable>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Theme.colors.surface,
-    borderRadius: Theme.radius.lg,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Theme.colors.borderLight,
+    marginBottom: 8,
   },
-  cardPressed: {
-    opacity: 0.85,
-  },
-  cardHeader: {
+  cardContent: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
   },
-  cardIndex: {
-    width: 42,
-    height: 42,
-  borderRadius: 21,
-  backgroundColor: Theme.colors.surfaceSoft,
-    textAlign: "center",
-    textAlignVertical: "center",
-    fontWeight: "700",
-  color: Theme.colors.primary,
-    marginRight: 12,
-  },
-  cardTitles: {
+  leftRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
     flex: 1,
   },
-  cardTitle: {
-    fontSize: Fonts.size.xl,
-    fontWeight: "600",
-    color: Colors.light.text,
+  idBadge: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(242, 181, 11, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(242, 181, 11, 0.35)",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  cardSubtitle: {
-    marginTop: 2,
-    fontSize: Fonts.size.text,
-    color: Colors.light.icon,
-  },
-  cardMetaRow: {
-    marginTop: 12,
-    flexDirection: "row",
-    gap: 12,
-    flexWrap: "wrap",
-  },
-  cardMetaText: {
+  idText: {
     fontSize: Fonts.size.sm,
-    color: Colors.light.icon,
+    fontWeight: "700",
+    color: "#F2B50B",
+  },
+  textGroup: {
+    flex: 1,
+  },
+  transliteration: {
+    fontSize: Fonts.size.md,
+    fontWeight: "700",
+    color: "#F3F4F6",
+    letterSpacing: -0.2,
+  },
+  translation: {
+    fontSize: Fonts.size.xs,
+    color: "#9CA3AF",
+    marginTop: 2,
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 6,
+  },
+  typeBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  makkiBadge: {
+    backgroundColor: "rgba(37, 103, 30, 0.3)",
+    borderColor: "rgba(72, 161, 17, 0.4)",
+  },
+  madaniBadge: {
+    backgroundColor: "rgba(242, 181, 11, 0.15)",
+    borderColor: "rgba(242, 181, 11, 0.3)",
+  },
+  typeText: {
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  makkiText: {
+    color: "#48A111",
+  },
+  madaniText: {
+    color: "#FDE68A",
+  },
+  versesCount: {
+    fontSize: Fonts.size.xxs,
+    color: "#6B7280",
+  },
+  rightArabic: {
+    paddingLeft: 12,
+  },
+  arabicName: {
+    fontSize: Fonts.size.xxl,
+    fontWeight: "700",
+    color: "#FDE68A",
+    textAlign: "right",
   },
 });
 
-const MemoizedSurahListItem = memo(SurahListItem);
+export const MemoizedSurahListItem = memo(SurahListItem);
 export default MemoizedSurahListItem;
 export { MemoizedSurahListItem as SurahListItem };

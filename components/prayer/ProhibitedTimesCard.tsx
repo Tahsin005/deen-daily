@@ -1,8 +1,7 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, Text, View } from "react-native";
-import { Colors } from "../../constants/Colors";
+import { GlassCard } from "../glass/GlassCard";
 import { Fonts } from "../../constants/Fonts";
-import { Theme } from "../../constants/Theme";
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -18,25 +17,24 @@ type ProhibitedTimesCardProps = {
 
 export const ProhibitedTimesCard = ({ times }: ProhibitedTimesCardProps) => {
     return (
-        <View style={styles.sectionCard}>
+        <GlassCard style={styles.card}>
             <View style={styles.headerRow}>
-                <View style={styles.headerTitleRow}>
+                <View>
+                    <Text style={styles.sectionCategory}>ATTENTION</Text>
                     <Text style={styles.sectionTitle}>Prohibited Times</Text>
                 </View>
-                <Text style={styles.headerHint}>Avoid praying</Text>
+                <Text style={styles.headerHint}>Avoid Salat</Text>
             </View>
             {times ? (
                 <View style={styles.prohibitedGrid}>
                     {([
                         { label: "Sunrise", value: times.sunrise, icon: "sunny" as IconName },
-                        { label: "Noon", value: times.noon, icon: "sunny-outline" as IconName },
+                        { label: "Noon (Zawal)", value: times.noon, icon: "sunny-outline" as IconName },
                         { label: "Sunset", value: times.sunset, icon: "partly-sunny" as IconName },
                     ] as const).map((item) => (
                         <View key={item.label} style={styles.prohibitedCard}>
                             <View style={styles.cardTopRow}>
-                                <View style={styles.iconBadge}>
-                                    <Ionicons name={item.icon} size={16} color={Theme.colors.accent} />
-                                </View>
+                                <Ionicons name={item.icon} size={18} color="#F2B50B" />
                                 <Text style={styles.prohibitedLabel}>{item.label}</Text>
                             </View>
                             <View style={styles.timePill}>
@@ -50,89 +48,82 @@ export const ProhibitedTimesCard = ({ times }: ProhibitedTimesCardProps) => {
             ) : (
                 <Text style={styles.statusText}>Prohibited times will appear once loaded.</Text>
             )}
-        </View>
+        </GlassCard>
     );
 };
 
 const styles = StyleSheet.create({
-    sectionCard: {
-        marginTop: 12,
-        backgroundColor: Theme.colors.surface,
-        borderRadius: Theme.radius.lg,
-        borderWidth: 1,
-        borderColor: Theme.colors.borderLight,
-        padding: 12,
+    card: {
+        marginTop: 16,
     },
     headerRow: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: 8,
+        marginBottom: 14,
     },
-    headerTitleRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 6,
-    },
-    headerHint: {
-        fontSize: Fonts.size.xxs,
-        color: Colors.light.icon,
+    sectionCategory: {
+        fontSize: 10,
+        fontWeight: "700",
+        color: "#6B7280",
+        letterSpacing: 1,
     },
     sectionTitle: {
-        fontSize: Fonts.size.text,
+        fontSize: Fonts.size.xl,
         fontWeight: "700",
-        color: Colors.light.text,
+        color: "#F3F4F6",
+        letterSpacing: -0.3,
+    },
+    headerHint: {
+        fontSize: Fonts.size.xs,
+        color: "#EF4444",
+        fontWeight: "600",
     },
     statusText: {
         fontSize: Fonts.size.sm,
-        color: Colors.light.icon,
+        color: "#9CA3AF",
+        textAlign: "center",
+        paddingVertical: 12,
     },
     prohibitedGrid: {
         flexDirection: "row",
-        justifyContent: "space-between",
         gap: 8,
     },
     prohibitedCard: {
         flex: 1,
-        backgroundColor: Theme.colors.surfaceAccent,
-        borderRadius: Theme.radius.md,
+        backgroundColor: "rgba(242, 181, 11, 0.08)",
+        borderRadius: 14,
         padding: 10,
         borderWidth: 1,
-        borderColor: Theme.colors.accent,
+        borderColor: "rgba(242, 181, 11, 0.2)",
+        borderTopColor: "rgba(242, 181, 11, 0.35)",
+        alignItems: "center",
     },
     cardTopRow: {
         flexDirection: "column",
         alignItems: "center",
-        gap: 6,
-        marginBottom: 6,
-    },
-    iconBadge: {
-        width: 24,
-        height: 24,
-        borderRadius: Theme.radius.md,
-        backgroundColor: Theme.colors.surfaceAccent,
-        alignItems: "center",
-        justifyContent: "center",
+        gap: 4,
+        marginBottom: 8,
     },
     prohibitedLabel: {
-        fontSize: Fonts.size.sm,
+        fontSize: Fonts.size.xs,
         fontWeight: "600",
-        color: Theme.colors.text,
+        color: "#FDE68A",
         textAlign: "center",
     },
     timePill: {
-        alignSelf: "center",
-        backgroundColor: Theme.colors.surface,
+        backgroundColor: "rgba(0, 0, 0, 0.3)",
         paddingHorizontal: 8,
         paddingVertical: 4,
-        borderRadius: Theme.radius.pill,
+        borderRadius: 10,
         borderWidth: 1,
-        borderColor: Theme.colors.accent,
+        borderColor: "rgba(242, 181, 11, 0.25)",
     },
     prohibitedValue: {
-        fontSize: Fonts.size.sm,
+        fontSize: Fonts.size.xxs,
         fontWeight: "600",
-        color: Theme.colors.text,
+        color: "#F3F4F6",
         textAlign: "center",
     },
 });
+export default ProhibitedTimesCard;

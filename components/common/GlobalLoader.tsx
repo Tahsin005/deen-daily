@@ -64,5 +64,6 @@ const styles = StyleSheet.create({
     logo: {
         resizeMode: "contain",
         alignSelf: "center",
+        borderRadius: 24,
     },
 });

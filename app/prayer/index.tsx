@@ -1,32 +1,27 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useQuery } from "@tanstack/react-query";
-import { BlurView } from "expo-blur";
-import * as Location from "expo-location";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  Animated,
-  Easing,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
-import { AnimatedLogo } from "../../components/common/AnimatedLogo";
-import { SkeletonBox, SkeletonLine } from "../../components/common/Skeleton";
 import { TodayFastingCard } from "../../components/fasting/TodayFastingCard";
 import { WhiteDaysCard } from "../../components/fasting/WhiteDaysCard";
-import { NextPrayerCard } from "../../components/prayer/NextPrayerCard";
+import { AmbientBackground } from "../../components/glass/AmbientBackground";
+import { GlassCard } from "../../components/glass/GlassCard";
+import { GlassPill } from "../../components/glass/GlassPill";
 import { PrayerTimesCard } from "../../components/prayer/PrayerTimesCard";
 import { ProhibitedTimesCard } from "../../components/prayer/ProhibitedTimesCard";
-import { RamadanBanner } from "../../components/ramadan/RamadanBanner";
 import { RamadanScheduleCard } from "../../components/ramadan/RamadanScheduleCard";
 import { ZakatCalculatorCard } from "../../components/zakat/ZakatCalculatorCard";
 import { ZakatNisabCard } from "../../components/zakat/ZakatNisabCard";
-import { Colors } from "../../constants/Colors";
 import { Fonts } from "../../constants/Fonts";
-import { Theme } from "../../constants/Theme";
 import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
 import { getAsmaulHusna } from "../../lib/api/asmaulHusna/getAsmaulHusna";
 import { getFastingTimes } from "../../lib/api/fasting/getFastingTimes";
@@ -44,21 +39,6 @@ const asmaLanguageOptions = [
   { label: "Türkçe (Turkish)", value: "tr" },
 ];
 
-const formatReadableDate = (value?: string) => {
-  if (!value) {
-    return "";
-  }
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return value;
-  }
-  return parsed.toLocaleDateString(undefined, {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-};
-
 type StoredLocation = {
   latitude: number;
   longitude: number;
@@ -74,38 +54,21 @@ const zakatDefaults = IslamicAPISettings.zakatNisab.defaults as {
 export default function PrayerScreen() {
   const { section } = useLocalSearchParams<{ section?: string }>();
   const [location, setLocation] = useState<StoredLocation | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("No saved location yet.");
-  const [storedLocation, setStoredLocation] = useLocalStorageString("prayerLocation", "");
+  const [storedLocation] = useLocalStorageString("prayerLocation", "");
   const [storedZakatCurrency] = useLocalStorageString(
     "zakatCurrency",
     zakatDefaults.currency
   );
   const [asmaLanguage, setAsmaLanguage] = useLocalStorageString("asmaLanguage", "en");
   const [isAsmaLanguageOpen, setIsAsmaLanguageOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(() => new Date());
+  const [asmaSearch, setAsmaSearch] = useState("");
   const [activeSection, setActiveSection] = useState<
     "prayer" | "fasting" | "zakat" | "asma"
-  >( "prayer" );
-  const [isSwitchingSection, setIsSwitchingSection] = useState(false);
-  const [pendingSection, setPendingSection] = useState<
-    "prayer" | "fasting" | "zakat" | "asma" | null
-  >(null);
-  const switchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const progressAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(0)).current;
-  const progressLoopRef = useRef<Animated.CompositeAnimation | null>(null);
-  const pulseLoopRef = useRef<Animated.CompositeAnimation | null>(null);
-  const [permissionStatus, setPermissionStatus] = useState<
-    "granted" | "denied" | "undetermined"
-  >("undetermined");
-  const [isCheckingPermission, setIsCheckingPermission] = useState(true);
+  >("prayer");
   const { method, school, shifting, calendar } = usePrayerSettings();
 
   const parsedStoredLocation = useMemo(() => {
-    if (!storedLocation) {
-      return null;
-    }
+    if (!storedLocation) return null;
     try {
       return JSON.parse(storedLocation) as StoredLocation;
     } catch {
@@ -113,168 +76,23 @@ export default function PrayerScreen() {
     }
   }, [storedLocation]);
 
-  const fetchLocation = async () => {
-    try {
-      setIsLoading(true);
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      setPermissionStatus(status === "granted" ? "granted" : "denied");
-      if (status !== "granted") {
-        setStatusMessage("Location permission denied.");
-        return;
-      }
-
-      const current = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-      const nextLocation: StoredLocation = {
-        latitude: current.coords.latitude,
-        longitude: current.coords.longitude,
-        updatedAt: new Date().toISOString(),
-      };
-      setStoredLocation(JSON.stringify(nextLocation));
-      setLocation(nextLocation);
-      setStatusMessage("Location updated.");
-    } catch {
-      setStatusMessage("Unable to fetch location.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (parsedStoredLocation) {
       setLocation(parsedStoredLocation);
-      setStatusMessage("Using saved location.");
     }
   }, [parsedStoredLocation]);
 
   useEffect(() => {
-    const checkPermission = async () => {
-      try {
-        const { status } = await Location.getForegroundPermissionsAsync();
-        setPermissionStatus(status === "granted" ? "granted" : "denied");
-      } finally {
-        setIsCheckingPermission(false);
-      }
-    };
-    checkPermission();
-  }, []);
-
-  useEffect(() => {
-    const tick = () => setCurrentTime(new Date());
-    tick();
-    const interval = setInterval(tick, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
     if (section === "fasting" || section === "ramadan") {
       setActiveSection("fasting");
-    }
-    if (section === "prayer") {
-      setActiveSection("prayer");
-    }
-    if (section === "zakat") {
+    } else if (section === "zakat") {
       setActiveSection("zakat");
-    }
-    if (section === "asma") {
+    } else if (section === "asma") {
       setActiveSection("asma");
-    }
-    if (!section) {
+    } else if (section === "prayer") {
       setActiveSection("prayer");
     }
   }, [section]);
-
-  useEffect(() => {
-    return () => {
-      if (switchTimeoutRef.current) {
-        clearTimeout(switchTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isSwitchingSection) {
-      progressLoopRef.current?.stop();
-      progressLoopRef.current = null;
-      progressAnim.setValue(0);
-      return;
-    }
-    progressAnim.setValue(0);
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(progressAnim, {
-          toValue: 1,
-          duration: 520,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(progressAnim, {
-          toValue: 0,
-          duration: 520,
-          easing: Easing.inOut(Easing.quad),
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    progressLoopRef.current = loop;
-    loop.start();
-    return () => {
-      loop.stop();
-      progressLoopRef.current = null;
-    };
-  }, [isSwitchingSection, progressAnim]);
-
-  useEffect(() => {
-    if (!isSwitchingSection) {
-      pulseLoopRef.current?.stop();
-      pulseLoopRef.current = null;
-      pulseAnim.setValue(0);
-      return;
-    }
-    pulseAnim.setValue(0);
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 700,
-          easing: Easing.out(Easing.quad),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 0,
-          duration: 700,
-          easing: Easing.in(Easing.quad),
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    pulseLoopRef.current = loop;
-    loop.start();
-    return () => {
-      loop.stop();
-      pulseLoopRef.current = null;
-    };
-  }, [isSwitchingSection, pulseAnim]);
-
-  const triggerSectionChange = (
-    nextSection: "prayer" | "fasting" | "zakat" | "asma"
-  ) => {
-    if (nextSection === activeSection) {
-      return;
-    }
-    if (switchTimeoutRef.current) {
-      clearTimeout(switchTimeoutRef.current);
-    }
-    setPendingSection(nextSection);
-    setIsSwitchingSection(true);
-    switchTimeoutRef.current = setTimeout(() => {
-      setActiveSection(nextSection);
-      setIsSwitchingSection(false);
-      setPendingSection(null);
-      switchTimeoutRef.current = null;
-    }, 200);
-  };
 
   const prayerQuery = useQuery({
     queryKey: [
@@ -322,10 +140,6 @@ export default function PrayerScreen() {
     enabled: Boolean(location),
   });
 
-  const fastingData = fastingQuery.data?.data;
-  const today = fastingData?.fasting?.[0];
-  const fastingDateLabel = formatReadableDate(today?.date);
-
   const ramadanQuery = useQuery({
     queryKey: [
       "ramadanTimes",
@@ -346,30 +160,11 @@ export default function PrayerScreen() {
     enabled: Boolean(location),
   });
 
-  const ramadanData = ramadanQuery.data;
-  const ramadanDays = ramadanData?.data?.fasting ?? [];
-  const ramadanYearLabel = ramadanData?.ramadan_year
-    ? `Ramadan ${ramadanData.ramadan_year}`
-    : "Ramadan";
-  const ramadanDateRange =
-    ramadanDays.length > 1
-      ? `${formatReadableDate(ramadanDays[0].date)} – ${formatReadableDate(
-          ramadanDays[ramadanDays.length - 1].date
-        )}`
-      : undefined;
-
   const zakatQuery = useQuery({
-    queryKey: [
-      "zakatNisab",
-      zakatDefaults.standard,
-      storedZakatCurrency,
-      zakatDefaults.unit,
-    ],
+    queryKey: ["zakatNisab", storedZakatCurrency],
     queryFn: () =>
       getZakatNisab({
-        standard: zakatDefaults.standard,
         currency: storedZakatCurrency,
-        unit: zakatDefaults.unit,
       }),
   });
 
@@ -378,687 +173,362 @@ export default function PrayerScreen() {
     queryFn: () => getAsmaulHusna(asmaLanguage),
   });
 
-  // Safely access nested data — asmaQuery.data may be undefined during initial load
-  const asmaNames = asmaQuery.data?.data?.names ?? [];
-  const currentAsmaLanguageLabel = useMemo(
-    () =>
-      asmaLanguageOptions.find((item) => item.value === asmaLanguage)?.label ??
-      asmaLanguage.toUpperCase(),
-    [asmaLanguage]
-  );
+  const fastingData = fastingQuery.data?.data;
+  const todayFasting = fastingData?.fasting?.[0];
+  const whiteDays = fastingData?.white_days;
+  const ramadanData = ramadanQuery.data?.data;
+  const zakatData = zakatQuery.data;
 
-  if (isCheckingPermission) {
-    return (
-      <View style={styles.permissionContainer}>
-        <View style={styles.permissionCard}>
-          <SkeletonBox style={styles.skeletonLogo} />
-          <SkeletonLine style={styles.skeletonLine} />
-          <SkeletonLine style={styles.skeletonLineWide} />
-          <SkeletonLine style={styles.skeletonButton} />
-        </View>
-      </View>
+  const filteredNames = useMemo(() => {
+    const names = asmaQuery.data?.data?.names ?? [];
+    if (!asmaSearch.trim()) return names;
+    const query = asmaSearch.toLowerCase();
+    return names.filter(
+      (item) =>
+        item.name.toLowerCase().includes(query) ||
+        item.transliteration.toLowerCase().includes(query) ||
+        item.translation.toLowerCase().includes(query) ||
+        item.meaning.toLowerCase().includes(query) ||
+        item.number.toString().includes(query)
     );
-  }
+  }, [asmaQuery.data?.data?.names, asmaSearch]);
 
-  if (permissionStatus !== "granted" || !location) {
+  const currentLanguageLabel = useMemo(() => {
     return (
-      <View style={styles.permissionContainer}>
-        <View style={styles.permissionCard}>
-          <View style={styles.logoWrap}>
-            <AnimatedLogo size={64} />
-          </View>
-          <Text style={styles.permissionTitle}>Location required</Text>
-          <Text style={styles.permissionText}>
-            We need your location to show prayer, fasting, and Ramadan times.
-          </Text>
-          <Pressable style={styles.permissionButton} onPress={fetchLocation}>
-            <Text style={styles.permissionButtonText}>
-              {permissionStatus === "denied" ? "Enable location" : "Share location"}
-            </Text>
-          </Pressable>
-          <Text style={styles.permissionHint}>You can change this later in settings.</Text>
-          {isLoading ? (
-            <View style={styles.permissionLoading}>
-              <SkeletonBox style={styles.skeletonDot} />
-              <Text style={styles.permissionStatus}>{statusMessage}</Text>
-            </View>
-          ) : null}
-        </View>
-      </View>
+      asmaLanguageOptions.find((opt) => opt.value === asmaLanguage)?.label ?? "English"
     );
-  }
+  }, [asmaLanguage]);
 
   return (
-    <View style={styles.screen}>
+    <AmbientBackground>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.tabRow}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.tabChip,
-              activeSection === "prayer" && styles.tabChipActive,
-              pressed && styles.tabChipPressed,
-            ]}
-            onPress={() => triggerSectionChange("prayer")}
-          >
-            <Text
-              style={[
-                styles.tabChipText,
-                activeSection === "prayer" && styles.tabChipTextActive,
-              ]}
-            >
-              Prayer
-            </Text>
-          </Pressable>
-          <Pressable
-            style={({ pressed }) => [
-              styles.tabChip,
-              activeSection === "fasting" && styles.tabChipActive,
-              pressed && styles.tabChipPressed,
-            ]}
-            onPress={() => triggerSectionChange("fasting")}
-          >
-            <Text
-              style={[
-                styles.tabChipText,
-                activeSection === "fasting" && styles.tabChipTextActive,
-              ]}
-            >
-              Fasting
-            </Text>
-          </Pressable>
-          <Pressable
-            style={({ pressed }) => [
-              styles.tabChip,
-              activeSection === "zakat" && styles.tabChipActive,
-              pressed && styles.tabChipPressed,
-            ]}
-            onPress={() => triggerSectionChange("zakat")}
-          >
-            <Text
-              style={[
-                styles.tabChipText,
-                activeSection === "zakat" && styles.tabChipTextActive,
-              ]}
-            >
-              Zakat
-            </Text>
-          </Pressable>
-          <Pressable
-            style={({ pressed }) => [
-              styles.tabChip,
-              activeSection === "asma" && styles.tabChipActive,
-              pressed && styles.tabChipPressed,
-            ]}
-            onPress={() => triggerSectionChange("asma")}
-          >
-            <Text
-              style={[
-                styles.tabChipText,
-                activeSection === "asma" && styles.tabChipTextActive,
-              ]}
-            >
-              Asma
-            </Text>
-          </Pressable>
-        </View>
-        {activeSection === "prayer" ? (
-          <>
-          <Text style={styles.sectionTitle}>Praying</Text>
-            <NextPrayerCard
-              isLoading={prayerQuery.isLoading}
-              error={prayerQuery.error}
-              times={prayerTimes}
-              now={currentTime}
-            />
 
+        <View style={styles.header}>
+          <Text style={styles.title}>Spiritual Hub</Text>
+          <Text style={styles.subtitle}>Prayer, fasting, zakat, and remembrance.</Text>
+        </View>
+
+
+        <View style={styles.pillsRow}>
+          <GlassPill
+            label="Prayer"
+            icon="moon"
+            active={activeSection === "prayer"}
+            onPress={() => setActiveSection("prayer")}
+          />
+          <GlassPill
+            label="Fasting"
+            icon="sunny"
+            active={activeSection === "fasting"}
+            onPress={() => setActiveSection("fasting")}
+          />
+          <GlassPill
+            label="Zakat"
+            icon="cash"
+            active={activeSection === "zakat"}
+            onPress={() => setActiveSection("zakat")}
+          />
+          <GlassPill
+            label="99 Names"
+            icon="sparkles"
+            active={activeSection === "asma"}
+            onPress={() => setActiveSection("asma")}
+          />
+        </View>
+
+
+        {activeSection === "prayer" ? (
+          <View style={styles.sectionContainer}>
             <PrayerTimesCard
               isLoading={prayerQuery.isLoading}
               error={prayerQuery.error}
               times={prayerTimes}
             />
-
             <ProhibitedTimesCard times={prohibitedTimes} />
-          </>
-        ) : null}
-
-        {activeSection === "fasting" ? (
-          <View style={styles.sectionSpacing}>
-            <Text style={styles.sectionTitle}>Fasting</Text>
-            {fastingQuery.isLoading ? (
-              <View style={styles.loadingCard}>
-                <SkeletonBox style={styles.loadingDot} />
-                <SkeletonLine style={styles.loadingLine} />
-              </View>
-            ) : fastingQuery.error ? (
-              <View style={styles.loadingCard}>
-                <Text style={styles.loadingText}>Unable to load fasting info.</Text>
-              </View>
-            ) : (
-              <>
-                <TodayFastingCard
-                  dateLabel={fastingDateLabel}
-                  hijriLabel={today?.hijri_readable}
-                  sahur={today?.time?.sahur}
-                  iftar={today?.time?.iftar}
-                  duration={today?.time?.duration}
-                />
-                <WhiteDaysCard whiteDays={fastingData?.white_days} />
-              </>
-            )}
-
-            <Text style={styles.sectionTitle2}>Ramadan</Text>
-            {ramadanQuery.isLoading ? (
-              <View style={styles.loadingCard}>
-                <SkeletonBox style={styles.loadingDot} />
-                <SkeletonLine style={styles.loadingLine} />
-              </View>
-            ) : ramadanQuery.error ? (
-              <View style={styles.loadingCard}>
-                <Text style={styles.loadingText}>Unable to load Ramadan info.</Text>
-              </View>
-            ) : ramadanData ? (
-              <>
-                <RamadanBanner yearLabel={ramadanYearLabel} dateRange={ramadanDateRange} />
-                <RamadanScheduleCard days={ramadanDays} />
-              </>
-            ) : (
-              <Text style={styles.loadingText}>No Ramadan data available.</Text>
-            )}
           </View>
         ) : null}
 
+
+        {activeSection === "fasting" ? (
+          <View style={styles.sectionContainer}>
+            <TodayFastingCard
+              dateLabel={todayFasting?.date}
+              hijriLabel={todayFasting?.hijri_readable}
+              sahur={todayFasting?.time?.sahur}
+              iftar={todayFasting?.time?.iftar}
+              duration={todayFasting?.time?.duration}
+            />
+            {whiteDays?.days ? <WhiteDaysCard whiteDays={whiteDays} /> : null}
+            {ramadanData?.fasting ? (
+              <RamadanScheduleCard days={ramadanData.fasting} />
+            ) : null}
+          </View>
+        ) : null}
+
+
         {activeSection === "zakat" ? (
-          <View style={styles.sectionSpacing}>
-            <Text style={styles.sectionTitle}>Zakat</Text>
-            {zakatQuery.isLoading ? (
-              <View style={styles.loadingCard}>
-                <SkeletonBox style={styles.loadingDot} />
-                <SkeletonLine style={styles.loadingLine} />
-              </View>
-            ) : zakatQuery.error ? (
-              <View style={styles.loadingCard}>
-                <Text style={styles.loadingText}>Unable to load nisab values.</Text>
-              </View>
-            ) : zakatQuery.data ? (
-              <ZakatNisabCard data={zakatQuery.data} />
-            ) : (
-              <Text style={styles.loadingText}>No nisab data available.</Text>
-            )}
+          <View style={styles.sectionContainer}>
+            {zakatData ? <ZakatNisabCard data={zakatData} /> : null}
             <ZakatCalculatorCard defaultCurrency={storedZakatCurrency} />
           </View>
         ) : null}
 
+
         {activeSection === "asma" ? (
-          <View style={styles.sectionSpacing}>
-            <View style={styles.asmaHeader}>
-              <View>
-                <Text style={styles.sectionTitle}>Asma-ul Husna</Text>
-                <Text style={styles.asmaSubtitle}>The 99 beautiful names of Allah</Text>
+          <View style={styles.sectionContainer}>
+
+            <View style={styles.searchRow}>
+              <View style={styles.searchInputWrap}>
+                <Ionicons name="search" size={16} color="#9CA3AF" />
+                <TextInput
+                  placeholder="Search name, meaning..."
+                  placeholderTextColor="#6B7280"
+                  value={asmaSearch}
+                  onChangeText={setAsmaSearch}
+                  style={styles.searchInput}
+                />
+                {asmaSearch ? (
+                  <Pressable onPress={() => setAsmaSearch("")}>
+                    <Ionicons name="close-circle" size={16} color="#9CA3AF" />
+                  </Pressable>
+                ) : null}
               </View>
-              <Pressable onPress={() => setIsAsmaLanguageOpen(true)}>
-                <Text style={styles.asmaLanguageButton}>{currentAsmaLanguageLabel}</Text>
-              </Pressable>
+
+              <GlassPill
+                label={currentLanguageLabel}
+                icon="globe-outline"
+                size="sm"
+                onPress={() => setIsAsmaLanguageOpen(true)}
+              />
             </View>
 
-            {asmaQuery.isLoading ? (
-              <View style={styles.loadingCard}>
-                <SkeletonBox style={styles.loadingDot} />
-                <SkeletonLine style={styles.loadingLine} />
-              </View>
-            ) : asmaQuery.error ? (
-              <View style={styles.loadingCard}>
-                <Text style={styles.loadingText}>Unable to load names right now.</Text>
-              </View>
-            ) : (
-              <View style={styles.asmaList}>
-                {asmaNames.map((name) => (
-                  <View key={name.number} style={styles.asmaRow}>
-                    <View style={styles.asmaBadge}>
-                      <Text style={styles.asmaBadgeText}>{name.number}</Text>
+
+            <Text style={styles.resultsCount}>
+              Showing {filteredNames.length} of 99 Names
+            </Text>
+
+
+            <View style={styles.namesList}>
+              {filteredNames.map((name) => (
+                <GlassCard key={name.number} variant="muted" style={styles.nameCard}>
+                  <View style={styles.nameHeader}>
+                    <View style={styles.nameNumberBadge}>
+                      <Text style={styles.nameNumberText}>#{name.number}</Text>
                     </View>
-                    <View style={styles.asmaContent}>
-                      <Text style={styles.asmaArabic}>{name.name}</Text>
-                      <Text style={styles.asmaTranslation}>
-                        {name.transliteration} · {name.translation}
-                      </Text>
-                      <Text style={styles.asmaMeaning}>{name.meaning}</Text>
-                    </View>
+                    <Text style={styles.nameArabic}>{name.name}</Text>
                   </View>
-                ))}
-              </View>
-            )}
+                  <Text style={styles.nameTransliteration}>
+                    {name.transliteration} · {name.translation}
+                  </Text>
+                  <Text style={styles.nameMeaning}>{name.meaning}</Text>
+                </GlassCard>
+              ))}
+            </View>
           </View>
         ) : null}
+
+
+        <View style={{ height: 110 }} />
       </ScrollView>
+
 
       <Modal
         visible={isAsmaLanguageOpen}
-        animationType="fade"
         transparent
+        animationType="fade"
         onRequestClose={() => setIsAsmaLanguageOpen(false)}
       >
-        <Pressable style={styles.modalBackdrop} onPress={() => setIsAsmaLanguageOpen(false)}>
-          <Pressable style={styles.modalCard} onPress={() => null}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select language</Text>
-              <Pressable onPress={() => setIsAsmaLanguageOpen(false)}>
-                <Text style={styles.modalCloseText}>Close</Text>
-              </Pressable>
-            </View>
-            <ScrollView contentContainerStyle={styles.modalList}>
-              {asmaLanguageOptions.map((option) => (
-                <Pressable
-                  key={option.label}
-                  style={styles.modalOption}
-                  onPress={() => {
-                    setAsmaLanguage(option.value);
-                    setIsAsmaLanguageOpen(false);
-                  }}
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setIsAsmaLanguageOpen(false)}
+        >
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Select Translation Language</Text>
+            {asmaLanguageOptions.map((opt) => (
+              <Pressable
+                key={opt.value}
+                onPress={() => {
+                  setAsmaLanguage(opt.value);
+                  setIsAsmaLanguageOpen(false);
+                }}
+                style={[
+                  styles.languageOption,
+                  asmaLanguage === opt.value && styles.languageOptionActive,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.languageOptionText,
+                    asmaLanguage === opt.value && styles.languageOptionTextActive,
+                  ]}
                 >
-                  <Text style={styles.modalOptionText}>{option.label}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </Pressable>
+                  {opt.label}
+                </Text>
+                {asmaLanguage === opt.value ? (
+                  <Ionicons name="checkmark-circle" size={18} color="#48A111" />
+                ) : null}
+              </Pressable>
+            ))}
+          </View>
         </Pressable>
       </Modal>
-      {isSwitchingSection ? (
-        <BlurView intensity={18} tint="dark" style={styles.transitionOverlay}>
-          <View style={styles.transitionCard}>
-            <Animated.View
-              style={[
-                styles.transitionLogo,
-                {
-                  transform: [
-                    {
-                      scale: pulseAnim.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: [1, 1.08],
-                      }),
-                    },
-                  ],
-                  opacity: pulseAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.7, 1],
-                  }),
-                },
-              ]}
-            >
-              <AnimatedLogo size={44} />
-            </Animated.View>
-            <Text style={styles.transitionText}>Switching to {pendingSection ?? "section"}</Text>
-            <View style={styles.shimmerTrack}>
-              <Animated.View
-                style={[
-                  styles.shimmerBar,
-                  {
-                    transform: [
-                      {
-                        translateX: progressAnim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 80],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              />
-            </View>
-          </View>
-        </BlurView>
-      ) : null}
-    </View>
+    </AmbientBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-  },
   container: {
     flex: 1,
     paddingHorizontal: 16,
   },
   content: {
-    paddingTop: 18,
-    paddingBottom: 32,
+    paddingTop: 16,
   },
-  sectionSpacing: {
-    marginTop: 12,
+  header: {
+    marginBottom: 16,
+    paddingHorizontal: 4,
   },
-  sectionTitle: {
-    fontSize: Fonts.size.xxl,
+  title: {
+    fontSize: Fonts.size.mega,
     fontWeight: "700",
-    color: Colors.light.text,
-    marginTop: 6,
-    paddingLeft: 6,
+    color: "#F3F4F6",
+    letterSpacing: -0.5,
   },
-  sectionTitle2: {
-    fontSize: Fonts.size.xxl,
-    fontWeight: "700",
-    color: Colors.light.text,
-    marginTop: 12,
-    paddingLeft: 6,
+  subtitle: {
+    fontSize: Fonts.size.sm,
+    color: "#9CA3AF",
+    marginTop: 2,
   },
-  loadingCard: {
-    marginTop: 16,
-    backgroundColor: Theme.colors.surface,
-    borderRadius: Theme.radius.lg,
-    borderWidth: 1,
-    borderColor: Theme.colors.borderLight,
-    padding: 16,
+  pillsRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 14,
+    flexWrap: "wrap",
+    paddingHorizontal: 4,
+  },
+  sectionContainer: {
+    gap: 12,
+  },
+  searchRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-  },
-  loadingText: {
-    fontSize: Fonts.size.text,
-    color: Colors.light.icon,
-  },
-  permissionContainer: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  permissionCard: {
-  backgroundColor: Theme.colors.surface,
-  borderRadius: Theme.radius.xl,
-    paddingVertical: 24,
-    paddingHorizontal: 22,
-    borderWidth: 1.5,
-    borderColor: Theme.colors.primary,
-    alignItems: "center",
-    gap: 12,
-  shadowColor: Theme.colors.text,
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
-    width: "100%",
-    maxWidth: 320,
-  },
-  logoWrap: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-  backgroundColor: Theme.colors.surfaceMuted,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 4,
-  },
-  logo: {
-    width: 64,
-    height: 64,
-  },
-  permissionTitle: {
-    fontSize: Fonts.size.xxl,
-    fontWeight: "700",
-    color: Colors.light.text,
-  },
-  permissionText: {
-    fontSize: Fonts.size.md,
-    color: Colors.light.icon,
-    textAlign: "center",
-    lineHeight: 18,
-  },
-  permissionButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: Theme.radius.pill,
-    backgroundColor: Theme.colors.primary,
-  },
-  permissionButtonText: {
-    color: Theme.colors.onPrimary,
-    fontWeight: "600",
-    fontSize: Fonts.size.md,
-  },
-  permissionHint: {
-    fontSize: Fonts.size.sm,
-    color: Colors.light.icon,
-    textAlign: "center",
-  },
-  permissionLoading: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  permissionStatus: {
-    fontSize: Fonts.size.sm,
-    color: Colors.light.icon,
-  },
-  skeletonLogo: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-  },
-  skeletonLine: {
-    width: 120,
-    height: 12,
-    borderRadius: 6,
-  },
-  skeletonLineWide: {
-    width: 200,
-    height: 12,
-    borderRadius: 6,
-  },
-  skeletonButton: {
-    width: 140,
-    height: 32,
-    borderRadius: 16,
-  },
-  skeletonDot: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-  },
-  skeletonStatus: {
-    width: 140,
-    height: 10,
-    borderRadius: 5,
-  },
-  loadingDot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-  },
-  loadingLine: {
-    width: 160,
-    height: 12,
-    borderRadius: 6,
-  },
-  tabRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 16,
-  },
-  tabChip: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: Theme.radius.pill,
-    backgroundColor: Theme.colors.surface,
-    borderWidth: 1,
-    borderColor: Theme.colors.borderLight,
-  },
-  tabChipActive: {
-    backgroundColor: Theme.colors.primary,
-    borderColor: Theme.colors.primary,
-  },
-  tabChipPressed: {
-    transform: [{ scale: 0.98 }],
-    opacity: 0.88,
-  },
-  tabChipText: {
-    fontSize: Fonts.size.sm,
-    fontWeight: "700",
-    color: Theme.colors.primary,
-  },
-  tabChipTextActive: {
-    color: Theme.colors.onPrimary,
-  },
-  transitionOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(17, 24, 28, 0.08)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  transitionCard: {
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: Theme.radius.lg,
-    backgroundColor: Theme.colors.surface,
-    borderWidth: 1,
-    borderColor: Theme.colors.borderLight,
-    shadowColor: Theme.colors.text,
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
-  },
-  transitionLogo: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: Theme.colors.surfaceMuted,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  transitionText: {
-    fontSize: Fonts.size.sm,
-    fontWeight: "600",
-    color: Colors.light.text,
-  },
-  shimmerTrack: {
-    width: 140,
-    height: 6,
-    borderRadius: 999,
-    backgroundColor: Theme.colors.surfaceMuted,
-    overflow: "hidden",
-  },
-  shimmerBar: {
-    width: 60,
-    height: 6,
-    borderRadius: 999,
-    backgroundColor: Theme.colors.primary,
-    opacity: 0.35,
-    shadowColor: Theme.colors.primary,
-    shadowOpacity: 0.45,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 0 },
-  },
-  asmaHeader: {
-    marginTop: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  asmaSubtitle: {
-    marginTop: 4,
-    fontSize: Fonts.size.sm,
-    color: Colors.light.icon,
-  },
-  asmaLanguageButton: {
-    fontSize: Fonts.size.sm,
-    fontWeight: "600",
-    color: Colors.light.primary,
-  },
-  asmaList: {
-    marginTop: 12,
-    gap: 12,
-  },
-  asmaRow: {
-    flexDirection: "row",
-    gap: 12,
-    padding: 12,
-    borderRadius: Theme.radius.md,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    backgroundColor: Theme.colors.surface,
-  },
-  asmaBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Theme.colors.surfaceSoft,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  asmaBadgeText: {
-    fontSize: Fonts.size.sm,
-    fontWeight: "700",
-    color: Colors.light.primary,
-  },
-  asmaContent: {
-    flex: 1,
-    gap: 4,
-  },
-  asmaArabic: {
-    fontSize: Fonts.size.mega,
-    color: Colors.light.text,
-    textAlign: "right",
-  },
-  asmaTranslation: {
-    fontSize: Fonts.size.xl,
-    fontWeight: "600",
-    color: Colors.light.text,
-  },
-  asmaMeaning: {
-    fontSize: Fonts.size.sm,
-    color: Colors.light.icon,
-  },
-  modalBackdrop: {
-    flex: 1,
-  backgroundColor: "rgba(17, 24, 28, 0.45)",
-    justifyContent: "center",
-    paddingHorizontal: 16,
-  },
-  modalCard: {
-    backgroundColor: Theme.colors.surface,
-    borderRadius: Theme.radius.lg,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    maxHeight: "70%",
-  },
-  modalHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    marginTop: 8,
     marginBottom: 12,
   },
-  modalTitle: {
-    fontSize: Fonts.size.xl,
-    fontWeight: "700",
-    color: Colors.light.text,
-  },
-  modalCloseText: {
-    fontSize: Fonts.size.sm,
-    fontWeight: "600",
-    color: Colors.light.primary,
-  },
-  modalList: {
+  searchInputWrap: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
-    paddingBottom: 8,
-  },
-  modalOption: {
-    paddingVertical: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    borderRadius: 16,
     paddingHorizontal: 12,
-    borderRadius: Theme.radius.sm,
+    height: 42,
     borderWidth: 1,
-    borderColor: Theme.colors.border,
+    borderColor: "rgba(255, 255, 255, 0.09)",
   },
-  modalOptionText: {
+  searchInput: {
+    flex: 1,
+    color: "#F3F4F6",
+    fontSize: Fonts.size.sm,
+  },
+  resultsCount: {
+    fontSize: Fonts.size.xs,
+    color: "#6B7280",
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  namesList: {
+    gap: 10,
+  },
+  nameCard: {
+    padding: 14,
+    gap: 6,
+  },
+  nameHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  nameNumberBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+    backgroundColor: "rgba(242, 181, 11, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(242, 181, 11, 0.3)",
+  },
+  nameNumberText: {
+    fontSize: Fonts.size.xs,
+    fontWeight: "700",
+    color: "#F2B50B",
+  },
+  nameArabic: {
+    fontSize: Fonts.size.xxl,
+    fontWeight: "700",
+    color: "#FDE68A",
+    textAlign: "right",
+  },
+  nameTransliteration: {
     fontSize: Fonts.size.md,
-    color: Colors.light.text,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+  nameMeaning: {
+    fontSize: Fonts.size.sm,
+    color: "#9CA3AF",
+    lineHeight: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+  modalCard: {
+    width: "100%",
+    maxWidth: 340,
+    backgroundColor: "rgba(22, 28, 24, 0.95)",
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.12)",
+    borderTopColor: "rgba(255, 255, 255, 0.25)",
+    gap: 10,
+  },
+  modalTitle: {
+    fontSize: Fonts.size.lg,
+    fontWeight: "700",
+    color: "#F3F4F6",
+    marginBottom: 8,
+  },
+  languageOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.04)",
+  },
+  languageOptionActive: {
+    backgroundColor: "rgba(37, 103, 30, 0.35)",
+    borderColor: "rgba(72, 161, 17, 0.4)",
+    borderWidth: 1,
+  },
+  languageOptionText: {
+    fontSize: Fonts.size.sm,
+    color: "#D1D5DB",
+    fontWeight: "500",
+  },
+  languageOptionTextActive: {
+    color: "#FFFFFF",
+    fontWeight: "700",
   },
 });

@@ -51,7 +51,7 @@ export const SkeletonCircle = ({ style }: SkeletonBoxProps) => (
 
 const styles = StyleSheet.create({
     box: {
-        backgroundColor: "#E5E7EB",
+        backgroundColor: "rgba(255, 255, 255, 0.08)",
         borderRadius: 8,
     },
     line: {

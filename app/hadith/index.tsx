@@ -4,10 +4,11 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { ScrollToTopButton } from "../../components/common/ScrollToTopButton";
 import { SkeletonLine } from "../../components/common/Skeleton";
+import { AmbientBackground } from "../../components/glass/AmbientBackground";
+import { GlassCard } from "../../components/glass/GlassCard";
+import { GlassPill } from "../../components/glass/GlassPill";
 import { BookCard } from "../../components/hadith/BookCard";
-import { Colors } from "../../constants/Colors";
 import { Fonts } from "../../constants/Fonts";
-import { Theme } from "../../constants/Theme";
 import { getHadithBooks, HadithBook } from "../../lib/api/hadith/getHadithBooks";
 
 export default function HadithScreen() {
@@ -24,7 +25,14 @@ export default function HadithScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: HadithBook }) => (
-      <Pressable onPress={() => router.push({ pathname: "/hadith/[slug]", params: { slug: item.bookSlug } })}>
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: "/hadith/[slug]",
+            params: { slug: item.bookSlug },
+          })
+        }
+      >
         <BookCard book={item} />
       </Pressable>
     ),
@@ -32,145 +40,121 @@ export default function HadithScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <View style={styles.headerText}> 
-          <Text style={styles.title}>Hadith Books</Text>
-          <Text style={styles.subtitle}>Discover collections of Hadith.</Text>
+    <AmbientBackground>
+      <View style={styles.container}>
+        <View style={styles.headerRow}>
+          <View style={styles.headerText}>
+            <Text style={styles.title}>Hadith Collections</Text>
+            <Text style={styles.subtitle}>Authentic prophetic traditions.</Text>
+          </View>
+          <GlassPill
+            label="Search"
+            icon="search"
+            variant="primary"
+            size="md"
+            onPress={() => router.push("/hadith/search")}
+          />
         </View>
-        <Pressable
-          style={styles.searchButton}
-          onPress={() => router.push("/hadith/search")}
-        >
-          <Text style={styles.searchButtonText}>Search</Text>
-        </Pressable>
-      </View>
-      <View style={{ height: 16 }} />
 
-      {isLoading ? (
-        <View style={styles.stateContainer}>
-          <View style={styles.skeletonList}>
+        {isLoading ? (
+          <View style={styles.skeletonContainer}>
             {Array.from({ length: 6 }).map((_, index) => (
-              <View key={`skeleton-${index}`} style={styles.skeletonRow}>
-                <SkeletonLine style={styles.skeletonLine} />
-                <SkeletonLine style={styles.skeletonLineShort} />
-              </View>
+              <GlassCard key={`sk-${index}`} style={styles.skeletonCard}>
+                <SkeletonLine style={{ width: "50%", height: 16 }} />
+                <SkeletonLine style={{ width: "75%", height: 12, marginTop: 8 }} />
+              </GlassCard>
             ))}
           </View>
-        </View>
-      ) : error ? (
-        <View style={styles.stateContainer}>
-          <Text style={styles.stateText}>Could not load books.</Text>
-          <Pressable onPress={() => refetch()} style={styles.retryButton}>
-            <Text style={styles.retryButtonText}>Try again</Text>
-          </Pressable>
-        </View>
-      ) : (
-        <FlatList
-          ref={listRef}
-          data={books}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-          contentContainerStyle={styles.listContent}
-          onScroll={({ nativeEvent }) => setShowScrollTop(nativeEvent.contentOffset.y > 300)}
-          scrollEventThrottle={16}
-          ListEmptyComponent={
-            <View style={styles.stateContainer}>
-              <Text style={styles.stateText}>No books found.</Text>
-            </View>
-          }
-        />
-      )}
+        ) : error ? (
+          <View style={styles.stateContainer}>
+            <Text style={styles.stateText}>Could not load Hadith books.</Text>
+            <Pressable onPress={() => refetch()} style={styles.retryButton}>
+              <Text style={styles.retryButtonText}>Try again</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <FlatList
+            ref={listRef}
+            data={books}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            onScroll={({ nativeEvent }) =>
+              setShowScrollTop(nativeEvent.contentOffset.y > 300)
+            }
+            scrollEventThrottle={16}
+            ListEmptyComponent={
+              <View style={styles.stateContainer}>
+                <Text style={styles.stateText}>No books found.</Text>
+              </View>
+            }
+          />
+        )}
 
-      <ScrollToTopButton
-        visible={showScrollTop}
-        onPress={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })}
-      />
-    </View>
+        <ScrollToTopButton
+          visible={showScrollTop}
+          onPress={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })}
+        />
+      </View>
+    </AmbientBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
     paddingHorizontal: 16,
-    paddingTop: 20,
-  },
-  title: {
-    fontSize: Fonts.size.mega,
-    fontWeight: "700",
-    color: Colors.light.text,
-  },
-  subtitle: {
-    marginTop: 4,
-    fontSize: Fonts.size.text,
-    color: Colors.light.icon,
+    paddingTop: 16,
   },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 12,
+    marginBottom: 16,
+    paddingHorizontal: 4,
   },
   headerText: {
     flex: 1,
   },
-  searchButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: Theme.radius.pill,
-    backgroundColor: Theme.colors.primary,
+  title: {
+    fontSize: Fonts.size.mega,
+    fontWeight: "700",
+    color: "#F3F4F6",
+    letterSpacing: -0.5,
   },
-  searchButtonText: {
-    color: Theme.colors.onPrimary,
-    fontWeight: "600",
+  subtitle: {
+    marginTop: 2,
     fontSize: Fonts.size.sm,
+    color: "#9CA3AF",
   },
   listContent: {
-    paddingVertical: 16,
-    gap: 12,
-    paddingBottom: 32,
+    paddingBottom: 110,
   },
-  stateContainer: {
-    marginTop: 32,
-    alignItems: "center",
+  skeletonContainer: {
     gap: 10,
   },
-  stateText: {
-    fontSize: Fonts.size.text,
-    color: Colors.light.icon,
+  skeletonCard: {
+    padding: 16,
   },
-  skeletonList: {
-    width: "100%",
+  stateContainer: {
+    marginTop: 40,
+    alignItems: "center",
     gap: 12,
   },
-  skeletonRow: {
-    backgroundColor: Theme.colors.surface,
-    borderRadius: Theme.radius.md,
-    borderWidth: 1,
-    borderColor: Theme.colors.borderLight,
-    padding: 12,
-    gap: 8,
-  },
-  skeletonLine: {
-    width: "80%",
-    height: 12,
-    borderRadius: 6,
-  },
-  skeletonLineShort: {
-    width: "50%",
-    height: 12,
-    borderRadius: 6,
+  stateText: {
+    fontSize: Fonts.size.md,
+    color: "#9CA3AF",
   },
   retryButton: {
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: Theme.radius.pill,
-    backgroundColor: Theme.colors.primary,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: "rgba(37, 103, 30, 0.4)",
   },
   retryButtonText: {
-    color: Theme.colors.onPrimary,
+    fontSize: Fonts.size.sm,
+    color: "#48A111",
     fontWeight: "600",
   },
 });

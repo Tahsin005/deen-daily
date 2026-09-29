@@ -1,10 +1,8 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Colors } from "../../constants/Colors";
+import { GlassCard } from "../glass/GlassCard";
 import { Fonts } from "../../constants/Fonts";
-import { Theme } from "../../constants/Theme";
-import { SkeletonLine } from "../common/Skeleton";
 import { timeEntries } from "./prayerTimesUtils";
 
 type PrayerTimesCardProps = {
@@ -13,7 +11,6 @@ type PrayerTimesCardProps = {
     times: Record<string, string>;
 };
 
-
 export const PrayerTimesCard = ({ isLoading, error, times }: PrayerTimesCardProps) => {
     const entries = useMemo(
         () => timeEntries.filter(({ key }) => Boolean(times[key])),
@@ -21,15 +18,21 @@ export const PrayerTimesCard = ({ isLoading, error, times }: PrayerTimesCardProp
     );
 
     return (
-        <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Today’s prayer times</Text>
+        <GlassCard style={styles.card}>
+            <View style={styles.headerRow}>
+                <View>
+                    <Text style={styles.sectionCategory}>SCHEDULE</Text>
+                    <Text style={styles.sectionTitle}>Today's Prayer Times</Text>
+                </View>
+                <View style={styles.tag}>
+                    <Text style={styles.tagText}>Daily</Text>
+                </View>
+            </View>
+
             {isLoading ? (
                 <View style={styles.skeletonGrid}>
                     {Array.from({ length: 6 }).map((_, index) => (
-                        <View key={`skeleton-${index}`} style={styles.skeletonItem}>
-                            <SkeletonLine style={styles.skeletonLine} />
-                            <SkeletonLine style={styles.skeletonLineShort} />
-                        </View>
+                        <View key={`skeleton-${index}`} style={styles.skeletonItem} />
                     ))}
                 </View>
             ) : error ? (
@@ -39,7 +42,7 @@ export const PrayerTimesCard = ({ isLoading, error, times }: PrayerTimesCardProp
                     {entries.map(({ key, label, icon }) => (
                         <View key={key} style={styles.timeItem}>
                             <View style={styles.timeLabelRow}>
-                                <Ionicons name={icon} size={18} color={Colors.light.primary} />
+                                <Ionicons name={icon} size={16} color="#48A111" />
                                 <Text style={styles.timeLabel}>{label}</Text>
                             </View>
                             <Text style={styles.timeValue}>{times[key]}</Text>
@@ -49,65 +52,57 @@ export const PrayerTimesCard = ({ isLoading, error, times }: PrayerTimesCardProp
             ) : (
                 <Text style={styles.statusText}>No prayer times available yet.</Text>
             )}
-        </View>
+        </GlassCard>
     );
 };
 
 const styles = StyleSheet.create({
-    sectionCard: {
+    card: {
         marginTop: 16,
-        backgroundColor: Theme.colors.surface,
-        borderRadius: Theme.radius.lg,
-        borderWidth: 1,
-        borderColor: Theme.colors.borderLight,
-        padding: 16,
+    },
+    headerRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 16,
+    },
+    sectionCategory: {
+        fontSize: 10,
+        fontWeight: "700",
+        color: "#6B7280",
+        letterSpacing: 1,
     },
     sectionTitle: {
         fontSize: Fonts.size.xl,
         fontWeight: "700",
-        color: Colors.light.text,
-        marginBottom: 12,
+        color: "#F3F4F6",
+        letterSpacing: -0.3,
     },
-    statusRow: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
+    tag: {
+        paddingHorizontal: 8,
+        paddingVertical: 3,
+        borderRadius: 12,
+        backgroundColor: "rgba(37, 103, 30, 0.3)",
+        borderWidth: 1,
+        borderColor: "rgba(72, 161, 17, 0.3)",
     },
-    skeletonGrid: {
+    tagText: {
+        fontSize: Fonts.size.xxs,
+        fontWeight: "700",
+        color: "#48A111",
+    },
+    timesGrid: {
         flexDirection: "row",
         flexWrap: "wrap",
-        gap: 12,
-    },
-    skeletonItem: {
-        width: "48%",
-        borderRadius: Theme.radius.md,
-        borderWidth: 1,
-        borderColor: Theme.colors.border,
-        backgroundColor: Theme.colors.surfaceMuted,
-        paddingVertical: 12,
-        paddingHorizontal: 12,
-        gap: 8,
-    },
-    skeletonLine: {
-        width: "70%",
-        height: 12,
-        borderRadius: 6,
-    },
-    skeletonLineShort: {
-        width: "40%",
-        height: 14,
-        borderRadius: 6,
-    },
-    statusText: {
-        fontSize: Fonts.size.text,
-        color: Colors.light.icon,
+        gap: 10,
     },
     timeItem: {
         width: "48%",
-        borderRadius: Theme.radius.md,
-        backgroundColor: Theme.colors.surfaceMuted,
+        borderRadius: 14,
+        backgroundColor: "rgba(255, 255, 255, 0.04)",
         borderWidth: 1,
-        borderColor: Theme.colors.border,
+        borderColor: "rgba(255, 255, 255, 0.08)",
+        borderTopColor: "rgba(255, 255, 255, 0.16)",
         paddingVertical: 12,
         paddingHorizontal: 12,
     },
@@ -118,17 +113,31 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     timeLabel: {
-        fontSize: Fonts.size.sm,
-        color: Colors.light.icon,
+        fontSize: Fonts.size.xs,
+        color: "#9CA3AF",
+        fontWeight: "500",
     },
     timeValue: {
-        fontSize: Fonts.size.xl,
-        fontWeight: "600",
-        color: Colors.light.text,
+        fontSize: Fonts.size.lg,
+        fontWeight: "700",
+        color: "#F3F4F6",
     },
-    timesGrid: {
+    statusText: {
+        fontSize: Fonts.size.text,
+        color: "#9CA3AF",
+        textAlign: "center",
+        paddingVertical: 16,
+    },
+    skeletonGrid: {
         flexDirection: "row",
         flexWrap: "wrap",
-        gap: 12,
+        gap: 10,
+    },
+    skeletonItem: {
+        width: "48%",
+        height: 60,
+        borderRadius: 14,
+        backgroundColor: "rgba(255, 255, 255, 0.04)",
     },
 });
+export default PrayerTimesCard;

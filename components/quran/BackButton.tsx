@@ -1,9 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { memo } from "react";
 import { Pressable, StyleSheet, Text } from "react-native";
-import { Colors } from "../../constants/Colors";
 import { Fonts } from "../../constants/Fonts";
-import { Theme } from "../../constants/Theme";
 
 type BackButtonProps = {
   label?: string;
@@ -13,7 +11,7 @@ type BackButtonProps = {
 function BackButton({ label = "Back", onPress }: BackButtonProps) {
   return (
     <Pressable onPress={onPress} style={styles.button}>
-      <Ionicons name="arrow-back" size={16} color={Colors.light.primary} />
+      <Ionicons name="arrow-back" size={16} color="#48A111" />
       <Text style={styles.text}>{label}</Text>
     </Pressable>
   );
@@ -25,19 +23,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: Theme.radius.pill,
-    backgroundColor: Theme.colors.surfaceSoft,
-    marginBottom: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    backgroundColor: "rgba(255, 255, 255, 0.06)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.12)",
+    borderTopColor: "rgba(255, 255, 255, 0.22)",
+    marginBottom: 14,
   },
   text: {
-    fontSize: Fonts.size.md,
+    fontSize: Fonts.size.sm,
     fontWeight: "600",
-    color: Colors.light.primary,
+    color: "#F3F4F6",
   },
 });
 
-const MemoizedBackButton = memo(BackButton);
+export const MemoizedBackButton = memo(BackButton);
 export default MemoizedBackButton;
 export { MemoizedBackButton as BackButton };

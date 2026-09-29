@@ -1,8 +1,19 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useMemo, useState } from "react";
-import { Linking, Modal, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Colors } from "../../constants/Colors";
+import {
+  Linking,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { AnimatedLogo } from "../../components/common/AnimatedLogo";
+import { AmbientBackground } from "../../components/glass/AmbientBackground";
+import { GlassCard } from "../../components/glass/GlassCard";
+import { GlassPill } from "../../components/glass/GlassPill";
 import { Fonts } from "../../constants/Fonts";
-import { Theme } from "../../constants/Theme";
 import { IslamicAPISettings } from "../../constants/settings/IslamicAPISettings";
 import { useLocalStorageString } from "../../lib/storage/useLocalStorageString";
 import { usePrayerSettings } from "../../lib/storage/usePrayerSettings";
@@ -16,12 +27,22 @@ type SettingKey =
 
 export default function MoreScreen() {
   const [activeSetting, setActiveSetting] = useState<SettingKey | null>(null);
-  const { method, school, shifting, calendar, setMethod, setSchool, setShifting, setCalendar } =
-    usePrayerSettings();
+  const {
+    method,
+    school,
+    shifting,
+    calendar,
+    setMethod,
+    setSchool,
+    setShifting,
+    setCalendar,
+  } = usePrayerSettings();
+
   const [zakatCurrency, setZakatCurrency] = useLocalStorageString(
     "zakatCurrency",
     IslamicAPISettings.zakatNisab.defaults.currency
   );
+
   const methodOptions = IslamicAPISettings.prayerTime.method;
   const schoolOptions = IslamicAPISettings.prayerTime.school;
   const shiftingOptions = IslamicAPISettings.prayerTime.shifting;
@@ -113,289 +134,372 @@ export default function MoreScreen() {
     setZakatCurrency,
   ]);
 
+  const activeSettingTitle = useMemo(() => {
+    if (activeSetting === "method") return "Calculation Method";
+    if (activeSetting === "school") return "Juristic School (Asr)";
+    if (activeSetting === "shifting") return "Higher Latitudes Shifting";
+    if (activeSetting === "calendar") return "Islamic Calendar Standard";
+    if (activeSetting === "zakatCurrency") return "Zakat Currency";
+    return "Select Setting";
+  }, [activeSetting]);
+
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-      <Text style={styles.title}>More</Text>
-      <Text style={styles.subtitle}>Settings and more tools.</Text>
-      <View style={styles.section}> 
-        <Text style={styles.sectionTitle}>Settings</Text>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Prayer Settings</Text>
-
-          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("method")}>
-            <View>
-              <Text style={styles.settingLabel}>Method</Text>
-              <Text style={styles.settingValue}>{currentMethodLabel}</Text>
-            </View>
-            <Text style={styles.settingAction}>Change</Text>
-          </Pressable>
-
-          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("school")}>
-            <View>
-              <Text style={styles.settingLabel}>School</Text>
-              <Text style={styles.settingValue}>{currentSchoolLabel}</Text>
-            </View>
-            <Text style={styles.settingAction}>Change</Text>
-          </Pressable>
-
-          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("shifting")}>
-            <View>
-              <Text style={styles.settingLabel}>Shifting</Text>
-              <Text style={styles.settingValue}>{currentShiftingLabel}</Text>
-            </View>
-            <Text style={styles.settingAction}>Change</Text>
-          </Pressable>
-
-          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("calendar")}>
-            <View>
-              <Text style={styles.settingLabel}>Calendar</Text>
-              <Text style={styles.settingValue}>{calendar}</Text>
-            </View>
-            <Text style={styles.settingAction}>Change</Text>
-          </Pressable>
+    <AmbientBackground>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>Preferences & About</Text>
+          <Text style={styles.subtitle}>Configure calculations, methods, and app tools.</Text>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Zakat Settings</Text>
-          <Pressable style={styles.settingRow} onPress={() => setActiveSetting("zakatCurrency")}>
-            <View>
-              <Text style={styles.settingLabel}>Default currency</Text>
-              <Text style={styles.settingValue}>{currentZakatCurrencyLabel}</Text>
+
+        <GlassCard variant="primaryTint" style={styles.brandCard}>
+          <View style={styles.brandTop}>
+            <View style={styles.brandLogoWrap}>
+              <AnimatedLogo size={42} />
             </View>
-            <Text style={styles.settingAction}>Change</Text>
-          </Pressable>
-        </View>
-      </View>
+            <View style={styles.brandTextWrap}>
+              <Text style={styles.brandTitle}>Deen Daily</Text>
+              <Text style={styles.brandSubtitle}>v1.1.0 · Liquid Glass Edition</Text>
+            </View>
+          </View>
+          <Text style={styles.brandDesc}>
+            Your daily companion for prayer times, Quran recitation, authentic Hadith,
+            fasting schedule, and Zakat calculation.
+          </Text>
+        </GlassCard>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Credits</Text>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>API Providers</Text>
-          <Text style={styles.creditText}>We’re grateful to these API providers:</Text>
-          <Pressable
-            style={styles.creditRow}
-            onPress={() => Linking.openURL("https://islamicapi.com/")}
-          >
-            <Text style={styles.creditLabel}>Islamic API</Text>
-            <Text style={styles.creditLink}>islamicapi.com</Text>
-          </Pressable>
-          <Pressable
-            style={styles.creditRow}
-            onPress={() => Linking.openURL("https://hadithapi.com/")}
-          >
-            <Text style={styles.creditLabel}>Hadith API</Text>
-            <Text style={styles.creditLink}>hadithapi.com</Text>
-          </Pressable>
-          <Pressable
-            style={styles.creditRow}
-            onPress={() => Linking.openURL("https://alquran-api.pages.dev/")}
-          >
-            <Text style={styles.creditLabel}>AlQuran API</Text>
-            <Text style={styles.creditLink}>alquran-api.pages.dev</Text>
-          </Pressable>
-        </View>
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Developer</Text>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Built by Tahsin Ferdous</Text>
-          <Text style={styles.creditText}>Let’s connect and follow the project:</Text>
-          <Pressable
-            style={styles.creditRow}
-            onPress={() => Linking.openURL("https://github.com/Tahsin005/deen-daily")}
-          >
-            <Text style={styles.creditLabel}>Project Repository</Text>
-            <Text style={styles.creditLink}>github.com/Tahsin005/deen-daily</Text>
-          </Pressable>
-          <Pressable
-            style={styles.creditRow}
-            onPress={() => Linking.openURL("https://github.com/Tahsin005/")}
-          >
-            <Text style={styles.creditLabel}>GitHub Profile</Text>
-            <Text style={styles.creditLink}>github.com/Tahsin005</Text>
-          </Pressable>
-          <Pressable
-            style={styles.creditRow}
-            onPress={() => Linking.openURL("https://www.linkedin.com/in/md-tahsin-ferdous/")}
-          >
-            <Text style={styles.creditLabel}>LinkedIn</Text>
-            <Text style={styles.creditLink}>linkedin.com/in/md-tahsin-ferdous</Text>
-          </Pressable>
+        <View style={styles.sectionWrap}>
+          <Text style={styles.sectionCategory}>CONFIGURATION</Text>
+          <Text style={styles.sectionTitle}>Prayer Calculations</Text>
+
+          <GlassCard style={styles.settingsCard}>
+            <Pressable
+              style={styles.settingRow}
+              onPress={() => setActiveSetting("method")}
+            >
+              <View style={styles.settingTextWrap}>
+                <Text style={styles.settingLabel}>Calculation Method</Text>
+                <Text style={styles.settingValue}>{currentMethodLabel}</Text>
+              </View>
+              <GlassPill label="Change" size="sm" />
+            </Pressable>
+
+            <View style={styles.divider} />
+
+            <Pressable
+              style={styles.settingRow}
+              onPress={() => setActiveSetting("school")}
+            >
+              <View style={styles.settingTextWrap}>
+                <Text style={styles.settingLabel}>Juristic School (Asr Time)</Text>
+                <Text style={styles.settingValue}>{currentSchoolLabel}</Text>
+              </View>
+              <GlassPill label="Change" size="sm" />
+            </Pressable>
+
+            <View style={styles.divider} />
+
+            <Pressable
+              style={styles.settingRow}
+              onPress={() => setActiveSetting("shifting")}
+            >
+              <View style={styles.settingTextWrap}>
+                <Text style={styles.settingLabel}>High Latitude Shifting</Text>
+                <Text style={styles.settingValue}>{currentShiftingLabel}</Text>
+              </View>
+              <GlassPill label="Change" size="sm" />
+            </Pressable>
+
+            <View style={styles.divider} />
+
+            <Pressable
+              style={styles.settingRow}
+              onPress={() => setActiveSetting("calendar")}
+            >
+              <View style={styles.settingTextWrap}>
+                <Text style={styles.settingLabel}>Calendar Method</Text>
+                <Text style={styles.settingValue}>{calendar}</Text>
+              </View>
+              <GlassPill label="Change" size="sm" />
+            </Pressable>
+          </GlassCard>
         </View>
-      </View>
+
+
+        <View style={styles.sectionWrap}>
+          <Text style={styles.sectionCategory}>FINANCIAL TOOLS</Text>
+          <Text style={styles.sectionTitle}>Zakat Settings</Text>
+
+          <GlassCard style={styles.settingsCard}>
+            <Pressable
+              style={styles.settingRow}
+              onPress={() => setActiveSetting("zakatCurrency")}
+            >
+              <View style={styles.settingTextWrap}>
+                <Text style={styles.settingLabel}>Default Currency</Text>
+                <Text style={styles.settingValue}>{currentZakatCurrencyLabel}</Text>
+              </View>
+              <GlassPill label="Change" size="sm" variant="gold" />
+            </Pressable>
+          </GlassCard>
+        </View>
+
+
+        <View style={styles.sectionWrap}>
+          <Text style={styles.sectionCategory}>COMMUNITY & CREDITS</Text>
+          <Text style={styles.sectionTitle}>About Developer</Text>
+
+          <GlassCard style={styles.settingsCard}>
+            <Pressable
+              style={styles.linkRow}
+              onPress={() => Linking.openURL("https://github.com/Tahsin005/deen-daily")}
+            >
+              <View style={styles.linkLeft}>
+                <Ionicons name="logo-github" size={20} color="#F3F4F6" />
+                <Text style={styles.linkLabel}>GitHub Repository</Text>
+              </View>
+              <Ionicons name="open-outline" size={16} color="#9CA3AF" />
+            </Pressable>
+
+            <View style={styles.divider} />
+
+            <Pressable
+              style={styles.linkRow}
+              onPress={() => Linking.openURL("https://www.linkedin.com/in/md-tahsin-ferdous/")}
+            >
+              <View style={styles.linkLeft}>
+                <Ionicons name="logo-linkedin" size={20} color="#48A111" />
+                <Text style={styles.linkLabel}>Developer Profile</Text>
+              </View>
+              <Ionicons name="open-outline" size={16} color="#9CA3AF" />
+            </Pressable>
+
+            <View style={styles.divider} />
+
+            <Pressable
+              style={styles.linkRow}
+              onPress={() => Linking.openURL("https://islamicapi.com/")}
+            >
+              <View style={styles.linkLeft}>
+                <Ionicons name="globe-outline" size={20} color="#F2B50B" />
+                <Text style={styles.linkLabel}>IslamicAPI.com Data Source</Text>
+              </View>
+              <Ionicons name="open-outline" size={16} color="#9CA3AF" />
+            </Pressable>
+          </GlassCard>
+        </View>
+
+
+        <View style={{ height: 110 }} />
+      </ScrollView>
+
 
       <Modal
-        visible={Boolean(activeSetting)}
-        animationType="fade"
+        visible={activeSetting !== null}
         transparent
+        animationType="fade"
         onRequestClose={() => setActiveSetting(null)}
       >
-        <Pressable style={styles.modalBackdrop} onPress={() => setActiveSetting(null)}>
-          <Pressable style={styles.modalCard} onPress={() => null}>
+        <Pressable style={styles.modalOverlay} onPress={() => setActiveSetting(null)}>
+          <View style={styles.modalCard}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select option</Text>
+              <Text style={styles.modalTitle}>{activeSettingTitle}</Text>
               <Pressable onPress={() => setActiveSetting(null)}>
-                <Text style={styles.modalCloseText}>Close</Text>
+                <Ionicons name="close" size={20} color="#9CA3AF" />
               </Pressable>
             </View>
-            <ScrollView contentContainerStyle={styles.modalList}>
+
+            <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
               {activeOptions.map((option) => (
                 <Pressable
-                  key={option.label}
-                  style={styles.modalOption}
+                  key={option.value}
                   onPress={option.onSelect}
+                  style={styles.modalOption}
                 >
                   <Text style={styles.modalOptionText}>{option.label}</Text>
+                  <Ionicons name="chevron-forward" size={16} color="#9CA3AF" />
                 </Pressable>
               ))}
             </ScrollView>
-          </Pressable>
+          </View>
         </Pressable>
       </Modal>
-    </ScrollView>
+    </AmbientBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
     paddingHorizontal: 16,
+    paddingTop: 16,
   },
   content: {
-    paddingTop: 24,
-    paddingBottom: 32,
+    paddingTop: 10,
   },
-  section: {
-    marginTop: 18,
-    gap: 12,
-  },
-  sectionTitle: {
-    fontSize: Fonts.size.text,
-    fontWeight: "700",
-    color: Colors.light.icon,
-    textTransform: "uppercase",
-    letterSpacing: 0.8,
+  header: {
+    marginBottom: 16,
+    paddingHorizontal: 4,
   },
   title: {
     fontSize: Fonts.size.mega,
     fontWeight: "700",
-    color: Colors.light.text,
-    textAlign: "center",
+    color: "#F3F4F6",
+    letterSpacing: -0.4,
   },
   subtitle: {
-    marginTop: 6,
-    fontSize: Fonts.size.text,
-    color: Colors.light.icon,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  card: {
-    backgroundColor: Theme.colors.surface,
-    borderRadius: Theme.radius.lg,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Theme.colors.borderLight,
-  },
-  cardTitle: {
-    fontSize: Fonts.size.xl,
-    fontWeight: "700",
-    color: Colors.light.text,
-    marginBottom: 12,
-  },
-  creditText: {
     fontSize: Fonts.size.sm,
-    color: Colors.light.icon,
-    marginBottom: 10,
+    color: "#9CA3AF",
+    marginTop: 2,
   },
-  creditRow: {
+  brandCard: {
+    padding: 18,
+    marginBottom: 16,
+  },
+  brandTop: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: Theme.colors.borderLight,
+    gap: 14,
+    marginBottom: 10,
   },
-  creditLabel: {
-    fontSize: Fonts.size.md,
-    color: Colors.light.text,
-    fontWeight: "600",
+  brandLogoWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: "rgba(37, 103, 30, 0.35)",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  creditLink: {
-    fontSize: Fonts.size.sm,
-    color: Theme.colors.primary,
+  brandTextWrap: {
+    flex: 1,
+  },
+  brandTitle: {
+    fontSize: Fonts.size.xl,
+    fontWeight: "800",
+    color: "#FFFFFF",
+  },
+  brandSubtitle: {
+    fontSize: Fonts.size.xs,
+    color: "#48A111",
     fontWeight: "600",
+    marginTop: 2,
+  },
+  brandDesc: {
+    fontSize: Fonts.size.xs,
+    color: "#D1D5DB",
+    lineHeight: 18,
+  },
+  sectionWrap: {
+    marginTop: 18,
+  },
+  sectionCategory: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#6B7280",
+    letterSpacing: 1,
+    paddingHorizontal: 4,
+  },
+  sectionTitle: {
+    fontSize: Fonts.size.lg,
+    fontWeight: "700",
+    color: "#F3F4F6",
+    marginBottom: 10,
+    marginTop: 2,
+    paddingHorizontal: 4,
+  },
+  settingsCard: {
+    padding: 6,
   },
   settingRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.colors.borderLight,
+    paddingHorizontal: 10,
+  },
+  settingTextWrap: {
+    flex: 1,
+    marginRight: 10,
   },
   settingLabel: {
-    fontSize: Fonts.size.md,
-    color: Colors.light.icon,
+    fontSize: Fonts.size.xs,
+    color: "#9CA3AF",
   },
   settingValue: {
-    fontSize: Fonts.size.text,
+    fontSize: Fonts.size.md,
     fontWeight: "600",
-    color: Colors.light.text,
-    marginTop: 4,
+    color: "#F3F4F6",
+    marginTop: 2,
   },
-  settingAction: {
+  divider: {
+    height: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.06)",
+    marginHorizontal: 10,
+  },
+  linkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 14,
+    paddingHorizontal: 10,
+  },
+  linkLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  linkLabel: {
     fontSize: Fonts.size.sm,
-    color: Colors.light.primary,
     fontWeight: "600",
+    color: "#F3F4F6",
   },
-  modalBackdrop: {
+  modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(17, 24, 28, 0.45)",
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
     justifyContent: "center",
-    paddingHorizontal: 16,
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
   modalCard: {
-    backgroundColor: Theme.colors.surface,
-    borderRadius: Theme.radius.lg,
-    padding: 18,
-    maxHeight: "85%",
+    width: "100%",
+    maxWidth: 380,
+    backgroundColor: "rgba(22, 28, 24, 0.96)",
+    borderRadius: 24,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.12)",
+    borderTopColor: "rgba(255, 255, 255, 0.25)",
   },
   modalHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 12,
+    marginBottom: 16,
   },
   modalTitle: {
-    fontSize: Fonts.size.xl,
+    fontSize: Fonts.size.lg,
     fontWeight: "700",
-    color: Colors.light.text,
-  },
-  modalCloseText: {
-    fontSize: Fonts.size.md,
-    fontWeight: "600",
-    color: Theme.colors.primary,
-  },
-  modalList: {
-    paddingBottom: 12,
+    color: "#F3F4F6",
   },
   modalOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: Theme.radius.md,
-    backgroundColor: Theme.colors.surfaceMuted,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    marginBottom: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    backgroundColor: "rgba(255, 255, 255, 0.04)",
+    marginBottom: 8,
   },
   modalOptionText: {
-    fontSize: Fonts.size.md,
-    color: Colors.light.text,
+    fontSize: Fonts.size.sm,
+    color: "#D1D5DB",
+    fontWeight: "500",
+    flex: 1,
   },
 });

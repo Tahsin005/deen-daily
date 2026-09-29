@@ -12,6 +12,7 @@ import { Fonts } from "../../constants/Fonts";
 import { Theme } from "../../constants/Theme";
 import { fetchJson } from "../../lib/api/fetchJson";
 import { SkeletonLine } from "../common/Skeleton";
+import { GlassCard } from "../glass/GlassCard";
 
 const formatCurrency = (amount: number, currency: string) => {
     try {
@@ -308,10 +309,12 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
     };
 
     return (
-        <View style={styles.card}>
+        <GlassCard style={styles.card}>
             <View style={styles.headerRow}>
                 <View style={styles.headerLeft}>
-                    <Ionicons name="calculator" size={22} color={Colors.light.primary} />
+                    <View style={styles.iconCircle}>
+                        <Ionicons name="calculator" size={18} color="#F2B50B" />
+                    </View>
                     <Text style={styles.headerTitle}>Zakat Calculator</Text>
                 </View>
                 <View style={styles.badge}>
@@ -324,11 +327,12 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                 {` ${effectiveCurrency}`}.
             </Text>
 
-        <View style={styles.sectionCard}>
+            <View style={styles.sectionCard}>
                 <Text style={styles.sectionTitle}>Exchange rate date (optional)</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="YYYY-MM-DD"
+                    placeholderTextColor="#6B7280"
                     value={exchangeDate}
                     onChangeText={setExchangeDate}
                     autoCapitalize="none"
@@ -342,38 +346,40 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                 <TextInput
                     style={styles.input}
                     placeholder="Type (e.g. cash, savings)"
+                    placeholderTextColor="#6B7280"
                     value={assetType}
                     onChangeText={setAssetType}
                 />
                 <View style={styles.inlineRow}>
-                <TextInput
-                    style={[styles.input, styles.inlineInput]}
-                    placeholder="Amount"
-                    value={assetAmount}
-                    onChangeText={setAssetAmount}
-                    keyboardType="decimal-pad"
-                />
-                <View style={[styles.input, styles.inlineInput, styles.currencyTag]}>
-                    <Text style={styles.currencyText}>{effectiveCurrency}</Text>
-                </View>
+                    <TextInput
+                        style={[styles.input, styles.inlineInput]}
+                        placeholder="Amount"
+                        placeholderTextColor="#6B7280"
+                        value={assetAmount}
+                        onChangeText={setAssetAmount}
+                        keyboardType="decimal-pad"
+                    />
+                    <View style={[styles.input, styles.inlineInput, styles.currencyTag]}>
+                        <Text style={styles.currencyText}>{effectiveCurrency}</Text>
+                    </View>
                 </View>
                 <Pressable style={styles.actionButton} onPress={addAsset}>
-                    <Text style={styles.actionButtonText}>Add asset</Text>
+                    <Text style={styles.actionButtonText}>+ Add Asset</Text>
                 </Pressable>
                 {assets.length > 0 ? (
                     <View style={styles.listContainer}>
                         {assets.map((asset) => (
                             <View key={asset.id} style={styles.listRow}>
                                 <View>
-                                <Text style={styles.listTitle}>{asset.type}</Text>
-                                <Text style={styles.listSubtitle}>
-                                    {asset.amount} {asset.currency.toUpperCase()}
-                                </Text>
+                                    <Text style={styles.listTitle}>{asset.type}</Text>
+                                    <Text style={styles.listSubtitle}>
+                                        {asset.amount} {asset.currency.toUpperCase()}
+                                    </Text>
                                 </View>
                                 <Pressable
-                                onPress={() => setAssets((prev) => prev.filter((item) => item.id !== asset.id))}
+                                    onPress={() => setAssets((prev) => prev.filter((item) => item.id !== asset.id))}
                                 >
-                                <Ionicons name="trash" size={18} color={Theme.colors.danger} />
+                                    <Ionicons name="trash-outline" size={18} color="#EF4444" />
                                 </Pressable>
                             </View>
                         ))}
@@ -386,23 +392,25 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                 <TextInput
                     style={styles.input}
                     placeholder="Type (e.g. debt, loan)"
+                    placeholderTextColor="#6B7280"
                     value={liabilityType}
                     onChangeText={setLiabilityType}
                 />
                 <View style={styles.inlineRow}>
-                <TextInput
-                    style={[styles.input, styles.inlineInput]}
-                    placeholder="Amount"
-                    value={liabilityAmount}
-                    onChangeText={setLiabilityAmount}
-                    keyboardType="decimal-pad"
-                />
-                <View style={[styles.input, styles.inlineInput, styles.currencyTag]}>
-                    <Text style={styles.currencyText}>{effectiveCurrency}</Text>
-                </View>
+                    <TextInput
+                        style={[styles.input, styles.inlineInput]}
+                        placeholder="Amount"
+                        placeholderTextColor="#6B7280"
+                        value={liabilityAmount}
+                        onChangeText={setLiabilityAmount}
+                        keyboardType="decimal-pad"
+                    />
+                    <View style={[styles.input, styles.inlineInput, styles.currencyTag]}>
+                        <Text style={styles.currencyText}>{effectiveCurrency}</Text>
+                    </View>
                 </View>
                 <Pressable style={styles.actionButton} onPress={addLiability}>
-                    <Text style={styles.actionButtonText}>Add liability</Text>
+                    <Text style={styles.actionButtonText}>+ Add Liability</Text>
                 </Pressable>
                 {liabilities.length > 0 ? (
                     <View style={styles.listContainer}>
@@ -419,7 +427,7 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                                         setLiabilities((prev) => prev.filter((item) => item.id !== liability.id))
                                     }
                                 >
-                                    <Ionicons name="trash" size={18} color={Theme.colors.danger} />
+                                    <Ionicons name="trash-outline" size={18} color="#EF4444" />
                                 </Pressable>
                             </View>
                         ))}
@@ -430,38 +438,40 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
             <View style={styles.sectionCard}>
                 <Text style={styles.sectionTitle}>Gold</Text>
                 <View style={styles.inlineRow}>
-                <TextInput
-                    style={[styles.input, styles.inlineInput]}
-                    placeholder="Carat"
-                    value={goldCarat}
-                    onChangeText={setGoldCarat}
-                    keyboardType="number-pad"
-                />
-                <TextInput
-                    style={[styles.input, styles.inlineInput]}
-                    placeholder="Weight (g)"
-                    value={goldWeight}
-                    onChangeText={setGoldWeight}
-                    keyboardType="decimal-pad"
-                />
+                    <TextInput
+                        style={[styles.input, styles.inlineInput]}
+                        placeholder="Carat (e.g. 21, 24)"
+                        placeholderTextColor="#6B7280"
+                        value={goldCarat}
+                        onChangeText={setGoldCarat}
+                        keyboardType="number-pad"
+                    />
+                    <TextInput
+                        style={[styles.input, styles.inlineInput]}
+                        placeholder="Weight (g)"
+                        placeholderTextColor="#6B7280"
+                        value={goldWeight}
+                        onChangeText={setGoldWeight}
+                        keyboardType="decimal-pad"
+                    />
                 </View>
                 <Pressable style={styles.actionButton} onPress={addGold}>
-                    <Text style={styles.actionButtonText}>Add gold</Text>
+                    <Text style={styles.actionButtonText}>+ Add Gold</Text>
                 </Pressable>
                 {goldItems.length > 0 ? (
                     <View style={styles.listContainer}>
                         {goldItems.map((item) => (
                             <View key={item.id} style={styles.listRow}>
                                 <View>
-                                <Text style={styles.listTitle}>{item.weight}g @ {item.carat}k</Text>
-                                <Text style={styles.listSubtitle}>
-                                    Pure: {item.pureGold.toFixed(2)}g | Zakatable: {item.zakatableGold.toFixed(2)}g
-                                </Text>
+                                    <Text style={styles.listTitle}>{item.weight}g @ {item.carat}k</Text>
+                                    <Text style={styles.listSubtitle}>
+                                        Pure: {item.pureGold.toFixed(2)}g | Zakatable: {item.zakatableGold.toFixed(2)}g
+                                    </Text>
                                 </View>
                                 <Pressable
                                     onPress={() => setGoldItems((prev) => prev.filter((row) => row.id !== item.id))}
                                 >
-                                    <Ionicons name="trash" size={18} color={Theme.colors.danger} />
+                                    <Ionicons name="trash-outline" size={18} color="#EF4444" />
                                 </Pressable>
                             </View>
                         ))}
@@ -474,12 +484,13 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                 <TextInput
                     style={styles.input}
                     placeholder="Weight (g)"
+                    placeholderTextColor="#6B7280"
                     value={silverWeight}
                     onChangeText={setSilverWeight}
                     keyboardType="decimal-pad"
                 />
                 <Pressable style={styles.actionButton} onPress={addSilver}>
-                    <Text style={styles.actionButtonText}>Add silver</Text>
+                    <Text style={styles.actionButtonText}>+ Add Silver</Text>
                 </Pressable>
                 {silverItems.length > 0 ? (
                     <View style={styles.listContainer}>
@@ -496,7 +507,7 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                                         setSilverItems((prev) => prev.filter((row) => row.id !== item.id))
                                     }
                                 >
-                                    <Ionicons name="trash" size={18} color={Theme.colors.danger} />
+                                    <Ionicons name="trash-outline" size={18} color="#EF4444" />
                                 </Pressable>
                             </View>
                         ))}
@@ -507,22 +518,22 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
             {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
             <View style={styles.buttonRow}>
-                <Pressable style={[styles.actionButton, styles.primaryButton]} onPress={calculateZakat}>
+                <Pressable style={[styles.actionButtonMain, styles.primaryButton]} onPress={calculateZakat}>
                     {isCalculating ? (
                         <SkeletonLine style={styles.buttonSkeleton} />
                     ) : (
-                        <Text style={[styles.actionButtonText, styles.primaryButtonText]}>Calculate</Text>
+                        <Text style={styles.primaryButtonText}>Calculate Zakat</Text>
                     )}
                 </Pressable>
-                <Pressable style={[styles.actionButton, styles.ghostButton]} onPress={resetAll}>
+                <Pressable style={[styles.actionButtonMain, styles.ghostButton]} onPress={resetAll}>
                     <Text style={styles.ghostButtonText}>Reset</Text>
                 </Pressable>
             </View>
 
             {result ? (
                 <View style={styles.resultCard}>
-                    <Text style={styles.resultTitle}>Zakat summary</Text>
-                    <Text style={styles.resultSubtitle}>Calculation date: {result.dateLabel}</Text>
+                    <Text style={styles.resultTitle}>Zakat Summary</Text>
+                    <Text style={styles.resultSubtitle}>Calculation Date: {result.dateLabel}</Text>
 
                     <View style={styles.resultRow}>
                         <Text style={styles.resultLabel}>Total cash/assets</Text>
@@ -542,9 +553,9 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                             {formatCurrency(result.netZakatableAssets, result.currency)}
                         </Text>
                     </View>
-                    <View style={styles.resultRow}>
-                        <Text style={styles.resultLabel}>Cash zakat (2.5%)</Text>
-                        <Text style={styles.resultValue}>
+                    <View style={styles.resultRowHighlight}>
+                        <Text style={styles.resultLabelHighlight}>Cash Zakat Due (2.5%)</Text>
+                        <Text style={styles.resultValueHighlight}>
                             {formatCurrency(result.totalZakatCash, result.currency)}
                         </Text>
                     </View>
@@ -558,7 +569,7 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                     <View style={styles.resultRow}>
                         <Text style={styles.resultLabel}>Zakatable gold weight</Text>
                         <Text style={styles.resultValue}>
-                        {result.totalZakatableGoldWeight.toFixed(2)} g
+                            {result.totalZakatableGoldWeight.toFixed(2)} g
                         </Text>
                     </View>
                     <View style={styles.resultRow}>
@@ -568,7 +579,7 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                     <View style={styles.resultRow}>
                         <Text style={styles.resultLabel}>Zakatable silver weight</Text>
                         <Text style={styles.resultValue}>
-                        {result.totalZakatableSilverWeight.toFixed(2)} g
+                            {result.totalZakatableSilverWeight.toFixed(2)} g
                         </Text>
                     </View>
 
@@ -577,17 +588,13 @@ export const ZakatCalculatorCard = ({ defaultCurrency }: ZakatCalculatorCardProp
                     </Text>
                 </View>
             ) : null}
-        </View>
+        </GlassCard>
     );
 };
 
 const styles = StyleSheet.create({
     card: {
-        marginTop: 16,
-        backgroundColor: Theme.colors.surface,
-        borderRadius: Theme.radius.lg,
-        borderWidth: 1,
-        borderColor: Theme.colors.borderLight,
+        marginTop: 14,
         padding: 16,
         gap: 12,
     },
@@ -599,53 +606,67 @@ const styles = StyleSheet.create({
     headerLeft: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 8,
+        gap: 10,
+    },
+    iconCircle: {
+        width: 34,
+        height: 34,
+        borderRadius: 17,
+        backgroundColor: "rgba(242, 181, 11, 0.15)",
+        borderWidth: 1,
+        borderColor: "rgba(242, 181, 11, 0.3)",
+        alignItems: "center",
+        justifyContent: "center",
     },
     headerTitle: {
-        fontSize: Fonts.size.xl,
+        fontSize: Fonts.size.lg,
         fontWeight: "700",
-        color: Colors.light.text,
+        color: "#FFFFFF",
     },
     badge: {
         paddingHorizontal: 10,
         paddingVertical: 4,
-        borderRadius: Theme.radius.pill,
-        backgroundColor: Theme.colors.surfaceSoft,
+        borderRadius: 999,
+        backgroundColor: "rgba(72, 161, 17, 0.2)",
+        borderWidth: 1,
+        borderColor: "rgba(72, 161, 17, 0.35)",
     },
     badgeText: {
         fontSize: Fonts.size.xs,
-        fontWeight: "600",
-        color: Colors.light.primary,
+        fontWeight: "700",
+        color: "#86EFAC",
     },
     subText: {
-        fontSize: Fonts.size.sm,
-        color: Colors.light.icon,
+        fontSize: Fonts.size.xs,
+        color: "#9CA3AF",
+        lineHeight: 18,
     },
     sectionCard: {
-        borderRadius: Theme.radius.md,
+        borderRadius: 14,
         borderWidth: 1,
-        borderColor: Theme.colors.border,
-        backgroundColor: Theme.colors.surfaceMuted,
+        borderColor: "rgba(255, 255, 255, 0.08)",
+        backgroundColor: "rgba(255, 255, 255, 0.03)",
         padding: 12,
         gap: 8,
     },
     sectionTitle: {
-        fontSize: Fonts.size.md,
+        fontSize: Fonts.size.sm,
         fontWeight: "700",
-        color: Colors.light.text,
+        color: "#F3F4F6",
     },
     helperText: {
-        fontSize: Fonts.size.xs,
-        color: Colors.light.icon,
+        fontSize: Fonts.size.xxs,
+        color: "#6B7280",
     },
     input: {
         borderWidth: 1,
-        borderColor: Theme.colors.border,
-        borderRadius: Theme.radius.sm,
+        borderColor: "rgba(255, 255, 255, 0.12)",
+        borderRadius: 10,
         paddingHorizontal: 12,
         paddingVertical: 8,
-        fontSize: Fonts.size.md,
-        backgroundColor: Theme.colors.surface,
+        fontSize: Fonts.size.sm,
+        color: "#FFFFFF",
+        backgroundColor: "rgba(255, 255, 255, 0.05)",
     },
     inlineRow: {
         flexDirection: "row",
@@ -657,58 +678,72 @@ const styles = StyleSheet.create({
     currencyTag: {
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: Theme.colors.surfaceSoft,
+        backgroundColor: "rgba(72, 161, 17, 0.15)",
+        borderColor: "rgba(72, 161, 17, 0.3)",
     },
     currencyText: {
         fontSize: Fonts.size.sm,
         fontWeight: "700",
-        color: Colors.light.primary,
+        color: "#86EFAC",
     },
     actionButton: {
         alignSelf: "flex-start",
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: Theme.radius.pill,
-        backgroundColor: Theme.colors.surfaceSoft,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 8,
+        backgroundColor: "rgba(72, 161, 17, 0.2)",
+        borderWidth: 1,
+        borderColor: "rgba(72, 161, 17, 0.35)",
     },
     actionButtonText: {
-        fontSize: Fonts.size.sm,
+        fontSize: Fonts.size.xs,
         fontWeight: "600",
-        color: Colors.light.primary,
+        color: "#86EFAC",
     },
     listContainer: {
-        gap: 8,
+        gap: 6,
+        marginTop: 4,
     },
     listRow: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        backgroundColor: Theme.colors.surface,
+        backgroundColor: "rgba(255, 255, 255, 0.04)",
         padding: 10,
-        borderRadius: Theme.radius.sm,
+        borderRadius: 10,
         borderWidth: 1,
-        borderColor: Theme.colors.border,
+        borderColor: "rgba(255, 255, 255, 0.08)",
     },
     listTitle: {
-        fontSize: Fonts.size.md,
+        fontSize: Fonts.size.sm,
         fontWeight: "600",
-        color: Colors.light.text,
+        color: "#F3F4F6",
     },
     listSubtitle: {
         fontSize: Fonts.size.xs,
-        color: Colors.light.icon,
+        color: "#9CA3AF",
     },
     buttonRow: {
         flexDirection: "row",
         gap: 10,
+        marginTop: 4,
     },
-    primaryButton: {
+    actionButtonMain: {
         flex: 1,
         alignItems: "center",
-        backgroundColor: Theme.colors.primary,
+        justifyContent: "center",
+        paddingVertical: 12,
+        borderRadius: 12,
+    },
+    primaryButton: {
+        backgroundColor: "#25671E",
+        borderWidth: 1,
+        borderColor: "rgba(72, 161, 17, 0.5)",
     },
     primaryButtonText: {
-        color: Theme.colors.onPrimary,
+        color: "#FFFFFF",
+        fontWeight: "700",
+        fontSize: Fonts.size.sm,
     },
     buttonSkeleton: {
         width: 60,
@@ -717,59 +752,81 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(255, 255, 255, 0.8)",
     },
     ghostButton: {
-        flex: 1,
-        alignItems: "center",
-        backgroundColor: Theme.colors.surfaceMuted,
+        backgroundColor: "rgba(255, 255, 255, 0.06)",
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.12)",
     },
     ghostButtonText: {
-        color: Colors.light.text,
+        color: "#9CA3AF",
         fontSize: Fonts.size.sm,
         fontWeight: "600",
     },
     errorText: {
-    color: Theme.colors.danger,
-        fontSize: Fonts.size.sm,
+        color: "#EF4444",
+        fontSize: Fonts.size.xs,
         fontWeight: "600",
     },
     resultCard: {
-        marginTop: 8,
-        borderRadius: Theme.radius.lg,
+        marginTop: 4,
+        borderRadius: 14,
         borderWidth: 1,
-        borderColor: Theme.colors.border,
-        backgroundColor: Theme.colors.surfaceAccent,
+        borderColor: "rgba(72, 161, 17, 0.4)",
+        borderTopColor: "rgba(134, 239, 172, 0.6)",
+        backgroundColor: "rgba(37, 103, 30, 0.2)",
         padding: 14,
         gap: 8,
     },
     resultTitle: {
-        fontSize: Fonts.size.text,
+        fontSize: Fonts.size.md,
         fontWeight: "700",
-        color: Colors.light.text,
+        color: "#FFFFFF",
     },
     resultSubtitle: {
-        fontSize: Fonts.size.sm,
-        color: Colors.light.icon,
+        fontSize: Fonts.size.xs,
+        color: "#9CA3AF",
     },
     resultRow: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
     },
+    resultRowHighlight: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        backgroundColor: "rgba(72, 161, 17, 0.2)",
+        padding: 8,
+        borderRadius: 8,
+        marginTop: 2,
+    },
     resultLabel: {
-        fontSize: Fonts.size.sm,
-        color: Colors.light.icon,
+        fontSize: Fonts.size.xs,
+        color: "#9CA3AF",
+    },
+    resultLabelHighlight: {
+        fontSize: Fonts.size.xs,
+        fontWeight: "700",
+        color: "#FDE68A",
     },
     resultValue: {
+        fontSize: Fonts.size.xs,
+        fontWeight: "600",
+        color: "#F3F4F6",
+    },
+    resultValueHighlight: {
         fontSize: Fonts.size.sm,
         fontWeight: "700",
-        color: Colors.light.text,
+        color: "#86EFAC",
     },
     divider: {
         height: 1,
-        backgroundColor: Theme.colors.border,
+        backgroundColor: "rgba(255, 255, 255, 0.08)",
+        marginVertical: 4,
     },
     resultNote: {
         marginTop: 4,
-        fontSize: Fonts.size.xs,
-        color: Colors.light.icon,
+        fontSize: Fonts.size.xxs,
+        color: "#6B7280",
+        lineHeight: 14,
     },
 });
