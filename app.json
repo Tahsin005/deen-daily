@@ -2,7 +2,7 @@
   "expo": {
     "name": "Deen Daily",
     "slug": "deen-daily",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "deendaily",
@@ -14,7 +14,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0A0E0B",
         "foregroundImage": "./assets/images/logo.png",
         "backgroundImage": "./assets/images/logo.png",
         "monochromeImage": "./assets/images/logo.png"
@@ -22,7 +22,7 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.tahsin005.deen.daily",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "output": "static",

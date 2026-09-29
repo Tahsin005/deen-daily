@@ -163,7 +163,7 @@ export default function MoreScreen() {
             </View>
             <View style={styles.brandTextWrap}>
               <Text style={styles.brandTitle}>Deen Daily</Text>
-              <Text style={styles.brandSubtitle}>v1.1.0 · Liquid Glass Edition</Text>
+              <Text style={styles.brandSubtitle}>v2.0.0 · Liquid Glass Edition</Text>
             </View>
           </View>
           <Text style={styles.brandDesc}>
