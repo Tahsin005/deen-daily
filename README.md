@@ -1,4 +1,4 @@
-# Deen Daily (v2.0.0)
+# Deen Daily (v2.0.1)
 
 Your daily guide to Deen — a modern Expo app that brings prayer times, Quran, hadith, fasting, and zakat tools into one clean, consistent experience.
 
@@ -12,7 +12,7 @@ Your daily guide to Deen — a modern Expo app that brings prayer times, Quran, 
 - Asma-ul Husna (name of the day + full list).
 - Consistent theming with shared palette, typography, and card styles.
 
-## Screenshots (v2.0.0)
+## Screenshots (v2.0.1)
 
 <table>
 	<tr>
